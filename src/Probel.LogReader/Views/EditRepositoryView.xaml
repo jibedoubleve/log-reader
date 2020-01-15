@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="Probel.LogReader.Views.EditRepositoryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="clr-namespace:Probel.LogReader.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Probel.LogReader.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:PluginInfoToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="0,5,5,0" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5,0,5,5" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5,0,5,5" />
+        </Style>
+    </UserControl.Resources>
+    <StackPanel>
+        <!--  PluginInfo  -->
+        <Label>Plugin:</Label>
+        <ComboBox
+            x:Name="PluginInfoList"
+            DisplayMemberPath="Name"
+            SelectedItem="{Binding SelectedPlugin, UpdateSourceTrigger=PropertyChanged}" />
+        <!--  Name  -->
+        <Label>Name:</Label>
+        <TextBox Text="{Binding Repository.Name, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TextBlock
+            Margin="5,5,0,0"
+            FontSize="14"
+            FontWeight="DemiBold"
+            Visibility="{Binding SelectedPlugin, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToVisibilityConverter}}">
+            <Hyperlink NavigateUri="{Binding SelectedPlugin.DocUrl, UpdateSourceTrigger=PropertyChanged}" RequestNavigate="OnRequestNavigate">
+                Documentation
+            </Hyperlink>
+        </TextBlock>
+        <!--  ConnectionString  -->
+        <Label>Connection string:</Label>
+        <TextBox Text="{Binding Repository.ConnectionString, UpdateSourceTrigger=PropertyChanged}" />
+        <!--  Query Day  -->
+        <Label>Query for days:</Label>
+        <TextBox
+            Height="120"
+            AcceptsReturn="True"
+            Text="{Binding Repository.QueryDay, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+        <!--  Query Log  -->
+        <Label>Query for logs:</Label>
+        <TextBox
+            Height="120"
+            AcceptsReturn="True"
+            Text="{Binding Repository.QueryLog, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap" />
+    </StackPanel>
+</UserControl>

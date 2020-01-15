@@ -1,0 +1,61 @@
+﻿<UserControl
+    x:Class="Probel.LogReader.Views.ManageRepositoryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="_self"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ContextMenu x:Key="_fiterContextMenu">
+            <MenuItem Command="{Binding Source={x:Reference _self}, Path=DataContext.DeleteCurrentRepositoryCommand}" Header="Delete this repository" />
+        </ContextMenu>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ToolBarTray Grid.ColumnSpan="2" Margin="5">
+            <ToolBar>
+                <Button x:Name="SaveAll" ToolTip="Save all changes">
+                    <iconPacks:PackIconModern Kind="Save" />
+                </Button>
+                <Button x:Name="DiscardAll" ToolTip="Discard changes">
+                    <iconPacks:PackIconMaterial Kind="FileUndo" />
+                </Button>
+                <Button x:Name="CreateRepository" ToolTip="New repository">
+                    <iconPacks:PackIconModern Kind="New" />
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ListView
+                x:Name="Repositories"
+                cal:Message.Attach="[SelectionChanged] = [ActivateCurrentRepository]"
+                DisplayMemberPath="Name"
+                SelectedItem="{Binding CurrentRepository}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource _fiterContextMenu}" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+        </Grid>
+        <ScrollViewer Grid.Row="1" Grid.Column="1">
+            <ContentControl x:Name="ActiveItem" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

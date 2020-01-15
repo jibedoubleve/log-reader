@@ -1,0 +1,26 @@
+﻿<Application
+    x:Class="Probel.LogReader.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Probel.LogReader">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--  CALIBURN CONFIGURATION  -->
+                <ResourceDictionary>
+                    <local:Bootstrapper x:Key="bootstrapper" />
+                </ResourceDictionary>
+                <!--  LOG COLOURS  -->
+                <ResourceDictionary>
+                    <SolidColorBrush x:Key="LogTraceColour" Color="#66C678DD" />
+                    <SolidColorBrush x:Key="LogDebugColour" Color="#98C379" />
+                    <SolidColorBrush x:Key="LogInfoColour" Color="#61AFEF" />
+                    <SolidColorBrush x:Key="LogWarnColour" Color="#D19A66" />
+                    <SolidColorBrush x:Key="LogErrorColour" Color="#E06C75" />
+                    <SolidColorBrush x:Key="LogFatalColour" Color="#E06C75" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,59 @@
+{
+    "filters": [
+      {
+        "expression": [
+          {
+            "operand": "15",
+            "operator": "<",
+            "type": "time"
+          },
+          {
+            "operand": "default, intercom, squirrel",
+            "operator": "in",
+            "type": "category"
+          },
+          {
+            "operand": "trace, debug, info, warn, error, fatal",
+            "operator": "in",
+            "type": "level"
+          }
+        ],
+        "id": "23fc09ec-4a7d-48e7-990f-64028552a842",
+        "name": "filter x"
+      },
+      {
+        "expression": [
+          {
+            "operand": "",
+            "operator": "not in",
+            "type": "level"
+          }
+        ],
+        "id": "01f36d50-5051-4def-a4b4-3665c0b3b00d",
+        "name": "Show all logs."
+      }
+    ],
+    "repositories": [
+      {
+        "connection-string": "Data Source=...;Version=3;",
+        "plugin-id": "c8d4b05b-8a59-42cc-996a-f6ca581f0edf",
+        "name": "sqlite-logreader",
+        "query-day": "select ... from ...",
+        "query-log": "select ... from ..."
+      },
+      {
+        "connection-string": null,
+        "plugin-id": "c6d28753-2a41-4e03-a2ab-c9ddcc8652cf",
+        "name": "debug-logreader",
+        "query-day": null,
+        "query-log": null
+      },
+      {
+        "connection-string": "C:\\xxx\\",
+        "plugin-id": "f55ea9ee-da17-4b6e-bab1-1805592507d0",
+        "name": "csv-logreader",
+        "query-day": "\\d{4}-\\d{2}-\\d{2}",
+        "query-log": "Time;Level;Logger;ThreadId;Message;Exception"
+      }
+    ]
+  }
