@@ -1,5 +1,4 @@
 ﻿using Probel.LogReader.Core.Configuration;
-using Probel.LogReader.Core.Configuration;
 using System.Threading.Tasks;
 
 namespace Probel.LogReader.Win32.Files

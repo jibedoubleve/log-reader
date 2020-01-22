@@ -15,7 +15,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = Guid.NewGuid().ToString() };
 
             ((DebugPlugin)plugin).SetCategory("category");
@@ -31,7 +31,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "category" };
 
             ((DebugPlugin)plugin).SetCategory("category");
@@ -47,7 +47,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_inclusive()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "in", Operand = "category" };
 
             ((DebugPlugin)plugin).SetCategory("category");
@@ -63,7 +63,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_inclusive_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "in", Operand = Guid.NewGuid().ToString() };
 
             ((DebugPlugin)plugin).SetCategory("category");
@@ -79,7 +79,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_exclusive()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = Guid.NewGuid().ToString() };
 
             ((DebugPlugin)plugin).SetLevel("category");
@@ -95,7 +95,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_exclusive_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = "category" };
 
             ((DebugPlugin)plugin).SetLevel("category");
@@ -111,7 +111,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_inclusive()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new LevelFilter() { Operator = "in", Operand = "category" };
 
             ((DebugPlugin)plugin).SetLevel("category");
@@ -127,7 +127,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_inclusive_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new LevelFilter() { Operator = "in", Operand = Guid.NewGuid().ToString() };
 
             ((DebugPlugin)plugin).SetLevel("category");
@@ -143,7 +143,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_or_equal()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             var now = DateTime.Now;
             ((DebugPlugin)plugin)
                 .Clear()
@@ -178,7 +178,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">", Operand = "15" };
 
             ((DebugPlugin)plugin).AddMinutes(100);
@@ -194,7 +194,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">", Operand = "15" };
 
             ((DebugPlugin)plugin).AddMinutes(1);
@@ -210,7 +210,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than_or_equal_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">=", Operand = "15" };
 
             ((DebugPlugin)plugin).AddMinutes(1);
@@ -226,7 +226,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_or_equal()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             var now = DateTime.Now;
             ((DebugPlugin)plugin)
                 .Clear()
@@ -260,7 +260,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_or_equal_on_multiple_days()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             var now = DateTime.Now;
             ((DebugPlugin)plugin)
                 .Clear()
@@ -292,7 +292,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_than()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new TimeFilter() { Operator = "<", Operand = "15" };
 
             ((DebugPlugin)plugin).AddMinutes(1);
@@ -308,7 +308,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_than_or_equal()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new TimeFilter() { Operator = "<=", Operand = "15" };
 
             ((DebugPlugin)plugin).AddMinutes(1);
@@ -324,7 +324,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_Can_filter()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
 
             ((DebugPlugin)plugin).AddMinutes(1);
             ((DebugPlugin)plugin).SetCategory("group");
@@ -349,7 +349,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_no_result_with_filter_that_has_results()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
 
             ((DebugPlugin)plugin).AddMinutes(100);
             ((DebugPlugin)plugin).SetCategory("group");
@@ -374,7 +374,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_filter_no_result()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
 
             ((DebugPlugin)plugin).AddMinutes(100);
             ((DebugPlugin)plugin).SetCategory(Guid.NewGuid().ToString());
@@ -399,7 +399,7 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_OR_Can_filter()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
             var now = DateTime.Now;
             ((DebugPlugin)plugin)
                 .Clear()

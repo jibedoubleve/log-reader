@@ -53,7 +53,7 @@ namespace Probel.LogReader.Win32
             else { throw new NotSupportedException($"No filter expression with name '{id}' found in the configuration"); }
         }
 
-        public IEnumerable<string> GetOperators(FilterOperations operation) => FilterHelper.GetOperators(operation);
+        public static IEnumerable<string> GetOperators(FilterOperations operation) => FilterHelper.GetOperators(operation);
 
         private IFilterExpression Create(FilterExpressionSettings item)
         {

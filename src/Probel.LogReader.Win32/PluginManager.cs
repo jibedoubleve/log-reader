@@ -36,7 +36,7 @@ namespace Probel.LogReader.Win32
 
         #region Methods
 
-        public IPlugin Build(RepositorySettings settings)
+        public PluginBase Build(RepositorySettings settings)
         {
             LoadPlugins();
 
@@ -51,7 +51,9 @@ namespace Probel.LogReader.Win32
                 var type = _pluginTypes[metadata.Dll];
                 var plugin = Activator.CreateInstance(type);
 
-                return plugin as IPlugin;
+                var p = plugin as PluginBase;
+                p?.Initialise(settings);
+                return p;
             }
             else { throw new NotSupportedException($"Cannot instanciate the plugin '{metadata.Dll}'. Did you forget to load the plugins?"); }
         }

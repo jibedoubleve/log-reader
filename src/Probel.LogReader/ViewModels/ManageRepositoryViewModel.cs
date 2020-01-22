@@ -2,6 +2,7 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Ui;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -14,6 +15,7 @@ namespace Probel.LogReader.ViewModels
 
         private readonly IConfigurationManager _configManager;
         private readonly EditRepositoryViewModel _editRepositoryViewModel;
+        private readonly IEventAggregator _eventAggregator;
         private AppSettings _cachedAppSettings;
         private RepositorySettings _currentRepositorySettings;
         private ObservableCollection<RepositorySettings> _repositories;
@@ -22,9 +24,12 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public ManageRepositoryViewModel(IConfigurationManager configManager, EditRepositoryViewModel editRepositoryViewModel)
+        public ManageRepositoryViewModel(IConfigurationManager configManager
+            , EditRepositoryViewModel editRepositoryViewModel
+            , IEventAggregator eventAggregator)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
+            _eventAggregator = eventAggregator;
             _editRepositoryViewModel = editRepositoryViewModel;
             _configManager = configManager;
         }
@@ -86,6 +91,7 @@ namespace Probel.LogReader.ViewModels
         {
             _editRepositoryViewModel.RefreshForUpdate();
             await _configManager.SaveAsync(_cachedAppSettings);
+            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
         }
 
         private void DeleteCurrentRepository()

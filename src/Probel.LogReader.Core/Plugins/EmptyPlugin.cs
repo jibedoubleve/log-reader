@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace Probel.LogReader.Core.Plugins
 {
-    public class EmptyPlugin : IPlugin
+    public class EmptyPlugin : PluginBase
     {
         #region Methods
 
-        public IEnumerable<DateTime> GetDays() => new List<DateTime>();
+        public override IEnumerable<DateTime> GetDays(OrderBy orderby) => new List<DateTime>();
 
-        public IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc) => new List<LogRow>();
+        public override IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc) => new List<LogRow>();
 
         #endregion Methods
     }

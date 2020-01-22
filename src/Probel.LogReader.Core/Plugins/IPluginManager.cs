@@ -7,7 +7,7 @@ namespace Probel.LogReader.Core.Plugins
     {
         #region Methods
 
-        IPlugin Build(RepositorySettings cfg);
+        PluginBase Build(RepositorySettings cfg);
 
         #endregion Methods
     }

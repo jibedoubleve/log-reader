@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Probel.LogReader.Plugins.Debug
 {
-    public class DebugPlugin : IPlugin
+    public class DebugPlugin : PluginBase
     {
         #region Fields
 
@@ -35,6 +35,82 @@ namespace Probel.LogReader.Plugins.Debug
         #endregion Constructors
 
         #region Methods
+
+        public DebugPlugin Add(params LogRow[] logRow)
+        {
+            if (_tempLogRows == null) { _tempLogRows = new List<LogRow>(); }
+            _tempLogRows.AddRange(logRow);
+            return this;
+        }
+
+        public void AddMinutes(int minutes)
+        {
+            var now = DateTime.Now.AddMinutes(minutes);
+            foreach (var item in _logs) { item.Time = now; }
+
+            _dates.Clear();
+            _dates.Add(now.Date);
+        }
+
+        public DebugPlugin Clear()
+        {
+            _doClear = true;
+            return this;
+        }
+
+        public void Commit()
+        {
+            if (_doClear) { _logs.Clear(); }
+            if (_tempLogRows != null) { _logs.AddRange(_tempLogRows); }
+
+            var dates = (from l in _logs
+                         select l.Time.Date).Distinct();
+            _dates.Clear();
+            _dates.AddRange(dates);
+        }
+
+        public override IEnumerable<DateTime> GetDays(OrderBy orderby = OrderBy.Desc)
+        {
+            switch (orderby)
+            {
+                case OrderBy.Asc: return _dates.OrderBy(e => e);
+                case OrderBy.Desc: return _dates.OrderByDescending(e => e);
+                case OrderBy.None: return _dates;
+                default: throw new NotSupportedException($"This sort '{orderby}' is not supported!");
+            }
+
+        }
+
+        public override IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc)
+        {
+            var logs = (from l in _logs
+                        where l.Time.Date == day.Date
+                        select l);
+            switch (orderby)
+            {
+                case OrderBy.Asc:
+                    return logs.OrderBy(e => e.Time);
+
+                case OrderBy.Desc:
+                    return logs.OrderBy(e => e.Time);
+
+                case OrderBy.None:
+                    return logs;
+
+                default:
+                    throw new NotSupportedException($"The order by clause '{orderby}' is not supported!");
+            }
+        }
+
+        public void SetCategory(string category)
+        {
+            foreach (var item in _logs) { item.Logger = category; }
+        }
+
+        public void SetLevel(string level)
+        {
+            foreach (var item in _logs) { item.Level = level; }
+        }
 
         private List<LogRow> BuildRandomLogs(int logCount, DateTime date)
         {
@@ -85,70 +161,6 @@ namespace Probel.LogReader.Plugins.Debug
                 default: throw new NotSupportedException($"Unsupported level {lvl}");
             }
         }
-
-        public DebugPlugin Add(params LogRow[] logRow)
-        {
-            if (_tempLogRows == null) { _tempLogRows = new List<LogRow>(); }
-            _tempLogRows.AddRange(logRow);
-            return this;
-        }
-
-        public void AddMinutes(int minutes)
-        {
-            var now = DateTime.Now.AddMinutes(minutes);
-            foreach (var item in _logs) { item.Time = now; }
-
-            _dates.Clear();
-            _dates.Add(now.Date);
-        }
-
-        public DebugPlugin Clear()
-        {
-            _doClear = true;
-            return this;
-        }
-
-        public void Commit()
-        {
-            if (_doClear) { _logs.Clear(); }
-            if (_tempLogRows != null) { _logs.AddRange(_tempLogRows); }
-
-            var dates = (from l in _logs
-                         select l.Time.Date).Distinct();
-            _dates.Clear();
-            _dates.AddRange(dates);
-        }
-
-        public IEnumerable<DateTime> GetDays() => _dates;
-
-        public IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc)
-        {
-            var logs = (from l in _logs
-                        where l.Time.Date == day.Date
-                        select l);
-            switch (orderby)
-            {
-                case OrderBy.Asc:
-                    return logs.OrderBy(e => e.Time);
-                case OrderBy.Desc:
-                    return logs.OrderBy(e => e.Time);
-                case OrderBy.None:
-                    return logs;
-                default:
-                    throw new NotSupportedException($"The order by clause '{orderby}' is not supported!");
-            }
-        }
-
-        public void SetCategory(string category)
-        {
-            foreach (var item in _logs) { item.Logger = category; }
-        }
-
-        public void SetLevel(string level)
-        {
-            foreach (var item in _logs) { item.Level = level; }
-        }
-
 
         #endregion Methods
     }

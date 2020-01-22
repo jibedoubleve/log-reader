@@ -12,7 +12,7 @@ namespace Probel.LogReader.Tests.Plugins
         [Fact]
         public void Has_days()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
 
             var days = plugin.GetDays();
 
@@ -22,7 +22,7 @@ namespace Probel.LogReader.Tests.Plugins
         [Fact]
         public void Has_expected_logs_for_day()
         {
-            IPlugin plugin = new DebugPlugin();
+            PluginBase plugin = new DebugPlugin();
 
             var days = plugin.GetDays();
             foreach (var day in days)

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.LogReader", "Probel.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Probel.LogReader.Win32", "Probel.LogReader.Win32\Probel.LogReader.Win32.csproj", "{C18AB34A-477D-4BC6-AF7F-14A5F93E9559}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.LogReader.Plugins.Csv", "plugins\Probel.LogReader.Plugins.Csv\Probel.LogReader.Plugins.Csv.csproj", "{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{C18AB34A-477D-4BC6-AF7F-14A5F93E9559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C18AB34A-477D-4BC6-AF7F-14A5F93E9559}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C18AB34A-477D-4BC6-AF7F-14A5F93E9559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1FC3D606-339B-4A1C-AD42-6075FD2951B4} = {148C436A-20F6-4301-BE7C-EFDA5F6268A4}
 		{85547110-D093-4585-901B-DFF360E9653D} = {93BB5FD2-2B1C-4137-97EF-80A9EBF409B1}
+		{7061DAD1-2FD6-4CC7-90FC-796C153B0AF6} = {93BB5FD2-2B1C-4137-97EF-80A9EBF409B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3982C7BA-72F0-4505-B544-A41FC6904263}

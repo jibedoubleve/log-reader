@@ -33,7 +33,12 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public MainViewModel(IConfigurationManager cfg, IPluginInfoManager pluginInfoManager, IPluginManager pluginManager, IFilterTranslator filterTranslator, MainViewModelPack views, IEventAggregator eventAggregator)
+        public MainViewModel(IConfigurationManager cfg
+            , IPluginInfoManager pluginInfoManager
+            , IPluginManager pluginManager
+            , IFilterTranslator filterTranslator
+            , MainViewModelPack views
+            , IEventAggregator eventAggregator)
         {
             eventAggregator.Subscribe(this);
 
@@ -137,7 +142,7 @@ namespace Probel.LogReader.ViewModels
             _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
         }
 
-        private void LoadLogs(IPlugin plugin)
+        private void LoadLogs(PluginBase plugin)
         {
             var days = plugin.GetDays();
             _vmDaysViewModel.Days = new ObservableCollection<DateTime>(days);

@@ -2,6 +2,7 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Ui;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Probel.LogReader.ViewModels
 
         private readonly IConfigurationManager _configManager;
         private readonly EditFilterViewModel _editSubfilterViewModel;
+        private readonly IEventAggregator _eventAggregator;
         private AppSettings _app;
         private FilterSettings _currentFilterSettings;
         private ObservableCollection<FilterSettings> _filters;
@@ -23,10 +25,11 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public ManageFilterViewModel(IConfigurationManager configManager, EditFilterViewModel editSubfilterViewModel)
+        public ManageFilterViewModel(IConfigurationManager configManager, EditFilterViewModel editSubfilterViewModel, IEventAggregator eventAggregator)
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
 
+            _eventAggregator = eventAggregator;
             _editSubfilterViewModel = editSubfilterViewModel;
             _configManager = configManager;
         }
@@ -87,7 +90,11 @@ namespace Probel.LogReader.ViewModels
         }
 
         //TODO: Error handling
-        public async void SaveAll() => await _configManager.SaveAsync(_app);
+        public async void SaveAll()
+        {
+            await _configManager.SaveAsync(_app);
+            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+        }
 
         private void DeleteCurrentFilter()
         {

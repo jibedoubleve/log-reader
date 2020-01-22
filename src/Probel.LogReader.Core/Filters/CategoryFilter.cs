@@ -22,7 +22,7 @@ namespace Probel.LogReader.Core.Filters
             var categories = Array.ConvertAll(Operand.Split(','), p => p.Trim());
             switch (Operator.ToLower())
             {
-                case "in": return ((r, t) => categories.Contains(r.Logger));
+                case "in": return ((r, t) => categories.Contains(r.Logger.ToLower()));
                 case "not in": return ((r, t) => !categories.Contains(r.Logger));
                 default: throw new NotSupportedException($"Cannot build a filter. Operator '{Operator}' is not supported.");
             }
