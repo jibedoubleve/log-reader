@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Probel.LogReader.Tests.Helpers
+namespace Probel.LogReader.TestCases.Helpers
 {
     public static class Rand
     {

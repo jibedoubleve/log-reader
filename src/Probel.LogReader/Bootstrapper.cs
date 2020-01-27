@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using Unity;
+using Unity.Injection;
+using Unity.Resolution;
 
 namespace Probel.LogReader
 {
@@ -39,7 +41,7 @@ namespace Probel.LogReader
 
             /* SERVICES */
             _container.RegisterType<IConfigurationManager, ConfigurationManager>();
-            _container.RegisterType<ISettingFileManager, JsonSettingsManager>();
+            _container.RegisterType<ISettingFileManager, JsonSettingsManager>(new InjectionConstructor(@"%appdata%\probel\log-reader\data-settings.json"));
             _container.RegisterType<IPluginManager, PluginManager>();
             _container.RegisterType<IFilterManager, FilterManager>();
             _container.RegisterType<IFilterTranslator, FilterTranslator>();

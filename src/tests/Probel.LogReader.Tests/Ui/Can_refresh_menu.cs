@@ -5,15 +5,15 @@ using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Win32;
 using Probel.LogReader.Win32.Files;
 using Probel.LogReader.Plugins.Debug;
-using Probel.LogReader.Tests.Constants;
-using Probel.LogReader.Tests.Helpers;
+using Probel.LogReader.TestCases.Constants;
+using Probel.LogReader.TestCases.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Probel.LogReader.Tests
+namespace Probel.LogReader.TestCases
 {
     public class Can_refresh_menu
     {

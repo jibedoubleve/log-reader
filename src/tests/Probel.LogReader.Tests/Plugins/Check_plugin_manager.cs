@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Probel.LogReader.Tests.Plugins
+namespace Probel.LogReader.TestCases.Plugins
 {
     public sealed class Check_plugin_manager
     {
@@ -29,6 +29,11 @@ namespace Probel.LogReader.Tests.Plugins
             var plugin = mgr.Build(rep);
 
             Assert.Equal(new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf"), rep.PluginId);
+
+            /* For now, you have to copy the files of the DEBUG plugin into
+             * %appdata%\probel\log-reader\plugins.
+             * TODO: automatise the installation of the debug plugin.
+             */
             Assert.Equal(10, plugin.GetDays().Count());
         }
 

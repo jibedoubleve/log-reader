@@ -3,5 +3,6 @@
   "plugin-id": "c6d28753-2a41-4e03-a2ab-c9ddcc8652cf",
   "dll": "Probel.LogReader.Plugins.Debug.dll",
   "explanation": "This plugin is only used for debugging purpose",
-  "doc-url": "https://github.com/jibedoubleve/log-reader"
+  "doc-url": "https://github.com/jibedoubleve/log-reader",
+  "is-for-test": true
 }

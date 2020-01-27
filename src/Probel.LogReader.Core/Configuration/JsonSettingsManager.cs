@@ -12,14 +12,11 @@ namespace Probel.LogReader.Core.Configuration
     {
         #region Fields
 
-        public const string DefaultFileName = @"%appdata%\probel\log-reader\data-settings.json";
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         #endregion Fields
 
         #region Constructors
-
-        public JsonSettingsManager() => FileName = DefaultFileName.Expand();
 
         public JsonSettingsManager(string path) => FileName = path.Expand();
 
@@ -38,7 +35,7 @@ namespace Probel.LogReader.Core.Configuration
             _semaphore.Wait();
             try
             {
-                var file = Environment.ExpandEnvironmentVariables(DefaultFileName);
+                var file = Environment.ExpandEnvironmentVariables(FileName);
 
                 if (File.Exists(file)) { File.Delete(file); }
             }

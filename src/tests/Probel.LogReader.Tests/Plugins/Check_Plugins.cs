@@ -3,7 +3,7 @@ using Probel.LogReader.Plugins.Debug;
 using System.Linq;
 using Xunit;
 
-namespace Probel.LogReader.Tests.Plugins
+namespace Probel.LogReader.TestCases.Plugins
 {
     public class Check_plugins
     {

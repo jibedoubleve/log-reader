@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Probel.LogReader.Tests.Filters
+namespace Probel.LogReader.TestCases.Filters
 {
     public class Can_filter
     {

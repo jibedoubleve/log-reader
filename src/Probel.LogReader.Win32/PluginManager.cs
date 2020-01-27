@@ -45,8 +45,7 @@ namespace Probel.LogReader.Win32
                             select m).SingleOrDefault();
 
             if (metadata == null) { return new EmptyPlugin(); }
-
-            if (_pluginTypes.ContainsKey(metadata.Dll))
+            else if (_pluginTypes.ContainsKey(metadata.Dll))
             {
                 var type = _pluginTypes[metadata.Dll];
                 var plugin = Activator.CreateInstance(type);
@@ -75,7 +74,8 @@ namespace Probel.LogReader.Win32
             {
                 try
                 {
-                    var assembly = Assembly.Load(AssemblyName.GetAssemblyName(path));
+                    var asmPath = AssemblyName.GetAssemblyName(path);
+                    var assembly = Assembly.Load(asmPath);
                     var type = (from t in assembly.GetTypes()
                                 where t.IsClass
                                    && !t.IsAbstract
