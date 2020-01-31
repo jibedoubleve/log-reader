@@ -1,0 +1,53 @@
+﻿<UserControl
+    x:Class="Probel.LogReader.Views.DaysView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:Probel.LogReader.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <sys:Double x:Key="IconSize">25</sys:Double>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            Margin="15,10,5,10"
+            FontSize="16"
+            FontWeight="Bold">
+            <Run Text="{Binding Plugin.RepositoryName, Mode=OneWay}" />
+        </TextBlock>
+        <ListView
+            x:Name="Days"
+            Grid.Row="2"
+            MouseDoubleClick="OnMouseDoubleClickOnDay"
+            SelectedItem="{Binding SelectedDay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel Margin="5">
+                        <iconPacks:PackIconOcticons
+                            Width="{DynamicResource IconSize}"
+                            Height="{DynamicResource IconSize}"
+                            VerticalAlignment="Center"
+                            Foreground="DarkGray"
+                            Kind="Archive" />
+                        <TextBlock
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center"
+                            FontSize="16"
+                            Text="{Binding Date, StringFormat={}dd MMMM yyyy}" />
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>
