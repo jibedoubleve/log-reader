@@ -2,6 +2,7 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Properties;
 using Probel.LogReader.Ui;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
+        public readonly IUserInteraction _userInteraction;
         private readonly IConfigurationManager _configManager;
         private readonly EditRepositoryViewModel _editRepositoryViewModel;
         private readonly IEventAggregator _eventAggregator;
@@ -26,9 +28,11 @@ namespace Probel.LogReader.ViewModels
 
         public ManageRepositoryViewModel(IConfigurationManager configManager
             , EditRepositoryViewModel editRepositoryViewModel
-            , IEventAggregator eventAggregator)
+            , IEventAggregator eventAggregator
+            , IUserInteraction userInteraction)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
+            _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editRepositoryViewModel = editRepositoryViewModel;
             _configManager = configManager;
@@ -78,7 +82,13 @@ namespace Probel.LogReader.ViewModels
         }
 
         //TODO: Error handling
-        public async void DiscardAll() => await LoadAsync();
+        public async void DiscardAll()
+        {
+            if (_userInteraction.Ask(Strings.Msg_AskReset) == UserAnswers.Yes)
+            {
+                await LoadAsync();
+            }
+        }
 
         public async Task LoadAsync()
         {
@@ -92,12 +102,17 @@ namespace Probel.LogReader.ViewModels
             _editRepositoryViewModel.RefreshForUpdate();
             await _configManager.SaveAsync(_cachedAppSettings);
             _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+
+            _userInteraction.Inform(Strings.Msg_InformSaved);
         }
 
         private void DeleteCurrentRepository()
         {
-            _cachedAppSettings.Repositories.Remove(CurrentRepository);
-            Repositories.Remove(CurrentRepository);
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            {
+                _cachedAppSettings.Repositories.Remove(CurrentRepository);
+                Repositories.Remove(CurrentRepository);
+            }
         }
 
         #endregion Methods

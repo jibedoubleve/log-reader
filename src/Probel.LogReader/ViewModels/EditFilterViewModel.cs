@@ -2,6 +2,8 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Properties;
+using Probel.LogReader.Ui;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -22,10 +24,13 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public EditFilterViewModel(IFilterTranslator filterTranslator, EditSubfilterViewModel editSubfilterViewModel)
+        public EditFilterViewModel(IFilterTranslator filterTranslator
+            , EditSubfilterViewModel editSubfilterViewModel
+            , IUserInteraction userInteraction)
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
 
+            _userInteraction = userInteraction;
             _editSubfilterViewModel = editSubfilterViewModel;
             FilterTranslator = filterTranslator;
             _subfilters = new ObservableCollection<FilterExpressionSettings>();
@@ -48,6 +53,8 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand DeleteCurrentFilterCommand { get; private set; }
+
+        private readonly IUserInteraction _userInteraction;
 
         public FilterSettings Filter
         {
@@ -85,8 +92,11 @@ namespace Probel.LogReader.ViewModels
 
         public void DeleteCurrentFilter()
         {
-            _cachedSubfilter.Remove(CurrentSubfilter);
-            Subfilters.Remove(CurrentSubfilter);
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            {
+                _cachedSubfilter.Remove(CurrentSubfilter);
+                Subfilters.Remove(CurrentSubfilter);
+            }
         }
 
         public void Reset()

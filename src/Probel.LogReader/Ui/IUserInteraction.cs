@@ -10,7 +10,9 @@
     {
         #region Methods
 
-        UserAnswers Ask(string title, string question);
+        UserAnswers Ask(string question, string title = "QUESTION");
+
+        void Inform(string message, string title = "INFO");
 
         #endregion Methods
     }

@@ -2,6 +2,7 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Properties;
 using Probel.LogReader.Ui;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,10 +26,14 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public ManageFilterViewModel(IConfigurationManager configManager, EditFilterViewModel editSubfilterViewModel, IEventAggregator eventAggregator)
+        public ManageFilterViewModel(IConfigurationManager configManager
+            , EditFilterViewModel editSubfilterViewModel
+            , IEventAggregator eventAggregator
+            , IUserInteraction userInteraction)
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
 
+            _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editFilterViewModel = editSubfilterViewModel;
             _configManager = configManager;
@@ -45,6 +50,8 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand DeleteCurrentFilterCommand { get; private set; }
+
+        private readonly IUserInteraction _userInteraction;
 
         public ObservableCollection<FilterSettings> Filters
         {
@@ -80,7 +87,13 @@ namespace Probel.LogReader.ViewModels
         public void CreateSubFilter() => _editFilterViewModel?.CreateSubfilter();
 
         //TODO: Error handling
-        public async void DiscardAll() => await LoadAsync();
+        public async void DiscardAll()
+        {
+            if (_userInteraction.Ask(Strings.Msg_AskReset) == UserAnswers.Yes)
+            {
+                await LoadAsync();
+            }
+        }
 
         public async Task LoadAsync()
         {
@@ -98,6 +111,8 @@ namespace Probel.LogReader.ViewModels
         {
             await _configManager.SaveAsync(_app);
             _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+
+            _userInteraction.Inform(Strings.Msg_InformSaved);
         }
 
         private void DeleteCurrentFilter()
@@ -106,10 +121,13 @@ namespace Probel.LogReader.ViewModels
                          where f.Id == CurrentFilter.Id
                          select f).FirstOrDefault();
 
-            if (toDel != null)
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
             {
-                Filters.Remove(toDel);
-                _app.Filters.Remove(toDel);
+                if (toDel != null)
+                {
+                    Filters.Remove(toDel);
+                    _app.Filters.Remove(toDel);
+                }
             }
         }
 

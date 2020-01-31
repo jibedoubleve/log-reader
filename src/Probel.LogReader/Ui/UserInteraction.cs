@@ -7,7 +7,7 @@ namespace Probel.LogReader.Ui
     {
         #region Methods
 
-        public UserAnswers Ask(string title, string question)
+        public UserAnswers Ask(string question, string title = "QUESTION")
         {
             var result = MessageBox.Show(question, title, MessageBoxButton.YesNo);
 
@@ -21,6 +21,8 @@ namespace Probel.LogReader.Ui
                 default: throw new NotSupportedException($"The user answer '{result}' is not supported.");
             }
         }
+
+        public void Inform(string message, string title = "INFO") => MessageBox.Show(title, message, MessageBoxButton.OK, MessageBoxImage.Information);
 
         #endregion Methods
     }
