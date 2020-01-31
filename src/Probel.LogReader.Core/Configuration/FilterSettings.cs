@@ -3,6 +3,7 @@ using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Probel.LogReader.Core.Configuration
@@ -22,6 +23,7 @@ namespace Probel.LogReader.Core.Configuration
         #endregion Methods
     }
 
+    [DebuggerDisplay("[FilterSettings] {Name}")]
     public class FilterSettings
     {
         #region Constructors

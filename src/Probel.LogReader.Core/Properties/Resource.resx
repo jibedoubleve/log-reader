@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Filter_AllLogs" xml:space="preserve">
-    <value>Show all logs.</value>
+    <value>Show all logs</value>
   </data>
   <data name="Filter_Category" xml:space="preserve">
     <value>When log category is {0} '{1}'</value>

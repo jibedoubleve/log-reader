@@ -1,4 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Plugins.Csv.Config;
 using Probel.LogReader.Plugins.Csv.IO;

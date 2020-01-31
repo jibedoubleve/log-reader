@@ -23,4 +23,10 @@
 
         #endregion Fields
     }
+    public enum OrderBy
+    {
+        Asc,
+        Desc,
+        None,
+    }
 }

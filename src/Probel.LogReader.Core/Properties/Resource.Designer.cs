@@ -61,7 +61,7 @@ namespace Probel.LogReader.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show all logs..
+        ///   Looks up a localized string similar to Show all logs.
         /// </summary>
         internal static string Filter_AllLogs {
             get {

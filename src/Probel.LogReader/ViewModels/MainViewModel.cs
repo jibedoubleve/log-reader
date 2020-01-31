@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
+using Probel.LogReader.Core.Constants;
+
 namespace Probel.LogReader.ViewModels
 {
     public class MainViewModel : Conductor<IScreen>, IHandleWithTask<UiEvent>
@@ -156,7 +158,9 @@ namespace Probel.LogReader.ViewModels
         private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
         {
             var menus = new List<MenuItemModel>();
-            foreach (var filter in app.Filters)
+            var aps = new AppSettingsDecorator(app);
+            var filters = aps.GetFilters(OrderBy.Asc);
+            foreach (var filter in filters)
             {
                 menus.Add(new MenuItemModel
                 {

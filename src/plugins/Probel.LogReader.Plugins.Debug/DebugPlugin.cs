@@ -1,4 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Plugins;
 using System;
 using System.Collections.Generic;
