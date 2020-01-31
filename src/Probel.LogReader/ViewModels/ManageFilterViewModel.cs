@@ -62,7 +62,8 @@ namespace Probel.LogReader.ViewModels
 
             if (CurrentFilter != null)
             {
-                _editSubfilterViewModel.SetSubfilters(CurrentFilter.Expression);
+                _editSubfilterViewModel.SetSubfilters(CurrentFilter);
+                NotifyOfPropertyChange(() => CanCreateSubFilter);
                 ActivateItem(_editSubfilterViewModel);
             }
         }
@@ -74,6 +75,9 @@ namespace Probel.LogReader.ViewModels
             _app.Filters.Add(newFilter);
             CurrentFilter = newFilter;
         }
+
+        public bool CanCreateSubFilter => _editSubfilterViewModel.Subfilters != null;
+        public void CreateSubFilter() => _editSubfilterViewModel?.CreateSubfilter();
 
         //TODO: Error handling
         public async void DiscardAll() => await LoadAsync();

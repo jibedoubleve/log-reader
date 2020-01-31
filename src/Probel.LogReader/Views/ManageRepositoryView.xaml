@@ -30,10 +30,10 @@
                     <iconPacks:PackIconModern Kind="Save" />
                 </Button>
                 <Button x:Name="DiscardAll" ToolTip="Discard changes">
-                    <iconPacks:PackIconMaterial Kind="FileUndo" />
+                    <iconPacks:PackIconModern Kind="UndoCurve" />
                 </Button>
                 <Button x:Name="CreateRepository" ToolTip="New repository">
-                    <iconPacks:PackIconModern Kind="New" />
+                    <iconPacks:PackIconFontAwesome Kind="PlusSquareRegular" />
                 </Button>
             </ToolBar>
         </ToolBarTray>

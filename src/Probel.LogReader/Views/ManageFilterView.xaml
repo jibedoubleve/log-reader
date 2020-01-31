@@ -34,7 +34,11 @@
                     <iconPacks:PackIconMaterial Kind="FileUndo" />
                 </Button>
                 <Button x:Name="CreateFilter" ToolTip="New filter">
-                    <iconPacks:PackIconModern Kind="New" />
+                    <iconPacks:PackIconFontAwesome Kind="PlusSquareRegular" />
+                </Button>
+                <Separator />
+                <Button x:Name="CreateSubFilter" ToolTip="New SUB filter">
+                    <iconPacks:PackIconFontAwesome Kind="PlusSquareSolid" />
                 </Button>
             </ToolBar>
         </ToolBarTray>

@@ -64,8 +64,6 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _selectedPlugin, value, nameof(SelectedPlugin));
         }
 
-        private ManageRepositoryViewModel ParentVm => Parent as ManageRepositoryViewModel;
-
         #endregion Properties
 
         #region Methods

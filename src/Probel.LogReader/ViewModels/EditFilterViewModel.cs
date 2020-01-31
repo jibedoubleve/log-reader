@@ -5,7 +5,6 @@ using Probel.LogReader.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Linq;
 
 namespace Probel.LogReader.ViewModels
 {
@@ -15,6 +14,7 @@ namespace Probel.LogReader.ViewModels
 
         private readonly EditSubfilterViewModel _editSubfilterViewModel;
         private FilterExpressionSettings _currentSubfilter;
+        private FilterSettings _filter;
         private ObservableCollection<FilterExpressionSettings> _subfilters;
 
         #endregion Fields
@@ -48,6 +48,14 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
+        public ICommand DeleteCurrentFilterCommand { get; private set; }
+
+        public FilterSettings Filter
+        {
+            get => _filter;
+            set => Set(ref _filter, value, nameof(Filter));
+        }
+        private ManageFilterViewModel ParentVm => Parent as ManageFilterViewModel;
         public IFilterTranslator FilterTranslator { get; }
 
         public ObservableCollection<FilterExpressionSettings> Subfilters
@@ -60,6 +68,12 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
+        public void ActivateCurrentSubfilter()
+        {
+            _editSubfilterViewModel.Load(CurrentSubfilter);
+            ActivateItem(_editSubfilterViewModel);
+        }
+
         public void CreateSubfilter()
         {
             var newFilter = new FilterExpressionSettings() { Operand = "15", Operator = "<=", Operation = "time" };
@@ -70,10 +84,10 @@ namespace Probel.LogReader.ViewModels
             CurrentSubfilter = newFilter;
         }
 
-        public void ActivateCurrentSubfilter()
+        public void DeleteCurrentFilter()
         {
-            _editSubfilterViewModel.Load(CurrentSubfilter);
-            ActivateItem(_editSubfilterViewModel);
+            _cachedSubfilter.Remove(CurrentSubfilter);
+            Subfilters.Remove(CurrentSubfilter);
         }
 
         public void Reset()
@@ -82,19 +96,13 @@ namespace Probel.LogReader.ViewModels
             DeactivateItem(_editSubfilterViewModel, true);
         }
 
-        public void SetSubfilters(IList<FilterExpressionSettings> subfilters)
+        public void SetSubfilters(FilterSettings filter)
         {
-            _cachedSubfilter = subfilters;
-            Subfilters = new ObservableCollection<FilterExpressionSettings>(subfilters);
+            _cachedSubfilter = filter.Expression;
+            Subfilters = new ObservableCollection<FilterExpressionSettings>(filter.Expression);
+            Filter = filter;
         }
 
-
-        public ICommand DeleteCurrentFilterCommand { get; private set; }
-        public void DeleteCurrentFilter()
-        {
-            _cachedSubfilter.Remove(CurrentSubfilter);
-            Subfilters.Remove(CurrentSubfilter);
-        }
         #endregion Methods
     }
 }

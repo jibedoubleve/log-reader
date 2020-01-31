@@ -5,6 +5,7 @@
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:conv="clr-namespace:Probel.LogReader.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Probel.LogReader.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="_self"
@@ -24,10 +25,18 @@
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="1" Margin="5,5,5,15">
+                <!--  Name  -->
+                <Label>Name:</Label>
+                <TextBox Text="{Binding Filter.Name, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
             <ListView
+                Grid.Row="10"
                 Margin="5"
                 cal:Message.Attach="[SelectionChanged] = [ActivateCurrentSubfilter]"
                 ItemsSource="{Binding Subfilters, UpdateSourceTrigger=PropertyChanged}"
@@ -54,12 +63,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button
-                x:Name="CreateSubfilter"
-                Grid.Row="1"
-                Margin="5">
-                Create new
-            </Button>
         </Grid>
         <ScrollViewer Grid.Column="1">
             <ContentControl x:Name="ActiveItem" />
