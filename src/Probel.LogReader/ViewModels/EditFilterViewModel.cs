@@ -13,6 +13,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly EditSubfilterViewModel _editSubfilterViewModel;
+        private IList<FilterExpressionSettings> _cachedSubfilter;
         private FilterExpressionSettings _currentSubfilter;
         private FilterSettings _filter;
         private ObservableCollection<FilterExpressionSettings> _subfilters;
@@ -34,8 +35,6 @@ namespace Probel.LogReader.ViewModels
 
         #region Properties
 
-        public IList<FilterExpressionSettings> _cachedSubfilter { get; private set; }
-
         public FilterExpressionSettings CurrentSubfilter
         {
             get => _currentSubfilter;
@@ -55,7 +54,7 @@ namespace Probel.LogReader.ViewModels
             get => _filter;
             set => Set(ref _filter, value, nameof(Filter));
         }
-        private ManageFilterViewModel ParentVm => Parent as ManageFilterViewModel;
+
         public IFilterTranslator FilterTranslator { get; }
 
         public ObservableCollection<FilterExpressionSettings> Subfilters
