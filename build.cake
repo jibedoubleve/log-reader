@@ -24,7 +24,7 @@
 var repoName = "LogReader";
 
 var target = Argument("target", "Default");
-var configuration = Argument("configuration", "Release");
+var configuration = Argument("configuration", "Release").ToLower();
 var verbosity = Argument("verbosity", Verbosity.Minimal);
 
 /* This list contains the path of the assets to release.
@@ -126,7 +126,7 @@ Task("Zip")
             if(d.Name.ToLower().Contains("csv")==false)
             { 
                 var pluginBin = d.FullName + @"\bin\Release\";
-                var dest = publishDir + "/" + d.Name.Replace("Probel.LogReader.Plugins.","Plugin-") + "-" + gitVersion.SemVer + ".bin.zip";
+                var dest = publishDir + "/" + d.Name.Replace("Probel.LogReader.Plugins.","plugin-") + "-" + gitVersion.SemVer + ".bin.zip";
                 assets.Add(dest);
 
                 Information("Zipping plugin:  {0}", dest);
@@ -167,7 +167,9 @@ Task("Release-GitHub")
             Milestone         = "V" + gitVersion.MajorMinorPatch,            
             Name              = gitVersion.SemVer,
             Prerelease        = gitVersion.SemVer.Contains("alpha"),
-            Assets            = publishDir + "/lanceur." + gitVersion.SemVer + ".bin.zip," + publishDir + "/lanceur." + gitVersion.SemVer + ".setup.exe",
+            Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
+                              + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip", 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
