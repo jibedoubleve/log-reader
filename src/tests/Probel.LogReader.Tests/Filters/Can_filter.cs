@@ -27,6 +27,38 @@ namespace Probel.LogReader.TestCases.Filters
                 Assert.True(logs.Count() > 0);
             }
         }
+        [Fact]
+        public void On_category_exclusive_no_result_case_insensitive()
+        {
+            PluginBase plugin = new DebugPlugin();
+            IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "category" };
+
+            ((DebugPlugin)plugin).SetCategory("cAtEgOrY");
+            var days = plugin.GetDays();
+            foreach (var day in days)
+            {
+                var logs = plugin.GetLogs(day);
+                logs = filter.Filter(logs);
+                Assert.True(logs.Count() == 0);
+            }
+        }
+
+
+        [Fact]
+        public void On_category_exclusive_no_result_multiple()
+        {
+            PluginBase plugin = new DebugPlugin();
+            IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "blahblah, CATEGORY " };
+
+            ((DebugPlugin)plugin).SetCategory("cAtEgOrY");
+            var days = plugin.GetDays();
+            foreach (var day in days)
+            {
+                var logs = plugin.GetLogs(day);
+                logs = filter.Filter(logs);
+                Assert.True(logs.Count() == 0);
+            }
+        }
 
         [Fact]
         public void On_category_exclusive_no_result()
@@ -82,13 +114,29 @@ namespace Probel.LogReader.TestCases.Filters
             PluginBase plugin = new DebugPlugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = Guid.NewGuid().ToString() };
 
-            ((DebugPlugin)plugin).SetLevel("category");
+            ((DebugPlugin)plugin).SetLevel("level");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
                 var logs = plugin.GetLogs(day);
                 logs = filter.Filter(logs);
                 Assert.True(logs.Count() > 0);
+            }
+        }
+
+        [Fact]
+        public void On_level_exclusive_no_result_case_insensitive()
+        {
+            PluginBase plugin = new DebugPlugin();
+            IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = "level" };
+
+            ((DebugPlugin)plugin).SetLevel("lEvEl");
+            var days = plugin.GetDays();
+            foreach (var day in days)
+            {
+                var logs = plugin.GetLogs(day);
+                logs = filter.Filter(logs);
+                Assert.True(logs.Count() == 0);
             }
         }
 

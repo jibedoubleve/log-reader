@@ -19,11 +19,11 @@ namespace Probel.LogReader.Core.Filters
 
         protected override Func<LogRow, string, bool> GetFilter()
         {
-            var categories = Array.ConvertAll(Operand.Split(','), p => p.Trim());
+            var categories = Array.ConvertAll(Operand.Split(','), p => p.Trim().ToLower());
             switch (Operator.ToLower())
             {
                 case "in": return ((r, t) => categories.Contains(r.Logger.ToLower()));
-                case "not in": return ((r, t) => !categories.Contains(r.Logger));
+                case "not in": return ((r, t) => !categories.Contains(r.Logger.ToLower()));
                 default: throw new NotSupportedException($"Cannot build a filter. Operator '{Operator}' is not supported.");
             }
         }
