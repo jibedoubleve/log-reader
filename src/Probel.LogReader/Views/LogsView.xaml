@@ -277,6 +277,11 @@
             </TextBlock>
             <Separator />
             <TextBlock>
+                <Run Text="Repository:" />
+                <Run Text="{Binding RepositoryName, Mode=OneWay}" />
+            </TextBlock>
+            <Separator />
+            <TextBlock>
                 <Run Text="Date:" />
                 <Run Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
             </TextBlock>

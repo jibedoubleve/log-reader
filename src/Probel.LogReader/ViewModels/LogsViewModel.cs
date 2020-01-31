@@ -29,6 +29,8 @@ namespace Probel.LogReader.ViewModels
         private bool _isWarnVisible = true;
         private ObservableCollection<LogRow> _logs;
 
+        private string _repositoryName;
+
         #endregion Fields
 
         #region Constructors
@@ -113,6 +115,12 @@ namespace Probel.LogReader.ViewModels
         }
 
         public int LogsCount => Logs.Count();
+
+        public string RepositoryName
+        {
+            get => _repositoryName;
+            set => Set(ref _repositoryName, value, nameof(RepositoryName));
+        }
 
         #endregion Properties
 

@@ -20,7 +20,12 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Margin="5" Text="List of days" />
+        <TextBlock
+            Margin="15,10,5,10"
+            FontSize="16"
+            FontWeight="Bold">
+            <Run Text="{Binding Plugin.RepositoryName, Mode=OneWay}" />
+        </TextBlock>
         <ListView
             x:Name="Days"
             Grid.Row="2"

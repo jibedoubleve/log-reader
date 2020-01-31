@@ -7,6 +7,12 @@ namespace Probel.LogReader.Core.Plugins
 {
     public interface IPlugin
     {
+        #region Properties
+
+        string RepositoryName { get; }
+
+        #endregion Properties
+
         #region Methods
 
         IEnumerable<DateTime> GetDays(OrderBy orderby = OrderBy.Desc);

@@ -21,6 +21,8 @@ namespace Probel.LogReader.Core.Plugins
 
         public void Initialise(RepositorySettings settings) => Settings = settings;
 
+        public string RepositoryName => Settings?.Name ?? "EMPTY";
+
         #endregion Methods
     }
 }

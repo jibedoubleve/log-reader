@@ -24,7 +24,7 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _days, value, nameof(Days));
         }
 
-        public PluginBase Plugin { get; set; }
+        public IPlugin Plugin { get; set; }
 
         public DateTime SelectedDay
         {
@@ -41,7 +41,7 @@ namespace Probel.LogReader.ViewModels
             if (Parent is MainViewModel parent)
             {
                 var logs = Plugin.GetLogs(SelectedDay);
-                await parent.ActivateLogsAsync(logs);
+                await parent.ActivateLogsAsync(Plugin, SelectedDay);
             }
         }
 

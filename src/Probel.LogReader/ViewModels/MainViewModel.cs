@@ -84,14 +84,15 @@ namespace Probel.LogReader.ViewModels
         #endregion Properties
 
         #region Methods
-
-        public async Task ActivateLogsAsync(IEnumerable<LogRow> logs)
+        public async Task ActivateLogsAsync(IPlugin plugin, DateTime day)
         {
             var cfg = await _configurationManager.GetAsync();
+            var logs = plugin.GetLogs(day);
 
             _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
             _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
             _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
+            _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
             _vmLogsViewModel.Cache(logs);
             ActivateItem(_vmLogsViewModel);
         }
@@ -102,9 +103,9 @@ namespace Probel.LogReader.ViewModels
             {
                 await LoadMenusAsync();
             }
-            else if (message.Event == UiEvents.FilterVisibility)
+            else if (message.Event == UiEvents.FilterVisibility && message.Context is bool isVisible)
             {
-                if (message.Context is bool isVisible) { IsFilterVisible = isVisible; }
+                IsFilterVisible = isVisible;
             }
         }
 
@@ -144,7 +145,7 @@ namespace Probel.LogReader.ViewModels
             _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
         }
 
-        private void LoadLogs(PluginBase plugin)
+        private void LoadLogs(IPlugin plugin)
         {
             var days = plugin.GetDays();
             _vmDaysViewModel.Days = new ObservableCollection<DateTime>(days);
