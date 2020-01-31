@@ -2,7 +2,6 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Win32;
 using Probel.LogReader.Ui;
 using Probel.LogReader.ViewModels;
 using Probel.LogReader.ViewModels.Packs;
@@ -11,7 +10,6 @@ using System.Collections.Generic;
 using System.Windows;
 using Unity;
 using Unity.Injection;
-using Unity.Resolution;
 
 namespace Probel.LogReader
 {
@@ -19,13 +17,13 @@ namespace Probel.LogReader
     {
         #region Fields
 
-        private IUnityContainer _container = new UnityContainer();
+        private readonly IUnityContainer _container = new UnityContainer();
 
         #endregion Fields
 
         #region Constructors
 
-        public Bootstrapper() => Initialize();
+        public Bootstrapper() { Initialize(); }
 
         #endregion Constructors
 

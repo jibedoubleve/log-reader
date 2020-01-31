@@ -1,9 +1,7 @@
-﻿using Probel.LogReader.Core.Constants;
-using Probel.LogReader.Core.Configuration;
+﻿using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Win32;
-using Probel.LogReader.Win32.Files;
 using Probel.LogReader.Plugins.Debug;
 using Probel.LogReader.TestCases.Constants;
 using Probel.LogReader.TestCases.Helpers;
@@ -18,29 +16,6 @@ namespace Probel.LogReader.TestCases
     public class Can_refresh_menu
     {
         #region Methods
-
-        [Fact]
-        public void With_filters()
-        {
-            var settings = new RepositorySettings { PluginId = PluginType.Debug, Name = "debug" };
-            var expression = new List<FilterExpressionSettings>()
-            {
-                new FilterExpressionSettings() { Operation = FilterType.Time , Operand = Rand.Text, Operator = Rand.Text},
-                new FilterExpressionSettings() { Operation = FilterType.Category, Operand = Rand.Text, Operator = Rand.Text},
-                new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.Text},
-            };
-
-            IPluginManager pm = new PluginManager();
-            IFilterManager fm = new FilterManager();
-
-            var p = pm.Build(settings);
-            var f = fm.Build(expression);
-
-            var day = p.GetDays().ElementAt(0);
-            var logs = f.Filter(p.GetLogs(day));
-
-            Assert.NotNull(logs);
-        }
 
         [Fact]
         public async Task From_config()
@@ -111,6 +86,29 @@ namespace Probel.LogReader.TestCases
                 Assert.Contains(menuName, names);
                 Assert.Equal(typeof(DebugPlugin), plugin.GetType());
             }
+        }
+
+        [Fact]
+        public void With_filters()
+        {
+            var settings = new RepositorySettings { PluginId = PluginType.Debug, Name = "debug" };
+            var expression = new List<FilterExpressionSettings>()
+            {
+                new FilterExpressionSettings() { Operation = FilterType.Time , Operand = Rand.Text, Operator = Rand.Text},
+                new FilterExpressionSettings() { Operation = FilterType.Category, Operand = Rand.Text, Operator = Rand.Text},
+                new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.Text},
+            };
+
+            IPluginManager pm = new PluginManager();
+            IFilterManager fm = new FilterManager();
+
+            var p = pm.Build(settings);
+            var f = fm.Build(expression);
+
+            var day = p.GetDays().ElementAt(0);
+            var logs = f.Filter(p.GetLogs(day));
+
+            Assert.NotNull(logs);
         }
 
         #endregion Methods

@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Probel.LogReader.Win32
+namespace Probel.LogReader.Core.Plugins
 {
     public class PluginManager : IPluginManager, IPluginInfoManager
     {

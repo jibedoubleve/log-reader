@@ -4,7 +4,7 @@ using Probel.LogReader.Core.Plugins;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Probel.LogReader.Win32
+namespace Probel.LogReader.Core.Plugins
 {
     public class ConfigurationManager : IConfigurationManager
     {

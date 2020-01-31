@@ -1,35 +1,36 @@
 ﻿using Probel.LogReader.Core.Configuration;
-using Probel.LogReader.Core.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Probel.LogReader.Win32
+namespace Probel.LogReader.Core.Filters
 {
     public class FilterManager : IFilterManager
     {
         #region Fields
 
-        private IList<FilterSettings> _filters = new List<FilterSettings>();
+        private readonly IList<FilterSettings> _filters = new List<FilterSettings>();
 
         #endregion Fields
 
         #region Constructors
 
-        public FilterManager(IList<FilterSettings> filters) => _filters = filters ?? new List<FilterSettings>();
+        public FilterManager(IList<FilterSettings> filters)
+        {
+            _filters = filters ?? new List<FilterSettings>();
+        }
 
-        public FilterManager() => _filters = new List<FilterSettings>();
+        public FilterManager()
+        {
+            _filters = new List<FilterSettings>();
+        }
 
         #endregion Constructors
 
-        #region Properties
-
-        private IEnumerable<FilterOperations> Operations => Enum.GetValues(typeof(FilterOperations)).Cast<FilterOperations>();
-
-        #endregion Properties
-
         #region Methods
+
+        public static IEnumerable<string> GetOperators(FilterOperations operation) => FilterHelper.GetOperators(operation);
 
         public IFilterComposite Build(IEnumerable<FilterExpressionSettings> expression)
         {
@@ -52,8 +53,6 @@ namespace Probel.LogReader.Win32
             if (expStg != null) { return Build(expStg); }
             else { throw new NotSupportedException($"No filter expression with name '{id}' found in the configuration"); }
         }
-
-        public static IEnumerable<string> GetOperators(FilterOperations operation) => FilterHelper.GetOperators(operation);
 
         private IFilterExpression Create(FilterExpressionSettings item)
         {

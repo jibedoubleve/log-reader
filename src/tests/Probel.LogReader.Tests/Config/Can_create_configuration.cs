@@ -2,7 +2,6 @@
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;

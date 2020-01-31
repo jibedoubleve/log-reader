@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Helpers;
 using System;
 using System.IO;
@@ -12,13 +11,13 @@ namespace Probel.LogReader.Core.Configuration
     {
         #region Fields
 
-        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         #endregion Fields
 
         #region Constructors
 
-        public JsonSettingsManager(string path) => FileName = path.Expand();
+        public JsonSettingsManager(string path) { FileName = path.Expand(); }
 
         #endregion Constructors
 

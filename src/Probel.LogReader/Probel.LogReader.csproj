@@ -219,10 +219,6 @@
       <Project>{DAF94458-76E2-4C4B-97D4-CD76763B03C5}</Project>
       <Name>Probel.LogReader.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Probel.LogReader.Win32\Probel.LogReader.Win32.csproj">
-      <Project>{c18ab34a-477d-4bc6-af7f-14a5f93e9559}</Project>
-      <Name>Probel.LogReader.Win32</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

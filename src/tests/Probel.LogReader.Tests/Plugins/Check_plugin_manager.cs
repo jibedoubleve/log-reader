@@ -1,7 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Win32;
-using Probel.LogReader.Win32.Files;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +9,6 @@ namespace Probel.LogReader.TestCases.Plugins
 {
     public sealed class Check_plugin_manager
     {
-
         #region Methods
 
         [Fact]
