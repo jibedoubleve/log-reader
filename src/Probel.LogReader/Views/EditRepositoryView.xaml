@@ -29,6 +29,13 @@
             x:Name="PluginInfoList"
             DisplayMemberPath="Name"
             SelectedItem="{Binding SelectedPlugin, UpdateSourceTrigger=PropertyChanged}" />
+        <!--  Description  -->
+        <StackPanel Margin="5" Background="#FFFFE0">
+            <TextBlock
+                Margin="10,10,10,10"
+                FontSize="14"
+                Text="{Binding SelectedPlugin.Description, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+        </StackPanel>
         <!--  Name  -->
         <Label>Name:</Label>
         <TextBox Text="{Binding Repository.Name, UpdateSourceTrigger=PropertyChanged}" />

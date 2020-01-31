@@ -11,7 +11,7 @@ namespace Probel.LogReader.Core.Plugins
         string Dll { get; }
 
         [JsonProperty("explanation")]
-        string Explanation { get; }
+        string Description { get; }
 
         [JsonProperty("name")]
         string Name { get; }

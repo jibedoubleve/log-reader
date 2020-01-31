@@ -62,7 +62,7 @@ namespace Probel.LogReader.Win32
             LoadPlugins();
 
             var result = (from m in _metadataList ?? new List<IPluginMetadata>()
-                          select new PluginInfo(m.PluginId, m.Name, m.DocUrl));
+                          select new PluginInfo(m.PluginId, m.Name, m.DocUrl, m.Description));
             return result;
         }
 
