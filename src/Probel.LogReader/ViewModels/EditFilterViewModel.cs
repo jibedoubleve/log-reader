@@ -102,6 +102,12 @@ namespace Probel.LogReader.ViewModels
             Filter = filter;
         }
 
+        protected override void OnDeactivate(bool close)
+        {
+            CurrentSubfilter = null;
+            DeactivateItem(_editSubfilterViewModel, close);
+        }
+
         #endregion Methods
     }
 }

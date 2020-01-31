@@ -15,7 +15,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configManager;
-        private readonly EditFilterViewModel _editSubfilterViewModel;
+        private readonly EditFilterViewModel _editFilterViewModel;
         private readonly IEventAggregator _eventAggregator;
         private AppSettings _app;
         private FilterSettings _currentFilterSettings;
@@ -30,7 +30,7 @@ namespace Probel.LogReader.ViewModels
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
 
             _eventAggregator = eventAggregator;
-            _editSubfilterViewModel = editSubfilterViewModel;
+            _editFilterViewModel = editSubfilterViewModel;
             _configManager = configManager;
         }
 
@@ -58,13 +58,13 @@ namespace Probel.LogReader.ViewModels
 
         public void ActivateCurrentFilter()
         {
-            DeactivateItem(_editSubfilterViewModel, true);
+            DeactivateItem(_editFilterViewModel, true);
 
             if (CurrentFilter != null)
             {
-                _editSubfilterViewModel.SetSubfilters(CurrentFilter);
+                _editFilterViewModel.SetSubfilters(CurrentFilter);
                 NotifyOfPropertyChange(() => CanCreateSubFilter);
-                ActivateItem(_editSubfilterViewModel);
+                ActivateItem(_editFilterViewModel);
             }
         }
 
@@ -76,8 +76,8 @@ namespace Probel.LogReader.ViewModels
             CurrentFilter = newFilter;
         }
 
-        public bool CanCreateSubFilter => _editSubfilterViewModel.Subfilters != null;
-        public void CreateSubFilter() => _editSubfilterViewModel?.CreateSubfilter();
+        public bool CanCreateSubFilter => _editFilterViewModel.Subfilters != null;
+        public void CreateSubFilter() => _editFilterViewModel?.CreateSubfilter();
 
         //TODO: Error handling
         public async void DiscardAll() => await LoadAsync();
