@@ -31,7 +31,7 @@
                     <iconPacks:PackIconModern Kind="Save" />
                 </Button>
                 <Button x:Name="DiscardAll" ToolTip="Discard changes">
-                    <iconPacks:PackIconMaterial Kind="FileUndo" />
+                    <iconPacks:PackIconModern Kind="UndoCurve" />
                 </Button>
                 <Button x:Name="CreateFilter" ToolTip="New filter">
                     <iconPacks:PackIconFontAwesome Kind="PlusSquareRegular" />
