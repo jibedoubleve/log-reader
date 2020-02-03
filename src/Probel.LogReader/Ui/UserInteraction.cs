@@ -22,7 +22,7 @@ namespace Probel.LogReader.Ui
             }
         }
 
-        public void Inform(string message, string title = "INFO") => MessageBox.Show(title, message, MessageBoxButton.OK, MessageBoxImage.Information);
+        public void Inform(string message, string title = "INFO") => MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 
         #endregion Methods
     }
