@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
@@ -9,9 +10,9 @@ using Probel.LogReader.ViewModels.Packs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Linq;
-using Probel.LogReader.Core.Constants;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Probel.LogReader.ViewModels
 {
@@ -20,14 +21,15 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
-        private readonly IPluginInfoManager _pluginInfoManager;
+        private readonly IFilterTranslator _filterTranslator;
         private readonly ManageFilterViewModel _manageFilterViewModel;
+        private readonly IPluginInfoManager _pluginInfoManager;
         private readonly IPluginManager _pluginManager;
-
+        private readonly IUserInteraction _userInteraction;
         private readonly DaysViewModel _vmDaysViewModel;
         private readonly LogsViewModel _vmLogsViewModel;
-
         private bool _isFilterVisible = false;
+        private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private ObservableCollection<MenuItemModel> _menuFile;
         private ObservableCollection<MenuItemModel> _menuFilter;
 
@@ -40,12 +42,13 @@ namespace Probel.LogReader.ViewModels
             , IPluginManager pluginManager
             , IFilterTranslator filterTranslator
             , MainViewModelPack views
-            , IEventAggregator eventAggregator)
+            , IEventAggregator eventAggregator
+            , IUserInteraction userInteraction)
         {
             eventAggregator.Subscribe(this);
 
             _configurationManager = cfg;
-
+            _userInteraction = userInteraction;
             _pluginInfoManager = pluginInfoManager;
             _pluginManager = pluginManager;
             _filterTranslator = filterTranslator;
@@ -58,10 +61,6 @@ namespace Probel.LogReader.ViewModels
         #endregion Constructors
 
         #region Properties
-
-        public IFilterTranslator _filterTranslator { get; }
-
-        public ManageRepositoryViewModel _manageRepositoryViewModel { get; }
 
         public bool IsFilterVisible
         {
@@ -84,17 +83,21 @@ namespace Probel.LogReader.ViewModels
         #endregion Properties
 
         #region Methods
+
         public async Task ActivateLogsAsync(IPlugin plugin, DateTime day)
         {
-            var cfg = await _configurationManager.GetAsync();
-            var logs = plugin.GetLogs(day);
+            using (_userInteraction.NotifyWait())
+            {
+                var cfg = await _configurationManager.GetAsync();
+                var logs = plugin.GetLogs(day);
 
-            _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
-            _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
-            _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
-            _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
-            _vmLogsViewModel.Cache(logs);
-            ActivateItem(_vmLogsViewModel);
+                _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
+                _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
+                _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
+                _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
+                _vmLogsViewModel.Cache(logs);
+                ActivateItem(_vmLogsViewModel);
+            }
         }
 
         public async Task Handle(UiEvent message)
@@ -147,13 +150,21 @@ namespace Probel.LogReader.ViewModels
 
         private void LoadLogs(IPlugin plugin)
         {
-            var days = plugin.GetDays();
-            _vmDaysViewModel.Days = new ObservableCollection<DateTime>(days);
-            _vmDaysViewModel.Plugin = plugin;
+            var token = new CancellationToken();
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            _vmLogsViewModel.ClearCache();
+            var waiter = _userInteraction.NotifyWait();
+            Task.Run(() => plugin.GetDays())
+                .ContinueWith(r =>
+                {
+                    _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r.Result);
+                    _vmDaysViewModel.Plugin = plugin;
 
-            ActivateItem(_vmDaysViewModel);
+                    _vmLogsViewModel.ClearCache();
+
+                    ActivateItem(_vmDaysViewModel);
+                    waiter.Dispose();
+                }, token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
         }
 
         private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)

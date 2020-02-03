@@ -40,7 +40,6 @@ namespace Probel.LogReader.ViewModels
         {
             if (Parent is MainViewModel parent)
             {
-                var logs = Plugin.GetLogs(SelectedDay);
                 await parent.ActivateLogsAsync(Plugin, SelectedDay);
             }
         }

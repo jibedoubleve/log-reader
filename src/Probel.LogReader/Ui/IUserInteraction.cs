@@ -12,7 +12,10 @@
 
         UserAnswers Ask(string question, string title = "QUESTION");
 
+
         void Inform(string message, string title = "INFO");
+
+        WaitNotification NotifyWait();
 
         #endregion Methods
     }

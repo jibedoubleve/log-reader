@@ -116,6 +116,7 @@
     <Compile Include="Ui\UiEvent.cs" />
     <Compile Include="Ui\UiEvents.cs" />
     <Compile Include="Ui\UserInteraction.cs" />
+    <Compile Include="Ui\WaitNotification.cs" />
     <Compile Include="ViewModels\DaysViewModel.cs" />
     <Compile Include="ViewModels\EditFilterViewModel.cs" />
     <Compile Include="ViewModels\EditRepositoryViewModel.cs" />
