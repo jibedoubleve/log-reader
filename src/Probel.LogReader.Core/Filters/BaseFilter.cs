@@ -11,7 +11,7 @@ namespace Probel.LogReader.Core.Filters
     {
         #region Constructors
 
-        public BaseFilter(FilterOperations operation)
+        protected BaseFilter(FilterOperations operation)
         {
             Operation = operation;
         }

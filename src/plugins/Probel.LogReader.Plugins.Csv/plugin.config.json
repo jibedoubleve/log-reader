@@ -2,6 +2,6 @@
   "name": "CSV files",
   "plugin-id": "59602b32-f019-498d-8d78-9099a5f7ec32",
   "dll": "Probel.LogReader.Plugins.Csv.dll",
-  "explanation": "This plugin is meant to read CSV files.",
+  "explanation": "Get logs from an Oracle database.",
   "doc-url": "https://github.com/jibedoubleve/log-reader/blob/develop-0.1/doc/plugins/plugin-csv.md"
 }
