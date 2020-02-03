@@ -11,7 +11,6 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private ObservableCollection<DateTime> _days;
-
         private DateTime _selectedDay;
 
         #endregion Fields

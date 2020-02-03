@@ -273,7 +273,7 @@
             <StatusBarItem />
             <TextBlock>
                 <Run Text="{Binding LogsCount, Mode=OneWay}" />
-                <Run Text="item(s)" />
+                <Run Text="Item(s)" />
             </TextBlock>
             <Separator />
             <TextBlock>
@@ -284,6 +284,13 @@
             <TextBlock>
                 <Run Text="Date:" />
                 <Run Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
+            </TextBlock>
+            <Separator Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBlock Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Run Text="Source:" />
+                <Hyperlink NavigateUri="{Binding FilePath, Mode=OneWay}" RequestNavigate="OnRequestNavigate">
+                    <TextBlock Text="{Binding FilePath, Mode=OneWay}" />
+                </Hyperlink>
             </TextBlock>
         </StatusBar>
     </Grid>

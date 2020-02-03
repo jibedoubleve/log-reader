@@ -19,9 +19,11 @@ namespace Probel.LogReader.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private IEnumerable<LogRow> _cachedLogs;
         private DateTime _date;
+        private string _filePath;
         private bool _isDebugVisible = true;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
+        private bool _isFile;
         private bool _isInfoVisible = true;
         private bool _isLoggerVisible = true;
         private bool _isThreadIdVisible;
@@ -52,6 +54,12 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _date, value, nameof(Date));
         }
 
+        public string FilePath
+        {
+            get => _filePath;
+            set => Set(ref _filePath, value, nameof(FilePath));
+        }
+
         public ICommand FilterCommand { get; set; }
 
         public bool IsDebugVisible
@@ -70,6 +78,12 @@ namespace Probel.LogReader.ViewModels
         {
             get => _isFatalVisible;
             set => Set(ref _isFatalVisible, value, nameof(IsFatalVisible));
+        }
+
+        public bool IsFile
+        {
+            get => _isFile;
+            set => Set(ref _isFile, value, nameof(IsFile));
         }
 
         public bool IsInfoVisible

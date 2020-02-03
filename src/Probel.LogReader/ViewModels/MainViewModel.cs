@@ -95,6 +95,10 @@ namespace Probel.LogReader.ViewModels
                 _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
                 _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
                 _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
+
+                _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
+                _vmLogsViewModel.FilePath = path;
+
                 _vmLogsViewModel.Cache(logs);
                 ActivateItem(_vmLogsViewModel);
             }

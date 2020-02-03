@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +10,7 @@ namespace Probel.LogReader.Core.Plugins
     {
         #region Properties
 
+        public string RepositoryName => Settings?.Name ?? "EMPTY";
         protected RepositorySettings Settings { get; private set; }
 
         #endregion Properties
@@ -21,7 +23,26 @@ namespace Probel.LogReader.Core.Plugins
 
         public void Initialise(RepositorySettings settings) => Settings = settings;
 
-        public string RepositoryName => Settings?.Name ?? "EMPTY";
+        public bool IsFile()
+        {
+            var path = Environment.ExpandEnvironmentVariables(Settings.ConnectionString);
+            return path.IsValidPath();
+        }
+
+        public bool TryGetFile(out string path)
+        {
+            path = null;
+            if (string.IsNullOrEmpty(Settings.ConnectionString)) { return false; }
+
+            var p = Environment.ExpandEnvironmentVariables(Settings.ConnectionString);
+
+            if (p.IsValidPath())
+            {
+                path = p;
+                return true;
+            }
+            else { return false; }
+        }
 
         #endregion Methods
     }
