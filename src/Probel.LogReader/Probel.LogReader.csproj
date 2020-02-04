@@ -126,6 +126,9 @@
     <Compile Include="ViewModels\ManageFilterViewModel.cs" />
     <Compile Include="ViewModels\ManageRepositoryViewModel.cs" />
     <Compile Include="ViewModels\Packs\MainViewModelPack.cs" />
+    <Compile Include="Views\Controls\DayControl.xaml.cs">
+      <DependentUpon>DayControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DaysView.xaml.cs">
       <DependentUpon>DaysView.xaml</DependentUpon>
     </Compile>
@@ -183,6 +186,10 @@
     <Resource Include="logs.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Controls\DayControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\DaysView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

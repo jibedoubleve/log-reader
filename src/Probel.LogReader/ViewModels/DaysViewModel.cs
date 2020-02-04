@@ -24,7 +24,12 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _days, value, nameof(Days));
         }
 
-        public IPlugin Plugin { get; set; }
+        private IPlugin _plugin;
+        public IPlugin Plugin
+        {
+            get => _plugin;
+            set => Set(ref _plugin, value, nameof(Plugin));
+        }
 
         public DateTime SelectedDay
         {

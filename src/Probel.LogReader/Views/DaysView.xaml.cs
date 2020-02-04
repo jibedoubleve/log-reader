@@ -11,7 +11,10 @@ namespace Probel.LogReader.Views
     {
         #region Constructors
 
-        public DaysView() => InitializeComponent();
+        public DaysView()
+        {
+            InitializeComponent();      
+        }
 
         #endregion Constructors
 
