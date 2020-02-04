@@ -59,7 +59,9 @@ namespace Probel.LogReader.Core.Configuration
                     result = new AppSettings();
                 }
 
-                return result;
+                return result == null
+                    ? new AppSettings() //throw new InvalidOperationException($"The json property file '{FileName}' is empty!")
+                    : result;
             }
             finally { _semaphore.Release(); }
         }
