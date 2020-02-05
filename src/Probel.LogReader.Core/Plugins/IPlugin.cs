@@ -5,9 +5,40 @@ using System.Collections.Generic;
 
 namespace Probel.LogReader.Core.Plugins
 {
-    public interface IPlugin
+    public interface IDataListener
+    {
+        #region Events
+
+        event EventHandler DataChanged;
+
+        #endregion Events
+
+        #region Methods
+
+        /// <summary>
+        /// Start listening on changes done on the repository.
+        /// </summary>
+        /// <param name="seconds">When value is "0" then will try to automatically notify on change as it occurs. If the plugin does not support this feature, it'll never update.
+        /// Otherwise, indicates the seconds between two refreshes</param>
+        /// <param name="day">Indicates on what day system should listen</param>
+        void StartListening(DateTime day, int seconds = 0);
+
+        /// <summary>
+        /// Stop listening to changes done on the repository.
+        /// </summary>
+        void StopListening();
+
+        #endregion Methods
+    }
+
+    public interface IPlugin : IDataListener
     {
         #region Properties
+
+        /// <summary>
+        /// Indicates whether this plugin can listen to changes
+        /// </summary>
+        bool CanListen { get; }
 
         string RepositoryName { get; }
 

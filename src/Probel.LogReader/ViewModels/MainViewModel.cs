@@ -110,11 +110,14 @@ namespace Probel.LogReader.ViewModels
 
                 _vmLogsViewModel.GoBack = () => LoadDays(plugin);
                 //_vmLogsViewModel.RefreshData = () => LoadLogsAsync(plugin, day);
+                _vmLogsViewModel.Listener = plugin;
 
                 _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
+                _vmLogsViewModel.CanListen = plugin.CanListen;
                 _vmLogsViewModel.FilePath = path;
 
                 _vmLogsViewModel.Cache(logs);
+
                 ActivateItem(_vmLogsViewModel);
             }
         }
