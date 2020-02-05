@@ -44,7 +44,7 @@ namespace Probel.LogReader.ViewModels
         {
             if (Parent is MainViewModel parent)
             {
-                await parent.ActivateLogsAsync(Plugin, SelectedDay);
+                await parent.LoadLogsAsync(Plugin, SelectedDay);
             }
         }
 

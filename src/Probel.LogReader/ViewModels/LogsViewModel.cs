@@ -62,6 +62,8 @@ namespace Probel.LogReader.ViewModels
 
         public ICommand FilterCommand { get; set; }
 
+        public System.Action GoBack { get; internal set; }
+
         public bool IsDebugVisible
         {
             get => _isDebugVisible;
@@ -197,6 +199,8 @@ namespace Probel.LogReader.ViewModels
             if (IsFatalVisible) { levels.Add("fatal"); }
             return levels;
         }
+
+        public void LoadDays() => GoBack?.Invoke();
 
         #endregion Methods
     }
