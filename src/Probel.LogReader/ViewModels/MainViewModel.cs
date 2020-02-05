@@ -195,7 +195,7 @@ namespace Probel.LogReader.ViewModels
             var pil = _pluginInfoManager.GetPluginsInfo();
             var repositories = (from r in app.Repositories
                                 where pil.Where(e => e.Id == r.PluginId).Count() > 0
-                                select r);
+                                select r).OrderBy(e => e.Name);
 
             var menus = new List<MenuItemModel>();
             foreach (var repo in repositories)
