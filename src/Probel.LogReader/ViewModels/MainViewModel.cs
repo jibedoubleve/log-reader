@@ -29,6 +29,7 @@ namespace Probel.LogReader.ViewModels
         private readonly DaysViewModel _vmDaysViewModel;
         private readonly LogsViewModel _vmLogsViewModel;
         private bool _isFilterVisible = false;
+        private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private ObservableCollection<MenuItemModel> _menuFile;
         private ObservableCollection<MenuItemModel> _menuFilter;
 
