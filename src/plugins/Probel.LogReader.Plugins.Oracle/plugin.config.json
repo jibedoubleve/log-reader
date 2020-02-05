@@ -1,5 +1,5 @@
 {
-  "name": "Oracle Databases",
+  "name": "Oracle Database",
   "plugin-id": "f9f0fc35-7504-4853-8334-585e0973a55c",
   "dll": "Probel.LogReader.Plugins.Oracle.dll",
   "explanation": "Get logs from an Oracle database",

@@ -22,6 +22,9 @@ namespace Probel.LogReader.Core.Plugins
         [JsonProperty("doc-url")]
         string DocUrl { get; }
 
+        [JsonProperty("colouration")]
+        string Colouration { get; set; }
+
         #endregion Properties
     }
 }

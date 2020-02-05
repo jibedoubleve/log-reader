@@ -62,7 +62,7 @@ namespace Probel.LogReader.Core.Plugins
             LoadPlugins();
 
             var result = (from m in _metadataList ?? new List<IPluginMetadata>()
-                          select new PluginInfo(m.PluginId, m.Name, m.DocUrl, m.Description));
+                          select new PluginInfo(m.PluginId, m.Name, m.DocUrl, m.Description,m.Colouration));
             return result;
         }
 

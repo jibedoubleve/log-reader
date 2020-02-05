@@ -65,7 +65,7 @@ namespace Probel.LogReader.ViewModels
             if (CurrentRepository != null)
             {
                 _editRepositoryViewModel.Repository = CurrentRepository;
-                _editRepositoryViewModel.Load();
+                _editRepositoryViewModel.Load();                
                 ActivateItem(_editRepositoryViewModel);
             }
         }

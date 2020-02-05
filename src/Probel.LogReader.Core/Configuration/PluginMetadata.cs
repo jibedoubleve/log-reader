@@ -26,6 +26,14 @@ namespace Probel.LogReader.Core.Plugins
         [JsonProperty("plugin-id")]
         public Guid PluginId { get; set; }
 
+        /// <summary>
+        /// Indicates the language used for the configuration. This is 
+        /// used for the syntaxic colouration. If value is null or 
+        /// empty, then no colouration
+        /// </summary>
+        [JsonProperty("colouration")]
+        public string Colouration { get ; set ; }
+
         #endregion Properties
     }
 }
