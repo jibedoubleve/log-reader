@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Probel.LogReader.Colouration;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Ui;
@@ -13,10 +14,9 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         public readonly IUserInteraction _user;
-        private readonly IConfigurationManager _configManager;
-        private readonly IEventAggregator _eventAggregator;
         private readonly IPluginInfoManager _infoManager;
 
+        private IColourator _colourator;
         private ObservableCollection<PluginInfo> _pluginInfo;
         private RepositorySettings _repository;
 
@@ -26,11 +26,9 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public EditRepositoryViewModel(IPluginInfoManager infoManager, IConfigurationManager configManager, IUserInteraction userInteraction, IEventAggregator eventAggregator)
+        public EditRepositoryViewModel(IPluginInfoManager infoManager, IUserInteraction userInteraction)
         {
-            _eventAggregator = eventAggregator;
             _user = userInteraction;
-            _configManager = configManager;
             _infoManager = infoManager;
         }
 
@@ -61,7 +59,13 @@ namespace Probel.LogReader.ViewModels
         public PluginInfo SelectedPlugin
         {
             get => _selectedPlugin;
-            set => Set(ref _selectedPlugin, value, nameof(SelectedPlugin));
+            set
+            {
+                if (Set(ref _selectedPlugin, value, nameof(SelectedPlugin)))
+                {
+                    ActivateColourator(value?.Colouration);
+                }
+            }
         }
 
         #endregion Properties
@@ -77,9 +81,17 @@ namespace Probel.LogReader.ViewModels
                               select p).FirstOrDefault();
         }
 
+        public void Refresh(IColourator c)
+        {
+            _colourator = c;
+            ActivateColourator(SelectedPlugin?.Colouration);
+        }
+
         public void RefreshForUpdate() => Repository.PluginId = SelectedPlugin?.Id ?? new Guid();
 
         protected override void OnDeactivate(bool close) => Repository = new RepositorySettings();
+
+        private void ActivateColourator(string colouration) => _colourator?.Set(colouration);
 
         #endregion Methods
     }

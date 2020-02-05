@@ -11,7 +11,6 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private ObservableCollection<DateTime> _days;
-
         private DateTime _selectedDay;
 
         #endregion Fields
@@ -24,7 +23,12 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _days, value, nameof(Days));
         }
 
-        public IPlugin Plugin { get; set; }
+        private IPlugin _plugin;
+        public IPlugin Plugin
+        {
+            get => _plugin;
+            set => Set(ref _plugin, value, nameof(Plugin));
+        }
 
         public DateTime SelectedDay
         {
@@ -36,11 +40,11 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public async Task LoadLogsAsync()
+        public void LoadLogs()
         {
             if (Parent is MainViewModel parent)
             {
-                await parent.ActivateLogsAsync(Plugin, SelectedDay);
+                parent.LoadLogs(Plugin, SelectedDay);
             }
         }
 

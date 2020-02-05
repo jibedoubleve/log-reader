@@ -79,7 +79,6 @@ namespace Probel.LogReader.Plugins.Debug
                 case OrderBy.None: return _dates;
                 default: throw new NotSupportedException($"This sort '{orderby}' is not supported!");
             }
-
         }
 
         public override IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc)

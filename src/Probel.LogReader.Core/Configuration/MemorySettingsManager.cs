@@ -14,7 +14,11 @@ namespace Probel.LogReader.Core.Configuration
 
         public void Delete() => _settings = null;
 
+        public AppSettings Get() => _settings;
+
         public Task<AppSettings> GetAsync() => Task.FromResult(_settings);
+
+        public void Save(AppSettings settings) => _settings = settings;
 
         public Task SaveAsync(AppSettings settings)
         {

@@ -1,6 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
-using Probel.LogReader.Core.Plugins;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,11 +24,25 @@ namespace Probel.LogReader.Core.Plugins
 
         #region Methods
 
+        public IFilterManager BuildFilterManager()
+        {
+            var cfg = Get();
+            var fm = new FilterManager(cfg.Filters);
+            return fm;
+        }
+
         public async Task<IFilterManager> BuildFilterManagerAsync()
         {
             var cfg = await GetAsync();
             var fm = new FilterManager(cfg.Filters);
             return fm;
+        }
+
+        public void Create(RepositorySettings repository)
+        {
+            var a = Get();
+            a.Repositories.Add(repository);
+            Save(a);
         }
 
         public async Task CreateAsync(RepositorySettings repository)
@@ -40,6 +53,17 @@ namespace Probel.LogReader.Core.Plugins
         }
 
         public void Delete() => _fileManager.Delete();
+
+        public void Delete(RepositorySettings repository)
+        {
+            var a = Get();
+            var del = a.Repositories.Where(e => e.PluginId == repository.PluginId).FirstOrDefault();
+            if (del != null)
+            {
+                a.Repositories.Remove(del);
+                Save(a);
+            }
+        }
 
         public async Task DeleteAsync(RepositorySettings repository)
         {
@@ -52,6 +76,16 @@ namespace Probel.LogReader.Core.Plugins
             }
         }
 
+        public AppSettings Get()
+        {
+            var app = _fileManager.Get();
+            if (app.Filters.Where(e => e.Id == FilterSettings.NoFilter.Id).Count() == 0)
+            {
+                app.Filters.Add(FilterSettings.NoFilter);
+            }
+            return app;
+        }
+
         public async Task<AppSettings> GetAsync()
         {
             var app = await _fileManager.GetAsync();
@@ -61,6 +95,8 @@ namespace Probel.LogReader.Core.Plugins
             }
             return app;
         }
+
+        public void Save(AppSettings settings) => _fileManager.Save(settings);
 
         public async Task SaveAsync(AppSettings settings) => await _fileManager.SaveAsync(settings);
 

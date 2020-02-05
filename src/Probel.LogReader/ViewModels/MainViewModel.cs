@@ -11,25 +11,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Probel.LogReader.ViewModels
 {
-    public class MainViewModel : Conductor<IScreen>, IHandleWithTask<UiEvent>
+    public class MainViewModel : Conductor<IScreen>, IHandle<UiEvent>
     {
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
         private readonly IFilterTranslator _filterTranslator;
         private readonly ManageFilterViewModel _manageFilterViewModel;
+        private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private readonly IPluginInfoManager _pluginInfoManager;
         private readonly IPluginManager _pluginManager;
         private readonly IUserInteraction _userInteraction;
         private readonly DaysViewModel _vmDaysViewModel;
         private readonly LogsViewModel _vmLogsViewModel;
         private bool _isFilterVisible = false;
-        private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private ObservableCollection<MenuItemModel> _menuFile;
         private ObservableCollection<MenuItemModel> _menuFilter;
 
@@ -84,27 +83,11 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public async Task ActivateLogsAsync(IPlugin plugin, DateTime day)
-        {
-            using (_userInteraction.NotifyWait())
-            {
-                var cfg = await _configurationManager.GetAsync();
-                var logs = plugin.GetLogs(day);
-
-                _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
-                _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
-                _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
-                _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
-                _vmLogsViewModel.Cache(logs);
-                ActivateItem(_vmLogsViewModel);
-            }
-        }
-
-        public async Task Handle(UiEvent message)
+        public void Handle(UiEvent message)
         {
             if (message.Event == UiEvents.RefreshMenus)
             {
-                await LoadMenusAsync();
+                LoadMenus();
             }
             else if (message.Event == UiEvents.FilterVisibility && message.Context is bool isVisible)
             {
@@ -112,12 +95,38 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public async Task LoadMenusAsync()
+        public void LoadLogs(IPlugin plugin, DateTime day)
+        {
+            using (_userInteraction.NotifyWait())
+            {
+                var cfg = Task.Run(() => _configurationManager.Get()).Result;
+                var logs = plugin.GetLogs(day);
+
+                _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
+                _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
+                _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
+                _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
+
+                _vmLogsViewModel.GoBack = () => LoadDays(plugin);
+                //_vmLogsViewModel.RefreshData = () => LoadLogsAsync(plugin, day);
+                _vmLogsViewModel.Listener = plugin;
+
+                _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
+                _vmLogsViewModel.CanListen = plugin.CanListen;
+                _vmLogsViewModel.FilePath = path;
+
+                _vmLogsViewModel.Cache(logs);
+
+                ActivateItem(_vmLogsViewModel);
+            }
+        }
+
+        public void LoadMenus()
         {
             try
             {
-                var app = await _configurationManager.GetAsync();
-                var fmanager = await _configurationManager.BuildFilterManagerAsync();
+                var app = Task.Run(() => _configurationManager.Get()).Result;
+                var fmanager = Task.Run(() => _configurationManager.BuildFilterManagerAsync()).Result;
 
                 var menuRepository = LoadMenuRepository(app);
                 var menuFilter = LoadMenuFilter(app, fmanager);
@@ -128,17 +137,31 @@ namespace Probel.LogReader.ViewModels
             catch (Exception ex) { throw ex; }
         }
 
-        public async void ManageFilters()
+        public void ManageFilters()
         {
-            await _manageFilterViewModel.LoadAsync();
+            _manageFilterViewModel.Load();
             ActivateItem(_manageFilterViewModel);
         }
 
-        //TODO: Error handling
-        public async void ManageRepositories()
+        public void ManageRepositories()
         {
-            await _manageRepositoryViewModel.LoadAsync();
+            _manageRepositoryViewModel.Load();
             ActivateItem(_manageRepositoryViewModel);
+        }
+
+        private void LoadDays(IPlugin plugin)
+        {
+            var waiter = _userInteraction.NotifyWait();
+
+            var r = Task.Run(() => plugin.GetDays()).Result;
+
+            _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
+            _vmDaysViewModel.Plugin = plugin;
+
+            _vmLogsViewModel.ClearCache();
+
+            ActivateItem(_vmDaysViewModel);
+            waiter.Dispose();
         }
 
         private void LoadFilter(IFilterComposite filterComposite)
@@ -146,25 +169,6 @@ namespace Probel.LogReader.ViewModels
             _vmLogsViewModel.ResetCache();
             var logs = filterComposite.Filter(_vmLogsViewModel.Logs);
             _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
-        }
-
-        private void LoadLogs(IPlugin plugin)
-        {
-            var token = new CancellationToken();
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var waiter = _userInteraction.NotifyWait();
-            Task.Run(() => plugin.GetDays())
-                .ContinueWith(r =>
-                {
-                    _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r.Result);
-                    _vmDaysViewModel.Plugin = plugin;
-
-                    _vmLogsViewModel.ClearCache();
-
-                    ActivateItem(_vmDaysViewModel);
-                    waiter.Dispose();
-                }, token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
         }
 
         private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
@@ -188,7 +192,7 @@ namespace Probel.LogReader.ViewModels
             var pil = _pluginInfoManager.GetPluginsInfo();
             var repositories = (from r in app.Repositories
                                 where pil.Where(e => e.Id == r.PluginId).Count() > 0
-                                select r);
+                                select r).OrderBy(e => e.Name);
 
             var menus = new List<MenuItemModel>();
             foreach (var repo in repositories)
@@ -196,7 +200,7 @@ namespace Probel.LogReader.ViewModels
                 menus.Add(new MenuItemModel
                 {
                     Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadLogs(_pluginManager.Build(repo)))
+                    MenuCommand = new RelayCommand(() => LoadDays(_pluginManager.Build(repo)))
                 });
             }
             return menus;

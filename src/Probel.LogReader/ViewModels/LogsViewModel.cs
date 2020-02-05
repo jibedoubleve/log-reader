@@ -6,7 +6,10 @@ using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Probel.LogReader.ViewModels
@@ -18,11 +21,16 @@ namespace Probel.LogReader.ViewModels
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
         private IEnumerable<LogRow> _cachedLogs;
+        private bool _canListen;
+        private int _changeCount;
         private DateTime _date;
+        private string _filePath;
         private bool _isDebugVisible = true;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
+        private bool _isFile;
         private bool _isInfoVisible = true;
+        private bool _isListeningFile;
         private bool _isLoggerVisible = true;
         private bool _isThreadIdVisible;
         private bool _isTraceVisible = true;
@@ -46,13 +54,33 @@ namespace Probel.LogReader.ViewModels
 
         #region Properties
 
+        public bool CanListen
+        {
+            get => _canListen;
+            set => Set(ref _canListen, value, nameof(CanListen));
+        }
+
+        public int ChangeCount
+        {
+            get => _changeCount;
+            set => Set(ref _changeCount, value, nameof(ChangeCount));
+        }
+
         public DateTime Date
         {
             get => _date;
             set => Set(ref _date, value, nameof(Date));
         }
 
+        public string FilePath
+        {
+            get => _filePath;
+            set => Set(ref _filePath, value, nameof(FilePath));
+        }
+
         public ICommand FilterCommand { get; set; }
+
+        public System.Action GoBack { get; internal set; }
 
         public bool IsDebugVisible
         {
@@ -72,10 +100,22 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _isFatalVisible, value, nameof(IsFatalVisible));
         }
 
+        public bool IsFile
+        {
+            get => _isFile;
+            set => Set(ref _isFile, value, nameof(IsFile));
+        }
+
         public bool IsInfoVisible
         {
             get => _isInfoVisible;
             set => Set(ref _isInfoVisible, value, nameof(IsInfoVisible));
+        }
+
+        public bool IsListeningFile
+        {
+            get => _isListeningFile;
+            set => Set(ref _isListeningFile, value, nameof(IsListeningFile));
         }
 
         public bool IsLoggerVisible
@@ -102,6 +142,8 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _isWarnVisible, value, nameof(IsWarnVisible));
         }
 
+        public IDataListener Listener { get; set; }
+
         public ObservableCollection<LogRow> Logs
         {
             get => _logs;
@@ -115,6 +157,8 @@ namespace Probel.LogReader.ViewModels
         }
 
         public int LogsCount => Logs.Count();
+
+        public System.Action RefreshData { get; set; }
 
         public string RepositoryName
         {
@@ -134,6 +178,8 @@ namespace Probel.LogReader.ViewModels
 
         public void ClearCache() => _cachedLogs = null;
 
+        public void LoadDays() => GoBack?.Invoke();
+
         public void ResetCache()
         {
             Logs = (_cachedLogs == null)
@@ -151,16 +197,30 @@ namespace Probel.LogReader.ViewModels
                 = IsErrorVisible
                 = IsFatalVisible
                 = true;
+
+            if (CanListen)
+            {
+                if (Listener != null)
+                {
+                    Listener.DataChanged += OnDataChanged;
+                    Listener.StartListening(Date);
+                }
+                else { Trace.TraceWarning("Plugin can listen but no listener is configured!"); }
+            }
         }
 
-        //TODO: Error handling
-        protected override async void OnDeactivate(bool close)
+        protected override void OnDeactivate(bool close)
         {
             _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
-            var app = await _configManager.GetAsync();
-            app.Ui.ShowLogger = IsLoggerVisible;
-            app.Ui.ShowThreadId = IsThreadIdVisible;
-            await _configManager.SaveAsync(app);
+
+            var stg = Task.Run(() => _configManager.Get())
+                          .Result;
+
+            stg.Ui.ShowLogger = IsLoggerVisible;
+            stg.Ui.ShowThreadId = IsThreadIdVisible;
+
+            Task.Run(() => _configManager.Save(stg))
+                .Wait();
         }
 
         private void Filter()
@@ -182,6 +242,15 @@ namespace Probel.LogReader.ViewModels
             if (IsErrorVisible) { levels.Add("error"); }
             if (IsFatalVisible) { levels.Add("fatal"); }
             return levels;
+        }
+
+        private void OnDataChanged(object sender, EventArgs e)
+        {
+            if (IsListeningFile)
+            {
+                ChangeCount++;
+                RefreshData?.Invoke();
+            }
         }
 
         #endregion Methods

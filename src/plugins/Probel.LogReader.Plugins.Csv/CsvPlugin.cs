@@ -14,6 +14,18 @@ namespace Probel.LogReader.Plugins.Csv
 {
     public class CsvPlugin : PluginBase
     {
+        #region Fields
+
+        private FileSystemWatcher _fw;
+
+        #endregion Fields
+
+        #region Properties
+
+        public override bool CanListen => true;
+
+        #endregion Properties
+
         #region Methods
 
         public override IEnumerable<DateTime> GetDays(OrderBy orderby = OrderBy.Desc)
@@ -40,6 +52,29 @@ namespace Probel.LogReader.Plugins.Csv
                 return reader.GetLogs();
             }
             return new List<LogRow>();
+        }
+
+        public override void StartListening(DateTime day, int seconds = 0)
+        {
+            var days = GetDays();
+            if (days.ContainsKey(day))
+            {
+                var path = days[day];
+                var dir = Path.GetDirectoryName(path);
+                InitialiseFileWatcher(dir);
+            }
+            else { throw new NotSupportedException($"No logs found to the specifie day '{day}'"); }
+        }
+
+        public override void StopListening() => ClearFileWatcher();
+
+        private void ClearFileWatcher()
+        {
+            if (_fw != null)
+            {
+                _fw.Changed -= OnFileChanged;
+                _fw = null;
+            }
         }
 
         private Dictionary<DateTime, string> GetDays()
@@ -154,6 +189,23 @@ namespace Probel.LogReader.Plugins.Csv
 
             return d;
         }
+
+        private void InitialiseFileWatcher(string path)
+        {
+            ClearFileWatcher();
+
+            var fileName = Path.GetFileName(path);
+
+            _fw = new FileSystemWatcher(path)
+            {
+                EnableRaisingEvents = true,
+                Filter = fileName
+            };
+            _fw.Changed += OnFileChanged;
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e) => OnChanged();
+
 
         #endregion Methods
     }

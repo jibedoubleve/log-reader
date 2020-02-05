@@ -11,7 +11,10 @@ namespace Probel.LogReader.Views
     {
         #region Constructors
 
-        public DaysView() => InitializeComponent();
+        public DaysView()
+        {
+            InitializeComponent();
+        }
 
         #endregion Constructors
 
@@ -23,8 +26,7 @@ namespace Probel.LogReader.Views
 
         #region Methods
 
-        //TODO: Error handling
-        private async void OnMouseDoubleClickOnDay(object sender, MouseButtonEventArgs e) => await ViewModel.LoadLogsAsync();
+        private void OnMouseDoubleClickOnDay(object sender, MouseButtonEventArgs e) => ViewModel.LoadLogs();
 
         #endregion Methods
     }
