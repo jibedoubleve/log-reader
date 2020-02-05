@@ -11,12 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Probel.LogReader.ViewModels
 {
-    public class MainViewModel : Conductor<IScreen>, IHandleWithTask<UiEvent>
+    public class MainViewModel : Conductor<IScreen>, IHandle<UiEvent>
     {
         #region Fields
 
@@ -84,11 +83,11 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public async Task Handle(UiEvent message)
+        public void Handle(UiEvent message)
         {
             if (message.Event == UiEvents.RefreshMenus)
             {
-                await LoadMenusAsync();
+                LoadMenus();
             }
             else if (message.Event == UiEvents.FilterVisibility && message.Context is bool isVisible)
             {
@@ -96,11 +95,11 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public async Task LoadLogsAsync(IPlugin plugin, DateTime day)
+        public void LoadLogs(IPlugin plugin, DateTime day)
         {
             using (_userInteraction.NotifyWait())
             {
-                var cfg = await _configurationManager.GetAsync();
+                var cfg = Task.Run(() => _configurationManager.Get()).Result;
                 var logs = plugin.GetLogs(day);
 
                 _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
@@ -122,12 +121,12 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public async Task LoadMenusAsync()
+        public void LoadMenus()
         {
             try
             {
-                var app = await _configurationManager.GetAsync();
-                var fmanager = await _configurationManager.BuildFilterManagerAsync();
+                var app = Task.Run(() => _configurationManager.Get()).Result;
+                var fmanager = Task.Run(() => _configurationManager.BuildFilterManagerAsync()).Result;
 
                 var menuRepository = LoadMenuRepository(app);
                 var menuFilter = LoadMenuFilter(app, fmanager);
@@ -138,36 +137,31 @@ namespace Probel.LogReader.ViewModels
             catch (Exception ex) { throw ex; }
         }
 
-        public async void ManageFilters()
+        public void ManageFilters()
         {
-            await _manageFilterViewModel.LoadAsync();
+            _manageFilterViewModel.Load();
             ActivateItem(_manageFilterViewModel);
         }
 
-        //TODO: Error handling
-        public async void ManageRepositories()
+        public void ManageRepositories()
         {
-            await _manageRepositoryViewModel.LoadAsync();
+            _manageRepositoryViewModel.Load();
             ActivateItem(_manageRepositoryViewModel);
         }
 
         private void LoadDays(IPlugin plugin)
         {
-            var token = new CancellationToken();
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
             var waiter = _userInteraction.NotifyWait();
-            Task.Run(() => plugin.GetDays())
-                .ContinueWith(r =>
-                {
-                    _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r.Result);
-                    _vmDaysViewModel.Plugin = plugin;
 
-                    _vmLogsViewModel.ClearCache();
+            var r = Task.Run(() => plugin.GetDays()).Result;
 
-                    ActivateItem(_vmDaysViewModel);
-                    waiter.Dispose();
-                }, token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
+            _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
+            _vmDaysViewModel.Plugin = plugin;
+
+            _vmLogsViewModel.ClearCache();
+
+            ActivateItem(_vmDaysViewModel);
+            waiter.Dispose();
         }
 
         private void LoadFilter(IFilterComposite filterComposite)

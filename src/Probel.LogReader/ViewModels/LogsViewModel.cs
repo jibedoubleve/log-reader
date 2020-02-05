@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Probel.LogReader.ViewModels
@@ -207,14 +209,18 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        //TODO: Error handling
-        protected override async void OnDeactivate(bool close)
+        protected override void OnDeactivate(bool close)
         {
             _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
-            var app = await _configManager.GetAsync();
-            app.Ui.ShowLogger = IsLoggerVisible;
-            app.Ui.ShowThreadId = IsThreadIdVisible;
-            await _configManager.SaveAsync(app);
+
+            var stg = Task.Run(() => _configManager.Get())
+                          .Result;
+
+            stg.Ui.ShowLogger = IsLoggerVisible;
+            stg.Ui.ShowThreadId = IsThreadIdVisible;
+
+            Task.Run(() => _configManager.Save(stg))
+                .Wait();
         }
 
         private void Filter()

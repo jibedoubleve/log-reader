@@ -65,7 +65,7 @@ namespace Probel.LogReader.ViewModels
             if (CurrentRepository != null)
             {
                 _editRepositoryViewModel.Repository = CurrentRepository;
-                _editRepositoryViewModel.Load();                
+                _editRepositoryViewModel.Load();
                 ActivateItem(_editRepositoryViewModel);
             }
         }
@@ -81,28 +81,30 @@ namespace Probel.LogReader.ViewModels
             ActivateItem(_editRepositoryViewModel);
         }
 
-        //TODO: Error handling
-        public async void DiscardAll()
+        public void DiscardAll()
         {
             if (_userInteraction.Ask(Strings.Msg_AskReset) == UserAnswers.Yes)
             {
-                await LoadAsync();
+                Load();
             }
         }
 
-        public async Task LoadAsync()
+        public void Load()
         {
-            _cachedAppSettings = await _configManager.GetAsync();
-            Repositories = new ObservableCollection<RepositorySettings>(_cachedAppSettings.Repositories);
+            var t1 = Task.Run(() => _cachedAppSettings = _configManager.Get());
+            var t2 = t1.ContinueWith(r => Repositories = new ObservableCollection<RepositorySettings>(_cachedAppSettings.Repositories), TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            t2.Wait();
         }
 
-        //TODO: Error handling
-        public async void SaveAll()
+        public void SaveAll()
         {
             _editRepositoryViewModel.RefreshForUpdate();
-            await _configManager.SaveAsync(_cachedAppSettings);
-            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
 
+            Task.Run(() => _configManager.Save(_cachedAppSettings))
+                .Wait();
+
+            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
             _userInteraction.Inform(Strings.Msg_InformSaved);
         }
 

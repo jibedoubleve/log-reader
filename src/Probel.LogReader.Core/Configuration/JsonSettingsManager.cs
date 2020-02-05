@@ -17,7 +17,10 @@ namespace Probel.LogReader.Core.Configuration
 
         #region Constructors
 
-        public JsonSettingsManager(string path) { FileName = path.Expand(); }
+        public JsonSettingsManager(string path)
+        {
+            FileName = path.Expand();
+        }
 
         #endregion Constructors
 
@@ -41,6 +44,31 @@ namespace Probel.LogReader.Core.Configuration
             finally { _semaphore.Release(); }
         }
 
+        public AppSettings Get()
+        {
+            _semaphore.Wait();
+            try
+            {
+                AppSettings result;
+
+                if (File.Exists(FileName))
+                {
+                    var json = File.ReadAllText(FileName);
+                    result = JsonConvert.DeserializeObject<AppSettings>(json);
+                }
+                else
+                {
+                    CreateDefaultConfig();
+                    result = new AppSettings();
+                }
+
+                return result == null
+                    ? new AppSettings() //throw new InvalidOperationException($"The json property file '{FileName}' is empty!")
+                    : result;
+            }
+            finally { _semaphore.Release(); }
+        }
+
         public async Task<AppSettings> GetAsync()
         {
             _semaphore.Wait();
@@ -55,13 +83,29 @@ namespace Probel.LogReader.Core.Configuration
                 }
                 else
                 {
-                    await CreateDefaultConfig();
+                    await CreateDefaultConfigAsync();
                     result = new AppSettings();
                 }
 
                 return result == null
                     ? new AppSettings() //throw new InvalidOperationException($"The json property file '{FileName}' is empty!")
                     : result;
+            }
+            finally { _semaphore.Release(); }
+        }
+
+        public void Save(AppSettings settings)
+        {
+            _semaphore.Wait();
+            try
+            {
+                var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                using (var stream = new FileStream(FileName, FileMode.Create))
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write(json);
+                    writer.Flush();
+                }
             }
             finally { _semaphore.Release(); }
         }
@@ -82,7 +126,17 @@ namespace Probel.LogReader.Core.Configuration
             finally { _semaphore.Release(); }
         }
 
-        private async Task CreateDefaultConfig()
+        private void CreateDefaultConfig()
+        {
+            var json = JsonConvert.SerializeObject(new AppSettings(), Formatting.Indented);
+            using (var stream = File.CreateText(FileName))
+            {
+                stream.Write(json);
+                stream.Flush();
+            }
+        }
+
+        private async Task CreateDefaultConfigAsync()
         {
             var json = JsonConvert.SerializeObject(new AppSettings(), Formatting.Indented);
             using (var stream = File.CreateText(FileName))

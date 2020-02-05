@@ -86,18 +86,17 @@ namespace Probel.LogReader.ViewModels
         public bool CanCreateSubFilter => _editFilterViewModel.Subfilters != null;
         public void CreateSubFilter() => _editFilterViewModel?.CreateSubfilter();
 
-        //TODO: Error handling
-        public async void DiscardAll()
+        public void DiscardAll()
         {
             if (_userInteraction.Ask(Strings.Msg_AskReset) == UserAnswers.Yes)
             {
-                await LoadAsync();
+                Load();
             }
         }
 
-        public async Task LoadAsync()
+        public void Load()
         {
-            _app = await _configManager.GetAsync();
+            _app = Task.Run(() => _configManager.Get()).Result;
 
             var filters = (from f in _app.Filters
                            where f.Id != FilterSettings.NoFilter.Id
@@ -106,12 +105,11 @@ namespace Probel.LogReader.ViewModels
             Filters = new ObservableCollection<FilterSettings>(filters);
         }
 
-        //TODO: Error handling
-        public async void SaveAll()
+        public void SaveAll()
         {
-            await _configManager.SaveAsync(_app);
-            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+            Task.Run(() => _configManager.SaveAsync(_app)).Wait();
 
+            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
             _userInteraction.Inform(Strings.Msg_InformSaved);
         }
 

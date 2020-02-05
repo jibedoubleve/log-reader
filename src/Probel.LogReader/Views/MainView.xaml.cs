@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.ViewModels;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Probel.LogReader.Views
@@ -22,8 +23,7 @@ namespace Probel.LogReader.Views
         #endregion Properties
 
         #region Methods
-        //TODO: Error handling
-        private async void OnWindowLoaded(object sender, RoutedEventArgs e) => await ViewModel?.LoadMenusAsync();
+        private void OnWindowLoaded(object sender, RoutedEventArgs e) =>  ViewModel?.LoadMenus();
 
         #endregion Methods
     }

@@ -8,13 +8,23 @@ namespace Probel.LogReader.Core.Plugins
     {
         #region Methods
 
+        IFilterManager BuildFilterManager();
+
         Task<IFilterManager> BuildFilterManagerAsync();
+
+        void Create(RepositorySettings repository);
 
         Task CreateAsync(RepositorySettings repository);
 
+        void Delete(RepositorySettings repository);
+
         Task DeleteAsync(RepositorySettings repository);
 
+        AppSettings Get();
+
         Task<AppSettings> GetAsync();
+
+        void Save(AppSettings settings);
 
         Task SaveAsync(AppSettings settings);
 

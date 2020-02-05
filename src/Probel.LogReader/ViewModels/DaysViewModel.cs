@@ -40,11 +40,11 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public async Task LoadLogsAsync()
+        public void LoadLogs()
         {
             if (Parent is MainViewModel parent)
             {
-                await parent.LoadLogsAsync(Plugin, SelectedDay);
+                parent.LoadLogs(Plugin, SelectedDay);
             }
         }
 
