@@ -13,6 +13,15 @@ namespace Probel.LogReader.Core.Plugins
 
         #endregion Events
 
+        #region Properties
+
+        /// <summary>
+        /// Indicates whether this plugin can listen to changes
+        /// </summary>
+        bool CanListen { get; }
+
+        #endregion Properties
+
         #region Methods
 
         /// <summary>
@@ -34,11 +43,6 @@ namespace Probel.LogReader.Core.Plugins
     public interface IPlugin : IDataListener
     {
         #region Properties
-
-        /// <summary>
-        /// Indicates whether this plugin can listen to changes
-        /// </summary>
-        bool CanListen { get; }
 
         string RepositoryName { get; }
 

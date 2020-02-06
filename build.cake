@@ -130,8 +130,8 @@ Task("Zip")
                 assets.Add(dest);
 
                 Information("Zipping plugin:  {0}", dest);
-                Information("  pluginBin : {0}", pluginBin);
-                Information("  dest      : {0}", dest);
+                Information("  pluginBin   : {0}", pluginBin);
+                Information("  dest        : {0}", dest);
 
                 Zip(pluginBin, dest);
             }

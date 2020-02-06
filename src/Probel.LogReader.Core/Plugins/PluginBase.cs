@@ -69,7 +69,7 @@ namespace Probel.LogReader.Core.Plugins
 
             var p = Environment.ExpandEnvironmentVariables(Settings.ConnectionString);
 
-            if (p.IsValidPath())
+            if (p.IsDirectory())
             {
                 path = p;
                 return true;
