@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Ui;
@@ -8,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -20,6 +20,7 @@ namespace Probel.LogReader.ViewModels
 
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILogger _log;
         private IEnumerable<LogRow> _cachedLogs;
         private bool _canListen;
         private int _changeCount;
@@ -43,8 +44,9 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator)
+        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log)
         {
+            _log = log;
             FilterCommand = new RelayCommand(Filter);
             _eventAggregator = eventAggregator;
             _configManager = configManager;
@@ -170,59 +172,6 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public void Cache(IEnumerable<LogRow> logs)
-        {
-            _cachedLogs = logs;
-            Date = logs.Select(e => e.Time.Date).Distinct().FirstOrDefault();
-        }
-
-        public void ClearCache() => _cachedLogs = null;
-
-        public void LoadDays() => GoBack?.Invoke();
-
-        public void ResetCache()
-        {
-            Logs = (_cachedLogs == null)
-                ? new ObservableCollection<LogRow>()
-                : new ObservableCollection<LogRow>(_cachedLogs);
-        }
-
-        protected override void OnActivate()
-        {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
-            IsTraceVisible
-                = IsDebugVisible
-                = IsInfoVisible
-                = IsWarnVisible
-                = IsErrorVisible
-                = IsFatalVisible
-                = true;
-
-            if (CanListen)
-            {
-                if (Listener != null)
-                {
-                    Listener.DataChanged += OnDataChanged;
-                    Listener.StartListening(Date);
-                }
-                else { Trace.TraceWarning("Plugin can listen but no listener is configured!"); }
-            }
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
-
-            var stg = Task.Run(() => _configManager.Get())
-                          .Result;
-
-            stg.Ui.ShowLogger = IsLoggerVisible;
-            stg.Ui.ShowThreadId = IsThreadIdVisible;
-
-            Task.Run(() => _configManager.Save(stg))
-                .Wait();
-        }
-
         private void Filter()
         {
             var levels = GetLevels();
@@ -251,6 +200,59 @@ namespace Probel.LogReader.ViewModels
                 ChangeCount++;
                 RefreshData?.Invoke();
             }
+        }
+
+        protected override void OnActivate()
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
+            IsTraceVisible
+                = IsDebugVisible
+                = IsInfoVisible
+                = IsWarnVisible
+                = IsErrorVisible
+                = IsFatalVisible
+                = true;
+
+            if (CanListen)
+            {
+                if (Listener != null)
+                {
+                    Listener.DataChanged += OnDataChanged;
+                    Listener.StartListening(Date);
+                }
+                else { Trace.TraceWarning("Plugin can listen but no listener is configured!"); }
+            }
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
+
+            var t1 = Task.Run(() =>
+            {
+                var stg = _configManager.Get();
+                stg.Ui.ShowLogger = IsLoggerVisible;
+                stg.Ui.ShowThreadId = IsThreadIdVisible;
+                _configManager.Save(stg);
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+        }
+
+        public void Cache(IEnumerable<LogRow> logs)
+        {
+            _cachedLogs = logs;
+            Date = logs.Select(e => e.Time.Date).Distinct().FirstOrDefault();
+        }
+
+        public void ClearCache() => _cachedLogs = null;
+
+        public void LoadDays() => GoBack?.Invoke();
+
+        public void ResetCache()
+        {
+            Logs = (_cachedLogs == null)
+                ? new ObservableCollection<LogRow>()
+                : new ObservableCollection<LogRow>(_cachedLogs);
         }
 
         #endregion Methods

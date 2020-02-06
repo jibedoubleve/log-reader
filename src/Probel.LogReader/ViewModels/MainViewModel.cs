@@ -2,6 +2,7 @@
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Models;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Probel.LogReader.ViewModels
@@ -21,6 +23,7 @@ namespace Probel.LogReader.ViewModels
 
         private readonly IConfigurationManager _configurationManager;
         private readonly IFilterTranslator _filterTranslator;
+        private readonly ILogger _log;
         private readonly ManageFilterViewModel _manageFilterViewModel;
         private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private readonly IPluginInfoManager _pluginInfoManager;
@@ -42,10 +45,12 @@ namespace Probel.LogReader.ViewModels
             , IFilterTranslator filterTranslator
             , MainViewModelPack views
             , IEventAggregator eventAggregator
-            , IUserInteraction userInteraction)
+            , IUserInteraction userInteraction
+            , ILogger log)
         {
             eventAggregator.Subscribe(this);
 
+            _log = log;
             _configurationManager = cfg;
             _userInteraction = userInteraction;
             _pluginInfoManager = pluginInfoManager;
@@ -83,85 +88,30 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        public void Handle(UiEvent message)
-        {
-            if (message.Event == UiEvents.RefreshMenus)
-            {
-                LoadMenus();
-            }
-            else if (message.Event == UiEvents.FilterVisibility && message.Context is bool isVisible)
-            {
-                IsFilterVisible = isVisible;
-            }
-        }
-
-        public void LoadLogs(IPlugin plugin, DateTime day)
-        {
-            using (_userInteraction.NotifyWait())
-            {
-                var cfg = Task.Run(() => _configurationManager.Get()).Result;
-                var logs = plugin.GetLogs(day);
-
-                _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
-                _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
-                _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
-                _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
-
-                _vmLogsViewModel.GoBack = () => LoadDays(plugin);
-                //_vmLogsViewModel.RefreshData = () => LoadLogsAsync(plugin, day);
-                _vmLogsViewModel.Listener = plugin;
-
-                _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
-                _vmLogsViewModel.CanListen = plugin.CanListen;
-                _vmLogsViewModel.FilePath = path;
-
-                _vmLogsViewModel.Cache(logs);
-
-                ActivateItem(_vmLogsViewModel);
-            }
-        }
-
-        public void LoadMenus()
-        {
-            try
-            {
-                var app = Task.Run(() => _configurationManager.Get()).Result;
-                var fmanager = Task.Run(() => _configurationManager.BuildFilterManagerAsync()).Result;
-
-                var menuRepository = LoadMenuRepository(app);
-                var menuFilter = LoadMenuFilter(app, fmanager);
-
-                MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
-                MenuFilter = new ObservableCollection<MenuItemModel>(menuFilter);
-            }
-            catch (Exception ex) { throw ex; }
-        }
-
-        public void ManageFilters()
-        {
-            _manageFilterViewModel.Load();
-            ActivateItem(_manageFilterViewModel);
-        }
-
-        public void ManageRepositories()
-        {
-            _manageRepositoryViewModel.Load();
-            ActivateItem(_manageRepositoryViewModel);
-        }
-
         private void LoadDays(IPlugin plugin)
         {
             var waiter = _userInteraction.NotifyWait();
 
-            var r = Task.Run(() => plugin.GetDays()).Result;
+            var t1 = Task.Run(() =>
+            {
+                var r = plugin.GetDays();
 
-            _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
-            _vmDaysViewModel.Plugin = plugin;
+                _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
+                _vmDaysViewModel.Plugin = plugin;
 
-            _vmLogsViewModel.ClearCache();
+                _vmLogsViewModel.ClearCache();
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
 
-            ActivateItem(_vmDaysViewModel);
-            waiter.Dispose();
+            var token = new CancellationToken();
+            var sched = TaskScheduler.FromCurrentSynchronizationContext();
+
+            var t2 = t1.ContinueWith(r =>
+            {
+                ActivateItem(_vmDaysViewModel);
+                waiter.Dispose();
+            }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
+            t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, sched);
         }
 
         private void LoadFilter(IFilterComposite filterComposite)
@@ -204,6 +154,84 @@ namespace Probel.LogReader.ViewModels
                 });
             }
             return menus;
+        }
+
+        public void Handle(UiEvent message)
+        {
+            if (message.Event == UiEvents.RefreshMenus)
+            {
+                LoadMenus();
+            }
+            else if (message.Event == UiEvents.FilterVisibility && message.Context is bool isVisible)
+            {
+                IsFilterVisible = isVisible;
+            }
+        }
+
+        public void LoadLogs(IPlugin plugin, DateTime day)
+        {
+            using (_userInteraction.NotifyWait())
+            {
+                var token = new CancellationToken();
+                var scheduler = TaskScheduler.Current;
+
+                var t1 = Task.Run(() =>
+                {
+                    var cfg = _configurationManager.Get();
+                    var logs = plugin.GetLogs(day);
+
+                    _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
+                    _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
+                    _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
+                    _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
+
+                    _vmLogsViewModel.GoBack = () => LoadDays(plugin);
+                    //_vmLogsViewModel.RefreshData = () => LoadLogsAsync(plugin, day);
+                    _vmLogsViewModel.Listener = plugin;
+
+                    _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
+                    _vmLogsViewModel.CanListen = plugin.CanListen;
+                    _vmLogsViewModel.FilePath = path;
+
+                    _vmLogsViewModel.Cache(logs);
+                });
+                t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+
+                var t2 = t1.ContinueWith(r => ActivateItem(_vmLogsViewModel), token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
+                t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, scheduler);
+            }
+        }
+
+        public void LoadMenus()
+        {
+            try
+            {
+                var t1 = Task.Run(() =>
+                {
+                    var app = _configurationManager.Get();
+                    var fmanager = _configurationManager.BuildFilterManager();
+
+                    var menuRepository = LoadMenuRepository(app);
+                    var menuFilter = LoadMenuFilter(app, fmanager);
+
+                    MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
+                    MenuFilter = new ObservableCollection<MenuItemModel>(menuFilter);
+                });
+                t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            }
+            catch (Exception ex) { throw ex; }
+        }
+
+        public void ManageFilters()
+        {
+            _manageFilterViewModel.Load();
+            ActivateItem(_manageFilterViewModel);
+        }
+
+        public void ManageRepositories()
+        {
+            _manageRepositoryViewModel.Load();
+            ActivateItem(_manageRepositoryViewModel);
         }
 
         #endregion Methods
