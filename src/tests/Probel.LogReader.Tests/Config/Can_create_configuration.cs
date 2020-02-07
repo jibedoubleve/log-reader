@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Probel.LogReader.TestCases.Config
+namespace Probel.LogReader.Tests.Config
 {
     public sealed class Can_create_configuration : IDisposable
     {

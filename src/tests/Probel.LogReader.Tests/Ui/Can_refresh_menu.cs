@@ -2,16 +2,17 @@
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Plugins;
+using Probel.LogReader.Core.Plugins.Loaders;
 using Probel.LogReader.Plugins.Debug;
-using Probel.LogReader.TestCases.Constants;
-using Probel.LogReader.TestCases.Helpers;
+using Probel.LogReader.Tests.Constants;
+using Probel.LogReader.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Probel.LogReader.TestCases
+namespace Probel.LogReader.Tests.Ui
 {
     public class Can_refresh_menu
     {
@@ -39,7 +40,7 @@ namespace Probel.LogReader.TestCases
             });
             cfg.Repositories.Add(new RepositorySettings { PluginId = PluginType.Debug, });
 
-            IPluginManager pm = new PluginManager();
+            IPluginManager pm = new PluginManager(new DebugLoader());
             IConfigurationManager cm = new ConfigurationManager(new MemorySettingsManager());
 
             await cm.SaveAsync(cfg);
@@ -77,7 +78,7 @@ namespace Probel.LogReader.TestCases
                 stg.Repositories.Add(new RepositorySettings { PluginId = PluginType.Debug, Name = i.ToString() }); ;
             }
 
-            var pm = new PluginManager();
+            var pm = new PluginManager(new DebugLoader());
             foreach (var repo in stg.Repositories)
             {
                 var menuName = repo.Name;
@@ -99,7 +100,7 @@ namespace Probel.LogReader.TestCases
                 new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.Text},
             };
 
-            IPluginManager pm = new PluginManager();
+            IPluginManager pm = new PluginManager(new DebugLoader());
             IFilterManager fm = new FilterManager();
 
             var p = pm.Build(settings);
