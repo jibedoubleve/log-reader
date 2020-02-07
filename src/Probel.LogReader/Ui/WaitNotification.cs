@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Probel.LogReader.Ui
@@ -14,9 +17,9 @@ namespace Probel.LogReader.Ui
 
         public void Dispose() => EndWaiting();
 
-        private void EndWaiting() => Mouse.OverrideCursor = null;
+        private void EndWaiting() => Application.Current.Dispatcher.Invoke(() => Mouse.OverrideCursor = null);
 
-        public void StartWaiting() => Mouse.OverrideCursor = Cursors.Wait;
+        public void StartWaiting() => Application.Current.Dispatcher.Invoke(() => Mouse.OverrideCursor = Cursors.Wait);
 
         #endregion Methods
     }

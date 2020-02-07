@@ -7,7 +7,6 @@ using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -117,7 +116,14 @@ namespace Probel.LogReader.ViewModels
         public bool IsListeningFile
         {
             get => _isListeningFile;
-            set => Set(ref _isListeningFile, value, nameof(IsListeningFile));
+            set
+            {
+                if (Set(ref _isListeningFile, value, nameof(IsListeningFile)))
+                {
+                    if (value) { RegisterListener(); }
+                    else { UnregisterListener(); }
+                }
+            }
         }
 
         public bool IsLoggerVisible
@@ -172,6 +178,51 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
+        public void Cache(IEnumerable<LogRow> logs)
+        {
+            _cachedLogs = logs;
+            Date = logs.Select(e => e.Time.Date).Distinct().FirstOrDefault();
+        }
+
+        public void ClearCache() => _cachedLogs = null;
+
+        public void LoadDays() => GoBack?.Invoke();
+
+        public void ResetCache()
+        {
+            Logs = (_cachedLogs == null)
+                ? new ObservableCollection<LogRow>()
+                : new ObservableCollection<LogRow>(_cachedLogs);
+        }
+
+        protected override void OnActivate()
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
+            IsTraceVisible
+                = IsDebugVisible
+                = IsInfoVisible
+                = IsWarnVisible
+                = IsErrorVisible
+                = IsFatalVisible
+                = true;
+            if (IsListeningFile) { RegisterListener(); }
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
+            UnregisterListener();
+
+            var t1 = Task.Run(() =>
+            {
+                var stg = _configManager.Get();
+                stg.Ui.ShowLogger = IsLoggerVisible;
+                stg.Ui.ShowThreadId = IsThreadIdVisible;
+                _configManager.Save(stg);
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+        }
+
         private void Filter()
         {
             var levels = GetLevels();
@@ -197,62 +248,32 @@ namespace Probel.LogReader.ViewModels
         {
             if (IsListeningFile)
             {
+                _log.Trace("Log file changed!");
                 ChangeCount++;
-                RefreshData?.Invoke();
+                Task.Run(() => RefreshData?.Invoke())
+                    .OnErrorHandleWith(t => _log.Error(t.Exception));
             }
         }
 
-        protected override void OnActivate()
+        private void RegisterListener()
         {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
-            IsTraceVisible
-                = IsDebugVisible
-                = IsInfoVisible
-                = IsWarnVisible
-                = IsErrorVisible
-                = IsFatalVisible
-                = true;
-
-            if (CanListen)
+            if (Listener != null)
             {
-                if (Listener != null)
-                {
-                    Listener.DataChanged += OnDataChanged;
-                    Listener.StartListening(Date);
-                }
-                else { Trace.TraceWarning("Plugin can listen but no listener is configured!"); }
+                _log.Trace($"Activate log change listener.");
+                Listener.DataChanged += OnDataChanged;
+                Listener.StartListening(Date);
             }
+            else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
-        protected override void OnDeactivate(bool close)
+        private void UnregisterListener()
         {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
-
-            var t1 = Task.Run(() =>
+            if (Listener != null)
             {
-                var stg = _configManager.Get();
-                stg.Ui.ShowLogger = IsLoggerVisible;
-                stg.Ui.ShowThreadId = IsThreadIdVisible;
-                _configManager.Save(stg);
-            });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
-        }
-
-        public void Cache(IEnumerable<LogRow> logs)
-        {
-            _cachedLogs = logs;
-            Date = logs.Select(e => e.Time.Date).Distinct().FirstOrDefault();
-        }
-
-        public void ClearCache() => _cachedLogs = null;
-
-        public void LoadDays() => GoBack?.Invoke();
-
-        public void ResetCache()
-        {
-            Logs = (_cachedLogs == null)
-                ? new ObservableCollection<LogRow>()
-                : new ObservableCollection<LogRow>(_cachedLogs);
+                _log.Trace($"DEACTIVATE log change listener.");
+                Listener.DataChanged -= OnDataChanged;
+            }
+            else { _log.Trace("No listener to deactivate."); }
         }
 
         #endregion Methods

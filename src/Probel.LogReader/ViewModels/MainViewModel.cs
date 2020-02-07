@@ -170,12 +170,12 @@ namespace Probel.LogReader.ViewModels
 
         public void LoadLogs(IPlugin plugin, DateTime day)
         {
-            using (_userInteraction.NotifyWait())
-            {
-                var token = new CancellationToken();
-                var scheduler = TaskScheduler.Current;
+            var token = new CancellationToken();
+            var scheduler = TaskScheduler.Current;
 
-                var t1 = Task.Run(() =>
+            var t1 = Task.Run(() =>
+            {
+                using (_userInteraction.NotifyWait())
                 {
                     var cfg = _configurationManager.Get();
                     var logs = plugin.GetLogs(day);
@@ -186,7 +186,7 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
 
                     _vmLogsViewModel.GoBack = () => LoadDays(plugin);
-                    //_vmLogsViewModel.RefreshData = () => LoadLogsAsync(plugin, day);
+                    _vmLogsViewModel.RefreshData = () => LoadLogs(plugin, day);
                     _vmLogsViewModel.Listener = plugin;
 
                     _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
@@ -194,12 +194,12 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.FilePath = path;
 
                     _vmLogsViewModel.Cache(logs);
-                });
-                t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+                }
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
 
-                var t2 = t1.ContinueWith(r => ActivateItem(_vmLogsViewModel), token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
-                t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, scheduler);
-            }
+            var t2 = t1.ContinueWith(r => ActivateItem(_vmLogsViewModel), token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
+            t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, scheduler);
         }
 
         public void LoadMenus()
