@@ -1,0 +1,7 @@
+{
+  "name": "Text files",
+  "plugin-id": "f9b5613e-e08c-4e6e-9e4c-80a9af13fc81",
+  "dll": "Probel.LogReader.Plugins.Text.dll",
+  "explanation": "Get logs from text files.",
+  "doc-url": "https://github.com/jibedoubleve/log-reader/blob/master/doc/plugins/plugin-text.md"
+}

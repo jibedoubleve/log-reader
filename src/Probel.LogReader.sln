@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.LogReader.Plugins.De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.LogReader.Plugins.Oracle", "plugins\Probel.LogReader.Plugins.Oracle\Probel.LogReader.Plugins.Oracle.csproj", "{2968E2F0-8DAB-4983-87AF-CE5F6F8B3BD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Probel.LogReader.Plugins.Text", "plugins\Probel.LogReader.Plugins.Text\Probel.LogReader.Plugins.Text.csproj", "{E5906844-246D-49FD-8671-CEA0056101E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{2968E2F0-8DAB-4983-87AF-CE5F6F8B3BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2968E2F0-8DAB-4983-87AF-CE5F6F8B3BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2968E2F0-8DAB-4983-87AF-CE5F6F8B3BD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5906844-246D-49FD-8671-CEA0056101E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5906844-246D-49FD-8671-CEA0056101E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5906844-246D-49FD-8671-CEA0056101E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5906844-246D-49FD-8671-CEA0056101E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 		{9F97CA80-9065-4FF1-9042-3467579EDE16} = {148C436A-20F6-4301-BE7C-EFDA5F6268A4}
 		{83D6F12C-CF95-4FCB-B93F-5535B29BE254} = {93BB5FD2-2B1C-4137-97EF-80A9EBF409B1}
 		{2968E2F0-8DAB-4983-87AF-CE5F6F8B3BD2} = {93BB5FD2-2B1C-4137-97EF-80A9EBF409B1}
+		{E5906844-246D-49FD-8671-CEA0056101E1} = {93BB5FD2-2B1C-4137-97EF-80A9EBF409B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3982C7BA-72F0-4505-B544-A41FC6904263}
