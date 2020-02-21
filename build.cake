@@ -169,7 +169,9 @@ Task("Release-GitHub")
             Prerelease        = gitVersion.SemVer.Contains("alpha"),
             Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
                               + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                              + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip", 
+                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip", 
+                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip", 
+                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip", 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
