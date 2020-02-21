@@ -5,7 +5,6 @@ using Probel.LogReader.Plugins.Csv.Config;
 using Probel.LogReader.Plugins.Csv.IO;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,6 +15,9 @@ namespace Probel.LogReader.Plugins.Csv
     {
         #region Fields
 
+        private readonly string _defaultQueryDay = @"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.csv";
+
+        private IEnumerable<LogSource> _dates;
         private FileSystemWatcher _fw;
 
         #endregion Fields
@@ -30,25 +32,33 @@ namespace Probel.LogReader.Plugins.Csv
 
         public override IEnumerable<DateTime> GetDays(OrderBy orderby = OrderBy.Desc)
         {
-            var dates = GetDays();
+            _dates = GetFiles(Settings.ConnectionString);
 
             switch (orderby)
             {
-                case OrderBy.Asc: return dates.Keys.OrderBy(e => e);
-                case OrderBy.Desc: return dates.Keys.OrderByDescending(e => e);
-                case OrderBy.None: return dates.Keys;
-                default: throw new NotSupportedException($"This sort '{orderby}' is not supported!");
+                case OrderBy.Asc:
+                    return _dates.OrderBy(e => e.Day).Select(e => e.Day);
+
+                case OrderBy.Desc:
+                    return _dates.OrderByDescending(e => e.Day).Select(e => e.Day);
+
+                case OrderBy.None:
+                    return _dates.Select(e => e.Day);
+
+                default: throw new NotSupportedException($"The orderby '{orderby}' is not supported!");
             }
         }
 
         public override IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc)
         {
             var s = GetQueryLogSettings();
-            var d = GetDays();
+            var d = (from dd in _dates
+                     where dd.Day.Date == day.Date
+                     select dd).FirstOrDefault();
 
-            if (d.ContainsKey(day.Date))
+            if (d != null)
             {
-                var reader = new CsvFileReader(s, d[day.Date]);
+                var reader = new CsvFileReader(s, d.FilePath);
                 return reader.GetLogs();
             }
             return new List<LogRow>();
@@ -56,16 +66,28 @@ namespace Probel.LogReader.Plugins.Csv
 
         public override void StartListening(DateTime day, int seconds = 0)
         {
-            var days = GetDays();
-            if (days.ContainsKey(day))
-            {
-                var path = days[day];
-                InitialiseFileWatcher(path);
-            }
+            var d = (from dd in _dates
+                     where dd.Day.Date == day.Date
+                     select dd).FirstOrDefault();
+
+            if (d != null) { InitialiseFileWatcher(d.FilePath); }
             else { throw new NotSupportedException($"No logs found to the specifie day '{day}'"); }
         }
 
         public override void StopListening() => ClearFileWatcher();
+
+        private DateTime AsDate(Match match)
+        {
+            int.TryParse(match.Groups["year"].Value, out var year);
+            int.TryParse(match.Groups["month"].Value, out var month);
+            int.TryParse(match.Groups["day"].Value, out var day);
+
+            try
+            {
+                return new DateTime(year, month, day);
+            }
+            catch (Exception) { return DateTime.MaxValue; }
+        }
 
         private void ClearFileWatcher()
         {
@@ -76,61 +98,24 @@ namespace Probel.LogReader.Plugins.Csv
             }
         }
 
-        private Dictionary<DateTime, string> GetDays()
-        {
-            var s = GetQueryDaySettings();
-            var regex = new Regex(s.Date);
-            var files = GetFiles(Settings.ConnectionString);
-            var dates = new Dictionary<DateTime, string>();
-
-            foreach (var file in files)
-            {
-                var m = regex.Match(file);
-                if (m.Success)
-                {
-                    var d = DateTime.ParseExact(m.Value, s.DateFormat, CultureInfo.InvariantCulture).Date;
-                    var f = file;
-                    dates.Add(d, f);
-                }
-            }
-
-            return dates;
-        }
-
-        private IEnumerable<string> GetFiles(string dir)
+        private IEnumerable<LogSource> GetFiles(string dir)
         {
             dir = Environment.ExpandEnvironmentVariables(dir);
-            var regex = new Regex(GetQueryDaySettings().File);
+
+            var regex = new Regex(Settings.QueryDay ?? _defaultQueryDay);
+
             if (Directory.Exists(dir))
             {
                 var files = (from f in Directory.GetFiles(dir)
                              where regex.IsMatch(f)
-                             select f).ToList();
+                             select new LogSource
+                             {
+                                 Day = AsDate(regex.Match(f)),
+                                 FilePath = f
+                             }).ToList();
                 return files;
             }
             else { throw new FileNotFoundException($"Directory '{dir}' do not exist. Impossible to find CSV files."); }
-        }
-
-        private QueryDaySettings GetQueryDaySettings()
-        {
-            var d = new QueryDaySettings();
-            var lines = (Settings.QueryDay ?? string.Empty).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-            var file = (from l in lines
-                        where l.ToLower().Trim().StartsWith("file")
-                        select l).FirstOrDefault();
-            var date = (from l in lines
-                        where l.ToLower().Trim().StartsWith("date")
-                        select l).FirstOrDefault();
-            var dateFormat = (from l in lines
-                              where l.ToLower().Trim().StartsWith("dateformat")
-                              select l).FirstOrDefault();
-
-            d.File = file?.Replace("file:", string.Empty).Trim() ?? "[0-9]{4}-[0-9]{2}-[0-9]{2}\\..*\\.csv";
-            d.Date = date?.Replace("date:", string.Empty).Trim() ?? "[0-9]{4}-[0-9]{2}-[0-9]{2}";
-            d.DateFormat = dateFormat?.Replace("dateformat:", string.Empty)?.Trim() ?? "yyyy-MM-dd";
-
-            return d;
         }
 
         private QueryLogSettings GetQueryLogSettings()
@@ -194,7 +179,7 @@ namespace Probel.LogReader.Plugins.Csv
             ClearFileWatcher();
 
             var dir = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);            
+            var fileName = Path.GetFileName(path);
 
             _fw = new FileSystemWatcher(dir)
             {
@@ -205,7 +190,6 @@ namespace Probel.LogReader.Plugins.Csv
         }
 
         private void OnFileChanged(object sender, FileSystemEventArgs e) => OnChanged();
-
 
         #endregion Methods
     }
