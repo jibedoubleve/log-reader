@@ -14,8 +14,15 @@ namespace Probel.LogReader.Plugins.Text
         #region Fields
 
         private IEnumerable<LogSource> _dates;
+        private FileSystemWatcher _fw;
 
         #endregion Fields
+
+        #region Properties
+
+        public override bool CanListen => true;
+
+        #endregion Properties
 
         #region Methods
 
@@ -27,10 +34,13 @@ namespace Probel.LogReader.Plugins.Text
             {
                 case OrderBy.Asc:
                     return _dates.OrderBy(e => e.Day).Select(e => e.Day);
+
                 case OrderBy.Desc:
                     return _dates.OrderByDescending(e => e.Day).Select(e => e.Day);
+
                 case OrderBy.None:
                     return _dates.Select(e => e.Day);
+
                 default: throw new NotSupportedException($"The orderby '{orderby}' is not supported!");
             }
         }
@@ -39,12 +49,23 @@ namespace Probel.LogReader.Plugins.Text
         {
             var path = (from s in _dates
                         where s.Day.Date == day.Date
-                        select s.FilePath).FirstOrDefault();            
+                        select s.FilePath).FirstOrDefault();
             var extractor = new LogExtractor(Settings.QueryLog);
 
             return extractor.Extract(path);
-
         }
+
+        public override void StartListening(DateTime day, int seconds = 0)
+        {
+            var d = (from dd in _dates
+                     where dd.Day.Date == day.Date
+                     select dd).FirstOrDefault();
+
+            if (d != null) { InitialiseFileWatcher(d.FilePath); }
+            else { throw new NotSupportedException($"No logs found to the specifie day '{day}'"); }
+        }
+
+        public override void StopListening() => ClearFileWatcher();
 
         private DateTime AsDate(Match match)
         {
@@ -53,6 +74,15 @@ namespace Probel.LogReader.Plugins.Text
             int.TryParse(match.Groups["day"].Value, out var day);
 
             return new DateTime(year, month, day);
+        }
+
+        private void ClearFileWatcher()
+        {
+            if (_fw != null)
+            {
+                _fw.Changed -= OnFileChanged;
+                _fw = null;
+            }
         }
 
         private IEnumerable<LogSource> GetFiles(string dir)
@@ -74,6 +104,23 @@ namespace Probel.LogReader.Plugins.Text
             }
             else { throw new FileNotFoundException($"Directory '{dir}' do not exist. Impossible to find CSV files."); }
         }
+
+        private void InitialiseFileWatcher(string path)
+        {
+            ClearFileWatcher();
+
+            var dir = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+
+            _fw = new FileSystemWatcher(dir)
+            {
+                EnableRaisingEvents = true,
+                Filter = fileName
+            };
+            _fw.Changed += OnFileChanged;
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e) => OnChanged();
 
         #endregion Methods
     }

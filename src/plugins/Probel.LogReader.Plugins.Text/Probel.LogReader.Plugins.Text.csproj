@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\MatchGroupHelper.cs" />
     <Compile Include="LogExtractor.cs" />
     <Compile Include="LogSource.cs" />
     <Compile Include="TextPlugin.cs" />

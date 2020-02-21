@@ -1,4 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Plugins.Text.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,11 +50,11 @@ namespace Probel.LogReader.Plugins.Text
                 return new LogRow
                 {
                     Time = DateTime.Parse(line.Groups["time"].Value),
-                    Level = line.Groups["level"].Value,
-                    Logger = "",
-                    Exception = "",
-                    Message = line.Groups["message"].Value.TrimEnd('\r', '\n'),
-                    ThreadId = "0"
+                    Level = line.GetLevel(),
+                    Logger = line.GetLogger(),
+                    Exception = line.GetException(),
+                    Message = line.GetMessage(),
+                    ThreadId = line.GetThreadId(),
                 };
             }
             else
