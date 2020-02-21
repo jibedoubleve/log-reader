@@ -11,7 +11,7 @@ namespace Probel.LogReader.Plugins.Text
     {
         #region Fields
 
-        private Regex _regex;
+        private readonly Regex _regex;
 
         #endregion Fields
 

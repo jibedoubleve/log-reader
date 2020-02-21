@@ -50,9 +50,16 @@ namespace Probel.LogReader.Plugins.Text
             var path = (from s in _dates
                         where s.Day.Date == day.Date
                         select s.FilePath).FirstOrDefault();
-            var extractor = new LogExtractor(Settings.QueryLog);
+            try
+            {
+                var extractor = new LogExtractor(Settings.QueryLog);
 
-            return extractor.Extract(path);
+                return extractor.Extract(path);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Cannot get logs from file '{path}'", ex);
+            }
         }
 
         public override void StartListening(DateTime day, int seconds = 0)

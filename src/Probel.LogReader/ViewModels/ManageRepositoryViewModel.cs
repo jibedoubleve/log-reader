@@ -18,7 +18,6 @@ namespace Probel.LogReader.ViewModels
         private readonly IConfigurationManager _configManager;
         private readonly EditRepositoryViewModel _editRepositoryViewModel;
         private readonly IEventAggregator _eventAggregator;
-        private readonly ILogger _log;
         private AppSettings _cachedAppSettings;
         private RepositorySettings _currentRepositorySettings;
         private ObservableCollection<RepositorySettings> _repositories;
@@ -31,15 +30,13 @@ namespace Probel.LogReader.ViewModels
         public ManageRepositoryViewModel(IConfigurationManager configManager
             , EditRepositoryViewModel editRepositoryViewModel
             , IEventAggregator eventAggregator
-            , IUserInteraction userInteraction
-            , ILogger log)
+            , IUserInteraction userInteraction)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
             _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editRepositoryViewModel = editRepositoryViewModel;
             _configManager = configManager;
-            _log = log;
         }
 
         #endregion Constructors
@@ -105,10 +102,10 @@ namespace Probel.LogReader.ViewModels
         public void Load()
         {
             var t1 = Task.Run(() => _cachedAppSettings = _configManager.Get());
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
 
             var t2 = t1.ContinueWith(r => Repositories = new ObservableCollection<RepositorySettings>(_cachedAppSettings.Repositories), TaskContinuationOptions.OnlyOnRanToCompletion);
-            t2.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t2.OnErrorHandle(_userInteraction);
         }
 
         public void SaveAll()
@@ -122,7 +119,7 @@ namespace Probel.LogReader.ViewModels
                 _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
                 _userInteraction.Inform(Strings.Msg_InformSaved);
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
         }
 
         #endregion Methods

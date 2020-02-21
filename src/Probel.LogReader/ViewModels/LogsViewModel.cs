@@ -7,7 +7,6 @@ using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -21,6 +20,7 @@ namespace Probel.LogReader.ViewModels
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _log;
+        private readonly IUserInteraction _ui;
         private IEnumerable<LogRow> _cachedLogs;
         private bool _canListen;
         private int _changeCount;
@@ -44,8 +44,9 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log)
+        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log, IUserInteraction ui)
         {
+            _ui = ui;
             _log = log;
             FilterCommand = new RelayCommand(Filter);
             _eventAggregator = eventAggregator;
@@ -189,12 +190,7 @@ namespace Probel.LogReader.ViewModels
 
         public void LoadDays() => GoBack?.Invoke();
 
-        public void ResetCache()
-        {
-            Logs = (_cachedLogs == null)
-                ? new ObservableCollection<LogRow>()
-                : new ObservableCollection<LogRow>(_cachedLogs);
-        }
+        public void ResetCache() => Logs = (_cachedLogs == null) ? new ObservableCollection<LogRow>() : new ObservableCollection<LogRow>(_cachedLogs);
 
         protected override void OnActivate()
         {
@@ -221,7 +217,7 @@ namespace Probel.LogReader.ViewModels
                 stg.Ui.ShowThreadId = IsThreadIdVisible;
                 _configManager.Save(stg);
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_ui);
         }
 
         private void Filter()
@@ -252,7 +248,7 @@ namespace Probel.LogReader.ViewModels
                 _log.Trace("Log file changed!");
                 ChangeCount++;
                 Task.Run(() => RefreshData?.Invoke())
-                    .OnErrorHandleWith(t => _log.Error(t.Exception));
+                    .OnErrorHandle(_ui);
             }
         }
 

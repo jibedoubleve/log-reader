@@ -361,8 +361,10 @@
             <GroupBox Grid.Column="2" Header="Message">
                 <TextBox
                     FontFamily="Consolas"
+                    HorizontalScrollBarVisibility="Auto"
                     IsReadOnly="True"
-                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}" />
+                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
+                    VerticalScrollBarVisibility="Auto" />
             </GroupBox>
             <GridSplitter
                 Grid.Row="1"
@@ -375,8 +377,10 @@
                 Header="Call stack">
                 <TextBox
                     FontFamily="Consolas"
+                    HorizontalScrollBarVisibility="Auto"
                     IsReadOnly="True"
-                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}" />
+                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
+                    VerticalScrollBarVisibility="Auto" />
             </GroupBox>
         </Grid>
         <StatusBar Grid.Row="4">

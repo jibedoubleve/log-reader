@@ -48,7 +48,7 @@ namespace Probel.LogReader
             _container.RegisterType<IFilterManager, FilterManager>();
             _container.RegisterType<IFilterTranslator, FilterTranslator>();
             _container.RegisterType<IPluginInfoManager, PluginManager>();
-            _container.RegisterType<ILogger, BasicLogger>();
+            _container.RegisterType<ILogger, NLogLogger>();
 
             /* UI */
             _container.RegisterType<IUserInteraction, UserInteraction>();
