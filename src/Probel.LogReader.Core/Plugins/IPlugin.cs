@@ -44,11 +44,6 @@ namespace Probel.LogReader.Core.Plugins
     {
         #region Properties
 
-        /// <summary>
-        /// Indicates whether this plugin can listen to changes
-        /// </summary>
-        bool CanListen { get; }
-
         string RepositoryName { get; }
 
         #endregion Properties

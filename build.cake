@@ -123,7 +123,7 @@ Task("Zip")
         var dir = new DirectoryInfo(binDirectory + @"/../../../plugins/");        
         foreach(var d in dir.GetDirectories())
         {
-            if(d.Name.ToLower().Contains("csv")==false)
+            if(d.Name.ToLower().Contains("debug")==false)
             { 
                 var pluginBin = d.FullName + @"\bin\Release\";
                 var dest = publishDir + "/" + d.Name.Replace("Probel.LogReader.Plugins.","plugin-") + "-" + gitVersion.SemVer + ".bin.zip";
@@ -169,9 +169,9 @@ Task("Release-GitHub")
             Prerelease        = gitVersion.SemVer.Contains("alpha"),
             Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
                               + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip", 
-                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip", 
-                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip", 
+                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
