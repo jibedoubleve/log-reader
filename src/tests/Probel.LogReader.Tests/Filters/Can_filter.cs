@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Probel.LogReader.TestCases.Filters
+namespace Probel.LogReader.Tests.Filters
 {
     public class Can_filter
     {
@@ -27,6 +27,7 @@ namespace Probel.LogReader.TestCases.Filters
                 Assert.True(logs.Count() > 0);
             }
         }
+
         [Fact]
         public void On_category_exclusive_no_result_case_insensitive()
         {
@@ -42,7 +43,6 @@ namespace Probel.LogReader.TestCases.Filters
                 Assert.True(logs.Count() == 0);
             }
         }
-
 
         [Fact]
         public void On_category_exclusive_no_result_multiple()

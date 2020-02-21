@@ -60,9 +60,6 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.6.8\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -101,6 +98,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -116,8 +116,10 @@
     <Compile Include="Converters\SubfilterToTextConverter.cs" />
     <Compile Include="Converters\TextToVisibilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />
+    <Compile Include="Helpers\BasicLogger.cs" />
     <Compile Include="Helpers\RelayArgCommand.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Helpers\TaskExtension.cs" />
     <Compile Include="Models\MenuItemModel.cs" />
     <Compile Include="Ui\IUserInteraction.cs" />
     <Compile Include="Ui\UiEvent.cs" />

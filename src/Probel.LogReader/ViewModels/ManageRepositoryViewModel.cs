@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Properties;
@@ -14,13 +15,14 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
-        public readonly IUserInteraction _userInteraction;
         private readonly IConfigurationManager _configManager;
         private readonly EditRepositoryViewModel _editRepositoryViewModel;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ILogger _log;
         private AppSettings _cachedAppSettings;
         private RepositorySettings _currentRepositorySettings;
         private ObservableCollection<RepositorySettings> _repositories;
+        public readonly IUserInteraction _userInteraction;
 
         #endregion Fields
 
@@ -29,13 +31,15 @@ namespace Probel.LogReader.ViewModels
         public ManageRepositoryViewModel(IConfigurationManager configManager
             , EditRepositoryViewModel editRepositoryViewModel
             , IEventAggregator eventAggregator
-            , IUserInteraction userInteraction)
+            , IUserInteraction userInteraction
+            , ILogger log)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
             _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editRepositoryViewModel = editRepositoryViewModel;
             _configManager = configManager;
+            _log = log;
         }
 
         #endregion Constructors
@@ -59,6 +63,15 @@ namespace Probel.LogReader.ViewModels
         #endregion Properties
 
         #region Methods
+
+        private void DeleteCurrentRepository()
+        {
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            {
+                _cachedAppSettings.Repositories.Remove(CurrentRepository);
+                Repositories.Remove(CurrentRepository);
+            }
+        }
 
         public void ActivateCurrentRepository()
         {
@@ -92,29 +105,24 @@ namespace Probel.LogReader.ViewModels
         public void Load()
         {
             var t1 = Task.Run(() => _cachedAppSettings = _configManager.Get());
-            var t2 = t1.ContinueWith(r => Repositories = new ObservableCollection<RepositorySettings>(_cachedAppSettings.Repositories), TaskContinuationOptions.OnlyOnRanToCompletion);
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
 
-            t2.Wait();
+            var t2 = t1.ContinueWith(r => Repositories = new ObservableCollection<RepositorySettings>(_cachedAppSettings.Repositories), TaskContinuationOptions.OnlyOnRanToCompletion);
+            t2.OnErrorHandleWith(r => _log.Error(r.Exception));
         }
 
         public void SaveAll()
         {
             _editRepositoryViewModel.RefreshForUpdate();
 
-            Task.Run(() => _configManager.Save(_cachedAppSettings))
-                .Wait();
-
-            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-            _userInteraction.Inform(Strings.Msg_InformSaved);
-        }
-
-        private void DeleteCurrentRepository()
-        {
-            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            var t1 = Task.Run(() =>
             {
-                _cachedAppSettings.Repositories.Remove(CurrentRepository);
-                Repositories.Remove(CurrentRepository);
-            }
+                _configManager.Save(_cachedAppSettings);
+
+                _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+                _userInteraction.Inform(Strings.Msg_InformSaved);
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
         }
 
         #endregion Methods

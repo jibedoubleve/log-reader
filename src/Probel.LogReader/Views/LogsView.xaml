@@ -294,14 +294,20 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <GroupBox Header="Message">
-                <TextBox IsReadOnly="True" Text="{Binding ElementName=_logs, Path=SelectedItem.Message}" />
+                <TextBox
+                    FontFamily="Consolas"
+                    IsReadOnly="True"
+                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}" />
             </GroupBox>
             <GridSplitter
                 Grid.Row="1"
                 Height="5"
                 HorizontalAlignment="Stretch" />
             <GroupBox Grid.Row="2" Header="Call stack">
-                <TextBox IsReadOnly="True" Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}" />
+                <TextBox
+                    FontFamily="Consolas"
+                    IsReadOnly="True"
+                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}" />
             </GroupBox>
         </Grid>
         <StatusBar Grid.Row="4">
@@ -325,7 +331,7 @@
                     <Run Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
                 </TextBlock>
             </StatusBarItem>
-            <Separator Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Separator Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
             <StatusBarItem>
                 <TextBlock Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Run Text="Source:" />

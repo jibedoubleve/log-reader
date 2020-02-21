@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Probel.LogReader.Core.Helpers
@@ -20,6 +21,12 @@ namespace Probel.LogReader.Core.Helpers
             return true;
         }
 
-        #endregion Methods
+        public static bool IsDirectory(this string toTest)
+        {
+            if (toTest.IsValidPath()) { return Directory.Exists(toTest); }
+            else { return false; }
+
+            #endregion Methods
+        }
     }
 }

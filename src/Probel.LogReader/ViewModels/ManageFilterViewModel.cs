@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Properties;
@@ -18,21 +19,26 @@ namespace Probel.LogReader.ViewModels
         private readonly IConfigurationManager _configManager;
         private readonly EditFilterViewModel _editFilterViewModel;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IUserInteraction _userInteraction;
         private AppSettings _app;
         private FilterSettings _currentFilterSettings;
         private ObservableCollection<FilterSettings> _filters;
+
+        public readonly ILogger _log;
 
         #endregion Fields
 
         #region Constructors
 
         public ManageFilterViewModel(IConfigurationManager configManager
-            , EditFilterViewModel editSubfilterViewModel
+                    , EditFilterViewModel editSubfilterViewModel
             , IEventAggregator eventAggregator
-            , IUserInteraction userInteraction)
+            , IUserInteraction userInteraction
+            , ILogger log)
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
 
+            _log = log;
             _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editFilterViewModel = editSubfilterViewModel;
@@ -43,6 +49,8 @@ namespace Probel.LogReader.ViewModels
 
         #region Properties
 
+        public bool CanCreateSubFilter => _editFilterViewModel.Subfilters != null;
+
         public FilterSettings CurrentFilter
         {
             get => _currentFilterSettings;
@@ -50,8 +58,6 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand DeleteCurrentFilterCommand { get; private set; }
-
-        private readonly IUserInteraction _userInteraction;
 
         public ObservableCollection<FilterSettings> Filters
         {
@@ -62,6 +68,22 @@ namespace Probel.LogReader.ViewModels
         #endregion Properties
 
         #region Methods
+
+        private void DeleteCurrentFilter()
+        {
+            var toDel = (from f in Filters
+                         where f.Id == CurrentFilter.Id
+                         select f).FirstOrDefault();
+
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            {
+                if (toDel != null)
+                {
+                    Filters.Remove(toDel);
+                    _app.Filters.Remove(toDel);
+                }
+            }
+        }
 
         public void ActivateCurrentFilter()
         {
@@ -83,7 +105,6 @@ namespace Probel.LogReader.ViewModels
             CurrentFilter = newFilter;
         }
 
-        public bool CanCreateSubFilter => _editFilterViewModel.Subfilters != null;
         public void CreateSubFilter() => _editFilterViewModel?.CreateSubfilter();
 
         public void DiscardAll()
@@ -96,37 +117,29 @@ namespace Probel.LogReader.ViewModels
 
         public void Load()
         {
-            _app = Task.Run(() => _configManager.Get()).Result;
+            var t1 = Task.Run(() =>
+            {
+                _app = _configManager.Get();
 
-            var filters = (from f in _app.Filters
-                           where f.Id != FilterSettings.NoFilter.Id
-                           select f).ToList();
+                var filters = (from f in _app.Filters
+                               where f.Id != FilterSettings.NoFilter.Id
+                               select f).ToList();
 
-            Filters = new ObservableCollection<FilterSettings>(filters);
+                Filters = new ObservableCollection<FilterSettings>(filters);
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
         }
 
         public void SaveAll()
         {
-            Task.Run(() => _configManager.SaveAsync(_app)).Wait();
-
-            _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-            _userInteraction.Inform(Strings.Msg_InformSaved);
-        }
-
-        private void DeleteCurrentFilter()
-        {
-            var toDel = (from f in Filters
-                         where f.Id == CurrentFilter.Id
-                         select f).FirstOrDefault();
-
-            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            var t1 = Task.Run(() =>
             {
-                if (toDel != null)
-                {
-                    Filters.Remove(toDel);
-                    _app.Filters.Remove(toDel);
-                }
-            }
+                _configManager.SaveAsync(_app);
+
+                _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
+                _userInteraction.Inform(Strings.Msg_InformSaved);
+            });
+            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
         }
 
         #endregion Methods

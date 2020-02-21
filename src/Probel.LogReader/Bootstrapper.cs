@@ -1,7 +1,10 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
+using Probel.LogReader.Core.Plugins.Loaders;
+using Probel.LogReader.Helpers;
 using Probel.LogReader.Ui;
 using Probel.LogReader.ViewModels;
 using Probel.LogReader.ViewModels.Packs;
@@ -41,9 +44,11 @@ namespace Probel.LogReader
             _container.RegisterType<IConfigurationManager, ConfigurationManager>();
             _container.RegisterType<ISettingFileManager, JsonSettingsManager>(new InjectionConstructor(@"%appdata%\probel\log-reader\data-settings.json"));
             _container.RegisterType<IPluginManager, PluginManager>();
+            _container.RegisterType<IPluginLoader, PluginLoader>(); //Used to instanciate PluginManager
             _container.RegisterType<IFilterManager, FilterManager>();
             _container.RegisterType<IFilterTranslator, FilterTranslator>();
             _container.RegisterType<IPluginInfoManager, PluginManager>();
+            _container.RegisterType<ILogger, BasicLogger>();
 
             /* UI */
             _container.RegisterType<IUserInteraction, UserInteraction>();

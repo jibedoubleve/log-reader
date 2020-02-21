@@ -60,8 +60,7 @@ namespace Probel.LogReader.Plugins.Csv
             if (days.ContainsKey(day))
             {
                 var path = days[day];
-                var dir = Path.GetDirectoryName(path);
-                InitialiseFileWatcher(dir);
+                InitialiseFileWatcher(path);
             }
             else { throw new NotSupportedException($"No logs found to the specifie day '{day}'"); }
         }
@@ -194,9 +193,10 @@ namespace Probel.LogReader.Plugins.Csv
         {
             ClearFileWatcher();
 
-            var fileName = Path.GetFileName(path);
+            var dir = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);            
 
-            _fw = new FileSystemWatcher(path)
+            _fw = new FileSystemWatcher(dir)
             {
                 EnableRaisingEvents = true,
                 Filter = fileName

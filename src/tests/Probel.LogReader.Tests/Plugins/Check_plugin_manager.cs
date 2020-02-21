@@ -1,11 +1,13 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
+using Probel.LogReader.Core.Plugins.Loaders;
+using Probel.LogReader.Tests.Helpers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Probel.LogReader.TestCases.Plugins
+namespace Probel.LogReader.Tests.Plugins
 {
     public sealed class Check_plugin_manager
     {
@@ -15,7 +17,7 @@ namespace Probel.LogReader.TestCases.Plugins
         public async Task Can_get_plugin_from_configuration()
         {
             var cm = new ConfigurationManager(new MemorySettingsManager());
-            IPluginManager mgr = new PluginManager();
+            IPluginManager mgr = new PluginManager(new DebugLoader());
 
             var cfg = new AppSettings();
             cfg.Repositories.Add(new RepositorySettings { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") });
@@ -37,7 +39,7 @@ namespace Probel.LogReader.TestCases.Plugins
         [Fact]
         public void Can_istanciate_debug_plugin()
         {
-            IPluginManager mgr = new PluginManager();
+            IPluginManager mgr = new PluginManager(new DebugLoader());
             var cfg = new RepositorySettings() { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") };
 
             var plugin = mgr.Build(cfg);
@@ -52,12 +54,12 @@ namespace Probel.LogReader.TestCases.Plugins
         [Fact]
         public void Can_istanciate_debug_plugin_multiple_times()
         {
-            IPluginManager mgr = new PluginManager();
+            IPluginManager mgr = new PluginManager(new DebugLoader());
+            var cfg = new RepositorySettings { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") };
 
-            var rep = new RepositorySettings { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") };
             for (var i = 0; i < 3; i++)
             {
-                var plugin = mgr.Build(rep);
+                var plugin = mgr.Build(cfg);
 
                 foreach (var date in plugin.GetDays())
                 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Probel.LogReader.TestCases.Constants
+namespace Probel.LogReader.Tests.Constants
 {
     public static class PluginType
     {
