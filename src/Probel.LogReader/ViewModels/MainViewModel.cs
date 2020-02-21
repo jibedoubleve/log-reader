@@ -1,4 +1,4 @@
-﻿using Caliburn.Micro;
+using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
