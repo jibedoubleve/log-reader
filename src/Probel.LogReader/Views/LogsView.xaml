@@ -7,11 +7,16 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Probel.LogReader.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
     x:Name="_self"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <GridLength x:Key="DefaultHeight">400</GridLength>
+        <sys:Int32 x:Key="AutoHideHeight">400</sys:Int32>
+        <!--  ====  -->
         <conv:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
         <conv:StringToOneLinerConverter x:Key="StringToOneLinerConverter" />
         <conv:UppercaseConverter x:Key="UppercaseConverter" />
@@ -21,20 +26,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition>
-                <RowDefinition.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=IsDetailsVisible, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                <Setter Property="RowDefinition.Height" Value="8*" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=IsDetailsVisible, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                <Setter Property="RowDefinition.Height" Value="0" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </RowDefinition.Style>
-            </RowDefinition>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <ToolBarTray>
@@ -71,30 +62,6 @@
                 </ToggleButton>
             </ToolBar>
             <ToolBar>
-                <ToggleButton x:Name="IsDetailsVisible">
-                    <StackPanel Orientation="Horizontal">
-                        <iconPacks:PackIconMaterial
-                            Margin="0,0,5,0"
-                            VerticalAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Kind="EyePlusOutline" />
-                        <TextBlock>
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=IsDetailsVisible, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Text" Value="Hide details" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=IsDetailsVisible, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                            <Setter Property="Text" Value="Show details" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-                </ToggleButton>
-                <Separator />
                 <ToggleButton x:Name="IsThreadIdVisible">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
@@ -180,209 +147,266 @@
                 </ToggleButton>
             </ToolBar>
         </ToolBarTray>
-        <DataGrid
-            x:Name="_logs"
+        <xcad:DockingManager
             Grid.Row="1"
-            AutoGenerateColumns="False"
-            CanUserAddRows="False"
-            CanUserReorderColumns="False"
-            CanUserResizeRows="False"
-            CanUserSortColumns="False"
-            FontFamily="Consolas"
-            FontSize="11"
-            GridLinesVisibility="Horizontal"
-            HorizontalGridLinesBrush="#0C000000"
-            IsReadOnly="True"
-            ItemsSource="{Binding Logs}"
-            MouseDoubleClick="OnLogsMouseDoubleClick"
-            SelectionMode="Single"
-            VerticalGridLinesBrush="#82000000">
-            <DataGrid.Resources>
-                <ResourceDictionary>
-                    <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
-                        <Setter Property="Background" Value="{x:Null}" />
-                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{x:Null}" />
-                                <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
-                                <Setter Property="FontWeight" Value="ExtraBold" />
-                                <Setter Property="BorderBrush" Value="{x:Null}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <Setter Property="Background" Value="{x:Null}" />
-                        <Setter Property="BorderBrush" Value="{x:Null}" />
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{x:Null}" />
-                                <Setter Property="BorderBrush" Value="{x:Null}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ResourceDictionary>
-            </DataGrid.Resources>
-            <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="TRACE">
-                            <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
-                        </DataTrigger>
+            Margin="0,5,0,0"
+            AllowMixedOrientation="False">
+            <xcad:DockingManager.Theme>
+                <xcad:GenericTheme />
+            </xcad:DockingManager.Theme>
 
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="DEBUG">
-                            <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
-                        </DataTrigger>
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Vertical">
+                    <xcad:LayoutDocumentPaneGroup>
+                        <xcad:LayoutDocumentPane ShowHeader="False">
+                            <xcad:LayoutDocument Title="Logs" CanClose="False">
+                                <DataGrid
+                                    x:Name="_logs"
+                                    Grid.Row="1"
+                                    AutoGenerateColumns="False"
+                                    CanUserAddRows="False"
+                                    CanUserReorderColumns="False"
+                                    CanUserResizeRows="False"
+                                    CanUserSortColumns="False"
+                                    FontFamily="Consolas"
+                                    FontSize="11"
+                                    GridLinesVisibility="Horizontal"
+                                    HorizontalGridLinesBrush="#0C000000"
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding Logs}"
+                                    MouseDoubleClick="OnLogsMouseDoubleClick"
+                                    SelectionMode="Single"
+                                    VerticalGridLinesBrush="#82000000">
+                                    <DataGrid.Resources>
+                                        <ResourceDictionary>
+                                            <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
+                                                <Setter Property="Background" Value="{x:Null}" />
+                                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter Property="Background" Value="{x:Null}" />
+                                                        <Setter Property="Foreground" Value="{x:Static SystemColors.ControlTextBrush}" />
+                                                        <Setter Property="FontWeight" Value="ExtraBold" />
+                                                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                            <Style TargetType="{x:Type DataGridRow}">
+                                                <Setter Property="Background" Value="{x:Null}" />
+                                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter Property="Background" Value="{x:Null}" />
+                                                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ResourceDictionary>
+                                    </DataGrid.Resources>
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="DataGridRow">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="TRACE">
+                                                    <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
+                                                </DataTrigger>
 
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="INFO">
-                            <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
-                        </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="DEBUG">
+                                                    <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
+                                                </DataTrigger>
 
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="WARN">
-                            <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
-                        </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="INFO">
+                                                    <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
+                                                </DataTrigger>
 
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="ERROR">
-                            <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
-                        </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="WARN">
+                                                    <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
+                                                </DataTrigger>
 
-                        <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="FATAL">
-                            <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DataGrid.RowStyle>
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="(+)">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <iconPacks:PackIconOcticons
-                                HorizontalAlignment="Center"
-                                Kind="Check"
-                                Visibility="{Binding Exception, Converter={StaticResource TextToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn
-                    Width="Auto"
-                    Binding="{Binding Time, StringFormat=HH:mm:ss.fff}"
-                    Header="Time" />
-                <DataGridTextColumn
-                    Width="Auto"
-                    Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}"
-                    Header="Level" />
-                <DataGridTextColumn
-                    Width="Auto"
-                    Binding="{Binding ThreadId}"
-                    Header="ThreadId"
-                    Visibility="{Binding IsChecked, Source={x:Reference IsThreadIdVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <DataGridTextColumn
-                    Width="Auto"
-                    Binding="{Binding Logger}"
-                    Header="Logger"
-                    Visibility="{Binding IsChecked, Source={x:Reference IsLoggerVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding Message, Converter={StaticResource StringToOneLinerConverter}}"
-                    Header="Message" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="5" />
-                <RowDefinition Height="2*" />
-            </Grid.RowDefinitions>
-            <!--  FIRST COLUMN  -->
-            <StackPanel Grid.RowSpan="3" Margin="5">
-                <StackPanel.Style>
-                    <Style TargetType="StackPanel">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="TRACE">
-                                <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
-                            </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="ERROR">
+                                                    <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
+                                                </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="DEBUG">
-                                <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
-                            </DataTrigger>
+                                                <DataTrigger Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}" Value="FATAL">
+                                                    <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTemplateColumn Header="(+)">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <iconPacks:PackIconOcticons
+                                                        HorizontalAlignment="Center"
+                                                        Kind="Check"
+                                                        Visibility="{Binding Exception, Converter={StaticResource TextToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTextColumn
+                                            Width="Auto"
+                                            Binding="{Binding Time, StringFormat=HH:mm:ss.fff}"
+                                            Header="Time" />
+                                        <DataGridTextColumn
+                                            Width="Auto"
+                                            Binding="{Binding Level, Converter={StaticResource UppercaseConverter}}"
+                                            Header="Level" />
+                                        <DataGridTextColumn
+                                            Width="Auto"
+                                            Binding="{Binding ThreadId}"
+                                            Header="ThreadId"
+                                            Visibility="{Binding IsChecked, Source={x:Reference IsThreadIdVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <DataGridTextColumn
+                                            Width="Auto"
+                                            Binding="{Binding Logger}"
+                                            Header="Logger"
+                                            Visibility="{Binding IsChecked, Source={x:Reference IsLoggerVisible}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <DataGridTextColumn
+                                            Width="*"
+                                            Binding="{Binding Message, Converter={StaticResource StringToOneLinerConverter}}"
+                                            Header="Message" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
+                    <xcad:LayoutAnchorablePaneGroup DockHeight="{StaticResource DefaultHeight}">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable
+                                Title="Details"
+                                AutoHideHeight="{StaticResource AutoHideHeight}"
+                                CanClose="False"
+                                CanDockAsTabbedDocument="False"
+                                CanHide="False">
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="5" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="5" />
+                                        <RowDefinition Height="2*" />
+                                    </Grid.RowDefinitions>
+                                    <!--  FIRST COLUMN  -->
+                                    <StackPanel Grid.RowSpan="3" Margin="5">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="TRACE">
+                                                        <Setter Property="Background" Value="{DynamicResource LogTraceColour}" />
+                                                    </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="INFO">
-                                <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
-                            </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="DEBUG">
+                                                        <Setter Property="Background" Value="{DynamicResource LogDebugColour}" />
+                                                    </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="WARN">
-                                <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
-                            </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="INFO">
+                                                        <Setter Property="Background" Value="{DynamicResource LogInfoColour}" />
+                                                    </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="ERROR">
-                                <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
-                            </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="WARN">
+                                                        <Setter Property="Background" Value="{DynamicResource LogWarnColour}" />
+                                                    </DataTrigger>
 
-                            <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="FATAL">
-                                <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-                <StackPanel.Resources>
-                    <Style x:Key="LabelStyle" TargetType="TextBlock">
-                        <Setter Property="Margin" Value="5" />
-                        <Setter Property="FontWeight" Value="Bold" />
-                    </Style>
-                    <Style x:Key="ValueStyle" TargetType="TextBlock">
-                        <Setter Property="Margin" Value="15,0,5,0" />
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Time" />
-                <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Time, StringFormat=HH:mm:ss.fff}" />
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Level" />
-                <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Level}" />
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Thread Id" />
-                <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.ThreadId}" />
-                <TextBlock Style="{StaticResource LabelStyle}" Text="Logger" />
-                <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Logger}" />
-            </StackPanel>
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="ERROR">
+                                                        <Setter Property="Background" Value="{DynamicResource LogErrorColour}" />
+                                                    </DataTrigger>
 
-            <!--  SECOND COLUMN  -->
-            <GridSplitter
-                Grid.RowSpan="2"
-                Grid.Column="1"
-                Width="5"
-                VerticalAlignment="Stretch"
-                ResizeBehavior="PreviousAndNext"
-                ResizeDirection="Columns" />
+                                                    <DataTrigger Binding="{Binding Source={x:Reference _logs}, Path=SelectedItem.Level, Converter={StaticResource UppercaseConverter}}" Value="FATAL">
+                                                        <Setter Property="Background" Value="{DynamicResource LogFatalColour}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <StackPanel.Resources>
+                                            <Style x:Key="LabelStyle" TargetType="TextBlock">
+                                                <Setter Property="Margin" Value="5" />
+                                                <Setter Property="FontWeight" Value="Bold" />
+                                            </Style>
+                                            <Style x:Key="ValueStyle" TargetType="TextBlock">
+                                                <Setter Property="Margin" Value="15,0,5,0" />
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Time" />
+                                        <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Time, StringFormat=HH:mm:ss.fff}" />
+                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Level" />
+                                        <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Level}" />
+                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Thread Id" />
+                                        <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.ThreadId}" />
+                                        <TextBlock Style="{StaticResource LabelStyle}" Text="Logger" />
+                                        <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Logger}" />
+                                    </StackPanel>
 
-            <!--  THIRD COLUMN  -->
-            <GroupBox Grid.Column="2" Header="Message">
-                <TextBox
-                    FontFamily="Consolas"
-                    HorizontalScrollBarVisibility="Auto"
-                    IsReadOnly="True"
-                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
-                    VerticalScrollBarVisibility="Auto" />
-            </GroupBox>
-            <GridSplitter
-                Grid.Row="1"
-                Grid.Column="2"
-                Height="5"
-                HorizontalAlignment="Stretch" />
-            <GroupBox
-                Grid.Row="2"
-                Grid.Column="2"
-                Header="Call stack">
-                <TextBox
-                    FontFamily="Consolas"
-                    HorizontalScrollBarVisibility="Auto"
-                    IsReadOnly="True"
-                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
-                    VerticalScrollBarVisibility="Auto" />
-            </GroupBox>
-        </Grid>
+                                    <!--  SECOND COLUMN  -->
+                                    <GridSplitter
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Width="5"
+                                        VerticalAlignment="Stretch"
+                                        ResizeBehavior="PreviousAndNext"
+                                        ResizeDirection="Columns" />
+
+                                    <!--  THIRD COLUMN  -->
+                                    <GroupBox Grid.Column="2" Header="Message">
+                                        <TextBox
+                                            FontFamily="Consolas"
+                                            HorizontalScrollBarVisibility="Auto"
+                                            IsReadOnly="True"
+                                            Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
+                                            VerticalScrollBarVisibility="Auto" />
+                                    </GroupBox>
+                                    <GridSplitter
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Height="5"
+                                        HorizontalAlignment="Stretch" />
+                                    <GroupBox
+                                        Grid.Row="2"
+                                        Grid.Column="2"
+                                        Header="Call stack">
+                                        <TextBox
+                                            FontFamily="Consolas"
+                                            HorizontalScrollBarVisibility="Auto"
+                                            IsReadOnly="True"
+                                            Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
+                                            VerticalScrollBarVisibility="Auto" />
+                                    </GroupBox>
+                                </Grid>
+                            </xcad:LayoutAnchorable>
+                            <xcad:LayoutAnchorable
+                                Title="Message"
+                                AutoHideHeight="{StaticResource AutoHideHeight}"
+                                CanClose="False"
+                                CanDockAsTabbedDocument="False"
+                                CanHide="False">
+                                <TextBox
+                                    FontFamily="Consolas"
+                                    HorizontalScrollBarVisibility="Auto"
+                                    IsReadOnly="True"
+                                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
+                                    VerticalScrollBarVisibility="Auto" />
+                            </xcad:LayoutAnchorable>
+                            <xcad:LayoutAnchorable
+                                Title="Call Stack"
+                                AutoHideHeight="{StaticResource AutoHideHeight}"
+                                CanClose="False"
+                                CanDockAsTabbedDocument="False"
+                                CanHide="False">
+                                <TextBox
+                                    FontFamily="Consolas"
+                                    HorizontalScrollBarVisibility="Auto"
+                                    IsReadOnly="True"
+                                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
+                                    VerticalScrollBarVisibility="Auto" />
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
         <StatusBar Grid.Row="4">
             <StatusBarItem>
                 <TextBlock>
