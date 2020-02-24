@@ -7,6 +7,7 @@ using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -215,7 +216,7 @@ namespace Probel.LogReader.ViewModels
         {
             IsOrderByAsc = !IsOrderByAsc;
             SortLogs(IsOrderByAsc);
-
+            SaveConfig();
         }
 
         protected override void OnActivate()
@@ -242,7 +243,6 @@ namespace Probel.LogReader.ViewModels
                 stg.Ui.ShowLogger = IsLoggerVisible;
                 stg.Ui.ShowThreadId = IsThreadIdVisible;
                 _configManager.Save(stg);
-                SaveConfig();
             });
             t1.OnErrorHandle(_ui);
         }
@@ -268,14 +268,22 @@ namespace Probel.LogReader.ViewModels
             return levels;
         }
 
+        private Stopwatch _stopwatch = new Stopwatch();
         private void OnDataChanged(object sender, EventArgs e)
         {
+
             if (IsListeningFile)
             {
-                _log.Trace("Log file changed!");
-                ChangeCount++;
-                Task.Run(() => RefreshData?.Invoke())
-                    .OnErrorHandle(_ui);
+                _stopwatch.Stop();
+                if (_stopwatch.ElapsedMilliseconds == 0 || _stopwatch.ElapsedMilliseconds > 100)
+                {
+                    _log.Trace("Log file changed!");
+                    ChangeCount++;
+                    Task.Run(() => RefreshData?.Invoke())
+                        .OnErrorHandle(_ui);
+                }
+                _stopwatch.Reset();
+                _stopwatch.Start();
             }
         }
 
@@ -308,6 +316,8 @@ namespace Probel.LogReader.ViewModels
                 Listener.DataChanged -= OnDataChanged;
             }
             else { _log.Trace("No listener to deactivate."); }
+
+            ChangeCount = 0;
         }
 
         #endregion Methods

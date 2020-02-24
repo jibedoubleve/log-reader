@@ -179,6 +179,8 @@ namespace Probel.LogReader.ViewModels
                     var orderby = cfg.Ui.IsLogOrderAsc ? OrderBy.Asc : OrderBy.Desc;
                     var logs = plugin.GetLogs(day, orderby);
 
+                    _vmLogsViewModel.Cache(logs);
+
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
@@ -193,7 +195,6 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.CanListen = plugin.CanListen;
                     _vmLogsViewModel.FilePath = path;
 
-                    _vmLogsViewModel.Cache(logs);
                 }
             });
             t1.OnErrorHandle(_userInteraction);
