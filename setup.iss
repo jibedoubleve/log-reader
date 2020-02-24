@@ -50,7 +50,9 @@ Source: "{#BinDirectory}*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
 ;----------------------------------------------------------------
 ;-- binaries of the plugins
 ;----------------------------------------------------------------
-Source: "{#BinPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\csv\"; Flags: ignoreversion
+Source: "{#CsvPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\csv\"; Flags: ignoreversion
+Source: "{#TextPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\text\"; Flags: ignoreversion
+Source: "{#OraclePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\oracle\"; Flags: ignoreversion
 ;----------------------------------------------------------------
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

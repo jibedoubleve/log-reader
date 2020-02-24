@@ -137,7 +137,7 @@ namespace Probel.LogReader.ViewModels
                 _configManager.SaveAsync(_app);
 
                 _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-                _userInteraction.Inform(Strings.Msg_InformSaved);
+                _userInteraction.NotifySuccess(Strings.Msg_InformSaved);
             });
             t1.OnErrorHandle(_userInteraction);
         }

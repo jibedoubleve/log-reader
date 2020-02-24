@@ -19,13 +19,17 @@ namespace Probel.LogReader.Ui
 
         #region Methods
 
-        UserAnswers Ask(string question, string title = "QUESTION");
+        UserAnswers Ask(string question, string title = "Question");
 
         void HandleError(Exception ex);
 
         void HandleError(string message, Exception ex);
 
-        void Inform(string message, string title = "INFO");
+        void NotifyError(string messgae);
+
+        void NotifyInformation(string message);
+
+        void NotifySuccess(string message);
 
         /// <summary>
         /// This method create a <see cref="WaitNotification"/> which after construction
@@ -34,6 +38,8 @@ namespace Probel.LogReader.Ui
         /// </summary>
         /// <returns></returns>
         WaitNotification NotifyWait();
+
+        void NotifyWarning(string message);
 
         #endregion Methods
     }
