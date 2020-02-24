@@ -8,9 +8,9 @@ Path to the directory that contains all the days (a day is a unique text file)
 ## Query Day
 The regex should be like:
 ```
-(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.log
+(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.csv
 ```
-The regex should contain in group the year, month, day of the date of log. The group name should be exactly these one.
+The regex should contain the *year*, *month*, *day* of the date of log into `groups`. The group name should be exactly these one. These `groups` will be used internally to search and display the days with logs.
 
 | group name | Explanations       |
 | ---------- | ------------------ |
@@ -25,14 +25,14 @@ The regex should be like:
 ```
 The regex should contain in group the year, month, day of the date of log. The group name should be exactly these one.
 
-| group name | Explanations                                          |
-| ---------- | ----------------------------------------------------- |
-| time       | get time, should be pased by `DateTime.Parse(string)` |
-| level      | level of logs                                         |
-| threadid   | thread id                                             |
-| logger     | logger                                                |
-| message    | message                                               |
-| exception  | exception                                             |
+| group name | Explanations                                                  |
+| ---------- | ------------------------------------------------------------- |
+| time       | get time, should able to be pased by `DateTime.Parse(string)` |
+| level      | level of logs                                                 |
+| threadid   | thread id                                                     |
+| logger     | logger                                                        |
+| message    | message                                                       |
+| exception  | exception                                                     |
 
 ## Preconfigured
 ### Github desktop log files

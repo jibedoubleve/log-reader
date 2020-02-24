@@ -3,21 +3,34 @@
 It reads CSV files
 
 ## Connection String
-Path to the directory that contains all the days (a day is a unique CSV file)
+Path to the directory that contains all the days (a day is a unique CSV file).
 
 ## Query Day
-| key         | Default                                 | Explanations                               |
-| ----------- | --------------------------------------- | ------------------------------------------ |
-| file:       | `[0-9]{4}-[0-9]{2}-[0-9]{2}\\..*\\.csv` | Regex to select CSV files                  |
-| date:       | `[0-9]{4}-[0-9]{2}-[0-9]{2}`            | Regex to extract date from file name       |
-| dateformat: | `yyyy-MM-dd`                            | Pattern use to infer a date from file name |
+The regex should be like:
+```
+(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.csv
+```
+The regex should contain the *year*, *month*, *day* of the date of log into `groups`. The group name should be exactly these one. These `groups` will be used internally to search and display the days with logs.
+
+| group name | Explanations       |
+| ---------- | ------------------ |
+| year       | Contains the year  |
+| month      | Contains the month |
+| day        | Contains the day   |
 
 ## Query Logs
-| Key      | Default             | Valid values           | Explanations                                   |
-| -------- | ------------------- | ---------------------- | ---------------------------------------------- |
-| encoding | `windows-1252`      | `windows-1252`, `UTF8` | Indicates the format of the files              |
-| Time     | `time:time`         |                        | (facultative) use to bind csv column to the UI |
-| Level    | `level:level`       |                        | (facultative) use to bind csv column to the UI |
-| ThreadId | `threadid:threadid` |                        | (facultative) use to bind csv column to the UI |
-| Logger   | `logger:logger`     |                        | (facultative) use to bind csv column to the UI |
-| Message  | `message:message`   |                        | (facultative) use to bind csv column to the UI |
+| Key      | Default                 | Valid values           | Explanations                        |
+| -------- | ----------------------- | ---------------------- | ----------------------------------- |
+| Encoding | `encoding:windows-1252` | `windows-1252`, `UTF8` | Indicates the encoding of the file. |
+| Time     | `time:time`             |                        | Bind csv column to the UI           |
+| Level    | `level:level`           |                        | Bind csv column to the UI           |
+| ThreadId | `threadid:threadid`     |                        | Bind csv column to the UI           |
+| Logger   | `logger:logger`         |                        | Bind csv column to the UI           |
+| Message  | `message:message`       |                        | Bind csv column to the UI           |
+
+## Preconfigured
+### Probel log files
+
+| Query | Regular expression                                                                                                  |
+| ----- | ------------------------------------------------------------------------------------------------------------------- |
+| Day   | `(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.csv`                                                    |
