@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Notifications.Wpf;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Helpers;
@@ -48,10 +49,12 @@ namespace Probel.LogReader
             _container.RegisterType<IFilterManager, FilterManager>();
             _container.RegisterType<IFilterTranslator, FilterTranslator>();
             _container.RegisterType<IPluginInfoManager, PluginManager>();
-            _container.RegisterType<ILogger, BasicLogger>();
+            _container.RegisterType<ILogger, NLogLogger>();
 
             /* UI */
             _container.RegisterType<IUserInteraction, UserInteraction>();
+
+            _container.RegisterSingleton<INotificationManager, NotificationManager>();
 
             /* VIEWS */
             _container.RegisterType<MainViewModelPack>();

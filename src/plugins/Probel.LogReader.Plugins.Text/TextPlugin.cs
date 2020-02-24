@@ -1,21 +1,17 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Plugins.Csv.Config;
-using Probel.LogReader.Plugins.Csv.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Probel.LogReader.Plugins.Csv
+namespace Probel.LogReader.Plugins.Text
 {
-    public class CsvPlugin : PluginBase
+    public class TextPlugin : PluginBase
     {
         #region Fields
-
-        private readonly string _defaultQueryDay = @"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.csv";
 
         private IEnumerable<LogSource> _dates;
         private FileSystemWatcher _fw;
@@ -51,17 +47,19 @@ namespace Probel.LogReader.Plugins.Csv
 
         public override IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc)
         {
-            var s = GetQueryLogSettings();
-            var d = (from dd in _dates
-                     where dd.Day.Date == day.Date
-                     select dd).FirstOrDefault();
-
-            if (d != null)
+            var path = (from s in _dates
+                        where s.Day.Date == day.Date
+                        select s.FilePath).FirstOrDefault();
+            try
             {
-                var reader = new CsvFileReader(s, d.FilePath);
-                return reader.GetLogs();
+                var extractor = new LogExtractor(Settings.QueryLog);
+
+                return extractor.Extract(path);
             }
-            return new List<LogRow>();
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Cannot get logs from file '{path}'", ex);
+            }
         }
 
         public override void StartListening(DateTime day, int seconds = 0)
@@ -82,11 +80,7 @@ namespace Probel.LogReader.Plugins.Csv
             int.TryParse(match.Groups["month"].Value, out var month);
             int.TryParse(match.Groups["day"].Value, out var day);
 
-            try
-            {
-                return new DateTime(year, month, day);
-            }
-            catch (Exception) { return DateTime.MaxValue; }
+            return new DateTime(year, month, day);
         }
 
         private void ClearFileWatcher()
@@ -102,7 +96,7 @@ namespace Probel.LogReader.Plugins.Csv
         {
             dir = Environment.ExpandEnvironmentVariables(dir);
 
-            var regex = new Regex(Settings.QueryDay ?? _defaultQueryDay);
+            var regex = new Regex(Settings.QueryDay);
 
             if (Directory.Exists(dir))
             {
@@ -116,62 +110,6 @@ namespace Probel.LogReader.Plugins.Csv
                 return files;
             }
             else { throw new FileNotFoundException($"Directory '{dir}' do not exist. Impossible to find CSV files."); }
-        }
-
-        private QueryLogSettings GetQueryLogSettings()
-        {
-            var d = new QueryLogSettings();
-            var lines = (Settings.QueryLog ?? string.Empty).Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-            d.Encoding = (from l in lines
-                          where l.ToLower().Trim().StartsWith("encoding")
-                          select l)
-                            .FirstOrDefault()
-                            ?.Replace("encoding:", "").Trim() ?? "windows-1252";
-
-            d.Delimiter = (from l in lines
-                           where l.ToLower().Trim().StartsWith("delimiter")
-                           select l)
-                            .FirstOrDefault()
-                            ?.Replace("delimiter:", "").Trim() ?? ";";
-
-            d.Level = (from l in lines
-                       where l.ToLower().Trim().StartsWith("level")
-                       select l)
-                         .FirstOrDefault()
-                         ?.Replace("level:", "").Trim() ?? "level";
-
-            d.Logger = (from l in lines
-                        where l.ToLower().Trim().StartsWith("logger")
-                        select l)
-                          .FirstOrDefault()
-                          ?.Replace("logger:", "")?.Trim() ?? "logger";
-
-            d.Message = (from l in lines
-                         where l.ToLower().Trim().StartsWith("message")
-                         select l)
-                           .FirstOrDefault()
-                           ?.Replace("message:", "")?.Trim() ?? "message";
-
-            d.ThreadId = (from l in lines
-                          where l.ToLower().Trim().StartsWith("threadid")
-                          select l)
-                            .FirstOrDefault()
-                            ?.Replace("threadid:", "")?.Trim() ?? "threadid";
-
-            d.Time = (from l in lines
-                      where l.ToLower().Trim().StartsWith("time")
-                      select l)
-                        .FirstOrDefault()
-                        ?.Replace("time:", "")?.Trim() ?? "time";
-
-            d.Exception = (from l in lines
-                           where l.ToLower().Trim().StartsWith("exception")
-                           select l)
-                             .FirstOrDefault()
-                             ?.Replace("exception:", "")?.Trim() ?? "exception";
-
-            return d;
         }
 
         private void InitialiseFileWatcher(string path)

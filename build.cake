@@ -39,11 +39,12 @@ var assets = new List<string>();
 ///////////////////////////////////////////////////////////////////////////////
 
 //Files & directories
-var solution   = "./src/Probel.LogReader.sln";
-var publishDir = "./Publish/";
-var inno_setup = "./setup.iss";
+var solution     = "./src/Probel.LogReader.sln";
+var publishDir   = "./Publish/";
+var inno_setup   = "./setup.iss";
 var binDirectory = $"./src/Probel.LogReader/bin/{configuration}/";
-var binCsvDir = $"./src/plugins/Probel.LogReader.Plugins.Csv/bin/{configuration}/";
+
+var binPluginDir    = $"./src/plugins/Probel.LogReader.Plugins.{{0}}/bin/{configuration}/";
 
 GitVersion gitVersion = GitVersion(new GitVersionSettings 
 { 
@@ -123,25 +124,23 @@ Task("Zip")
         var dir = new DirectoryInfo(binDirectory + @"/../../../plugins/");        
         foreach(var d in dir.GetDirectories())
         {
-            if(d.Name.ToLower().Contains("csv")==false)
-            { 
-                var pluginBin = d.FullName + @"\bin\Release\";
-                var dest = publishDir + "/" + d.Name.Replace("Probel.LogReader.Plugins.","plugin-") + "-" + gitVersion.SemVer + ".bin.zip";
-                assets.Add(dest);
+            var pluginBin = d.FullName + @"\bin\Release\";
+            var dest = publishDir + "/" + d.Name.Replace("Probel.LogReader.Plugins.","plugin-") + "-" + gitVersion.SemVer + ".bin.zip";
+            assets.Add(dest);
 
-                Information("Zipping plugin:  {0}", dest);
-                Information("  pluginBin   : {0}", pluginBin);
-                Information("  dest        : {0}", dest);
+            Information("Zipping plugin:  {0}", dest);
+            Information("  pluginBin   : {0}", pluginBin);
+            Information("  dest        : {0}", dest);
 
-                Zip(pluginBin, dest);
-            }
+            Zip(pluginBin, dest);
         }
 });  
 
 Task("Inno-Setup")
     .Does(() => {
         var path = binDirectory.Replace("/", "\\").TrimStart('.').TrimStart('\\');
-        var pluginDir = binCsvDir.Replace("/", "\\").TrimStart('.').TrimStart('\\');
+        var pluginDir = binPluginDir.Replace("/", "\\").TrimStart('.').TrimStart('\\');
+        var plugins = new string[] { "csv", "text", "oracle" };        
 
         Information("Bin path   : {0}: ", path);
         Information("Plugin path: {0}: ", pluginDir);
@@ -151,7 +150,9 @@ Task("Inno-Setup")
             Defines = new Dictionary<string, string> {
                  { "MyAppVersion", gitVersion.SemVer },
                  { "BinDirectory", path },
-                 { "BinPluginDir", pluginDir }
+                 { "CsvPluginDir", String.Format(pluginDir, plugins[0]) },
+                 { "TextPluginDir", String.Format(pluginDir, plugins[1]) },
+                 { "OraclePluginDir", String.Format(pluginDir, plugins[2]) },
             }
         });
 });
@@ -169,9 +170,10 @@ Task("Release-GitHub")
             Prerelease        = gitVersion.SemVer.Contains("alpha"),
             Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
                               + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip", 
-                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip", 
-                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip", 
+                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
+                              + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  

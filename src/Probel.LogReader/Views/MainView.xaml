@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="clr-namespace:Notifications.Wpf.Controls;assembly=Notifications.Wpf"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Probel.LogReader"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,42 +16,48 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Menu>
-            <MenuItem x:Name="_menuFile" Header="_File">
-                <MenuItem cal:Message.Attach="[Event Click] = [ManageRepositories]" Header="Manage _repositories..." />
-                <MenuItem cal:Message.Attach="[Event Click] = [ManageFilters]" Header="Manage _filters..." />
-            </MenuItem>
-            <MenuItem
-                x:Name="_repositoryFile"
-                Header="_Repository"
-                ItemsSource="{Binding MenuRepository}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem">
-                        <Setter Property="Header" Value="{Binding Name}" />
-                        <Setter Property="Command" Value="{Binding MenuCommand}" />
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            <MenuItem
-                x:Name="_menuFilter"
-                Header="F_ilter"
-                ItemsSource="{Binding MenuFilter}"
-                Visibility="{Binding IsFilterVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem">
-                        <Setter Property="Header" Value="{Binding Name}" />
-                        <Setter Property="Command" Value="{Binding MenuCommand}" />
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" Click="OnClickAbout"/>
-            </MenuItem>
-        </Menu>
-        <ContentControl x:Name="ActiveItem" Grid.Row="1" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Menu>
+                <MenuItem x:Name="_menuFile" Header="_File">
+                    <MenuItem cal:Message.Attach="[Event Click] = [ManageRepositories]" Header="Manage _repositories..." />
+                    <MenuItem cal:Message.Attach="[Event Click] = [ManageFilters]" Header="Manage _filters..." />
+                </MenuItem>
+                <MenuItem
+                    x:Name="_repositoryFile"
+                    Header="_Repository"
+                    ItemsSource="{Binding MenuRepository}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name}" />
+                            <Setter Property="Command" Value="{Binding MenuCommand}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <MenuItem
+                    x:Name="_menuFilter"
+                    Header="F_ilter"
+                    ItemsSource="{Binding MenuFilter}"
+                    Visibility="{Binding IsFilterVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name}" />
+                            <Setter Property="Command" Value="{Binding MenuCommand}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Click="OnClickAbout" Header="_About" />
+                </MenuItem>
+            </Menu>
+            <ContentControl x:Name="ActiveItem" Grid.Row="1" />
+        </Grid>
+        <controls:NotificationArea
+            x:Name="WindowArea"
+            MaxItems="3"
+            Position="BottomRight" />
     </Grid>
 </Window>
