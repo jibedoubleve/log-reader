@@ -18,6 +18,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configManager;
+        private readonly IConfigurationManager _config;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _log;
         private readonly IUserInteraction _ui;
@@ -33,6 +34,7 @@ namespace Probel.LogReader.ViewModels
         private bool _isInfoVisible = true;
         private bool _isListeningFile;
         private bool _isLoggerVisible = true;
+        private bool _isOrderByAsc;
         private bool _isThreadIdVisible;
         private bool _isTraceVisible = true;
         private bool _isWarnVisible = true;
@@ -44,13 +46,14 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log, IUserInteraction ui)
+        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log, IUserInteraction ui, IConfigurationManager config)
         {
             _ui = ui;
             _log = log;
             FilterCommand = new RelayCommand(Filter);
             _eventAggregator = eventAggregator;
             _configManager = configManager;
+            _config = config;
         }
 
         #endregion Constructors
@@ -134,6 +137,12 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _isLoggerVisible, value, nameof(IsLoggerVisible));
         }
 
+        public bool IsOrderByAsc
+        {
+            get => _isOrderByAsc;
+            set => Set(ref _isOrderByAsc, value, nameof(IsOrderByAsc));
+        }
+
         public bool IsThreadIdVisible
         {
             get => _isThreadIdVisible;
@@ -203,6 +212,7 @@ namespace Probel.LogReader.ViewModels
                 = IsFatalVisible
                 = true;
             if (IsListeningFile) { RegisterListener(); }
+            IsOrderByAsc = _config.Get().Ui.IsLogOrderAsc;
         }
 
         protected override void OnDeactivate(bool close)
@@ -216,8 +226,14 @@ namespace Probel.LogReader.ViewModels
                 stg.Ui.ShowLogger = IsLoggerVisible;
                 stg.Ui.ShowThreadId = IsThreadIdVisible;
                 _configManager.Save(stg);
+                SaveConfig();
             });
             t1.OnErrorHandle(_ui);
+        }
+
+        private void SaveConfig()
+        {
+            _config.Save(e => e.Ui.IsLogOrderAsc = IsOrderByAsc);
         }
 
         private void Filter()
@@ -272,6 +288,16 @@ namespace Probel.LogReader.ViewModels
             }
             else { _log.Trace("No listener to deactivate."); }
         }
+
+        public void SortLogs()
+        {
+            Logs = (IsOrderByAsc)
+                ? new ObservableCollection<LogRow>(Logs.OrderBy(e => e.Time))
+                : new ObservableCollection<LogRow>(Logs.OrderByDescending(e => e.Time));
+
+            IsOrderByAsc = !IsOrderByAsc;
+        }
+
 
         #endregion Methods
     }

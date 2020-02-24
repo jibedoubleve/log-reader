@@ -122,6 +122,41 @@
                 </ToggleButton>
             </ToolBar>
             <ToolBar Visibility="{Binding CanListen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button x:Name="SortLogs">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center">
+                            <iconPacks:PackIconMaterial.Style>
+                                <Style TargetType="iconPacks:PackIconMaterial">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Kind" Value="SortAscending" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                            <Setter Property="Kind" Value="SortDescending" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </iconPacks:PackIconMaterial.Style>
+                        </iconPacks:PackIconMaterial>
+                        <TextBlock>
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Text" Value="Sort ascending" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                            <Setter Property="Text" Value="Sort descending" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
                 <ToggleButton x:Name="_isListeningFile" IsChecked="{Binding IsListeningFile}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
@@ -443,6 +478,27 @@
                     <Run Text="{Binding ChangeCount}" />
                     <Run Text="Change(s)" />
                 </TextBlock>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <iconPacks:PackIconMaterial
+                    Margin="0,0,5,0"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center">
+                    <iconPacks:PackIconMaterial.Style>
+                        <Style TargetType="iconPacks:PackIconMaterial">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                    <Setter Property="Kind" Value="SortAscending" />
+                                    <Setter Property="ToolTip" Value="Sorted ascending" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <Setter Property="Kind" Value="SortDescending" />
+                                    <Setter Property="ToolTip" Value="Sorted descending" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </iconPacks:PackIconMaterial.Style>
+                </iconPacks:PackIconMaterial>
             </StatusBarItem>
         </StatusBar>
     </Grid>
