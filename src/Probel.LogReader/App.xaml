@@ -2,7 +2,10 @@
     x:Class="Probel.LogReader.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Probel.LogReader">
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="clr-namespace:Notifications.Wpf.Controls;assembly=Notifications.Wpf"
+    xmlns:local="clr-namespace:Probel.LogReader"
+    xmlns:micro="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,6 +21,19 @@
                     <SolidColorBrush x:Key="LogWarnColour" Color="#D19A66" />
                     <SolidColorBrush x:Key="LogErrorColour" Color="#E06C75" />
                     <SolidColorBrush x:Key="LogFatalColour" Color="#E06C75" />
+                </ResourceDictionary>
+                <ResourceDictionary>
+                    <Style TargetType="controls:Notification">
+                        <Style.Resources>
+                            <DataTemplate DataType="{x:Type micro:PropertyChangedBase}">
+                                <ContentControl cal:View.Model="{Binding}" />
+                            </DataTemplate>
+                        </Style.Resources>
+                    </Style>
+
+                    <Style TargetType="controls:NotificationArea">
+                        <Setter Property="MaxItems" Value="7" />
+                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

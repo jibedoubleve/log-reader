@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace Probel.LogReader.Views
 {
@@ -21,10 +20,6 @@ namespace Probel.LogReader.Views
 
         #region Methods
 
-        private void OnLogsMouseDoubleClick(object sender, MouseButtonEventArgs e) => IsDetailsVisible.IsChecked = true;
-
-        #endregion Methods
-
         private void OnRequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             try { Process.Start(e.Uri.AbsoluteUri); }
@@ -34,6 +29,13 @@ namespace Probel.LogReader.Views
                  * TODO: add logs here
                  */
             }
+        }
+
+        #endregion Methods
+
+        private void OnLogsMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
         }
     }
 }

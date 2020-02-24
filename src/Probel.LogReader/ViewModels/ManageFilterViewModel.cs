@@ -127,7 +127,7 @@ namespace Probel.LogReader.ViewModels
 
                 Filters = new ObservableCollection<FilterSettings>(filters);
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
         }
 
         public void SaveAll()
@@ -137,9 +137,9 @@ namespace Probel.LogReader.ViewModels
                 _configManager.SaveAsync(_app);
 
                 _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-                _userInteraction.Inform(Strings.Msg_InformSaved);
+                _userInteraction.NotifySuccess(Strings.Msg_InformSaved);
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
         }
 
         #endregion Methods

@@ -22,8 +22,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
-        private readonly IFilterTranslator _filterTranslator;
-        private readonly ILogger _log;
+        private readonly IFilterTranslator _filterTranslator;        
         private readonly ManageFilterViewModel _manageFilterViewModel;
         private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private readonly IPluginInfoManager _pluginInfoManager;
@@ -45,12 +44,10 @@ namespace Probel.LogReader.ViewModels
             , IFilterTranslator filterTranslator
             , MainViewModelPack views
             , IEventAggregator eventAggregator
-            , IUserInteraction userInteraction
-            , ILogger log)
+            , IUserInteraction userInteraction)
         {
             eventAggregator.Subscribe(this);
-
-            _log = log;
+            
             _configurationManager = cfg;
             _userInteraction = userInteraction;
             _pluginInfoManager = pluginInfoManager;
@@ -101,7 +98,7 @@ namespace Probel.LogReader.ViewModels
 
                 _vmLogsViewModel.ClearCache();
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
 
             var token = new CancellationToken();
             var sched = TaskScheduler.FromCurrentSynchronizationContext();
@@ -111,7 +108,7 @@ namespace Probel.LogReader.ViewModels
                 ActivateItem(_vmDaysViewModel);
                 waiter.Dispose();
             }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
-            t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, sched);
+            t2.OnErrorHandle(_userInteraction, token, sched);
         }
 
         private void LoadFilter(IFilterComposite filterComposite)
@@ -196,10 +193,10 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.Cache(logs);
                 }
             });
-            t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+            t1.OnErrorHandle(_userInteraction);
 
             var t2 = t1.ContinueWith(r => ActivateItem(_vmLogsViewModel), token, TaskContinuationOptions.OnlyOnRanToCompletion, scheduler);
-            t2.OnErrorHandleWith(r => _log.Error(r.Exception), token, scheduler);
+            t2.OnErrorHandle(_userInteraction, token, scheduler);
         }
 
         public void LoadMenus()
@@ -217,7 +214,7 @@ namespace Probel.LogReader.ViewModels
                     MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
                     MenuFilter = new ObservableCollection<MenuItemModel>(menuFilter);
                 });
-                t1.OnErrorHandleWith(r => _log.Error(r.Exception));
+                t1.OnErrorHandle(_userInteraction);
             }
             catch (Exception ex) { throw ex; }
         }

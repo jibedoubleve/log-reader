@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Filters;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -98,7 +99,21 @@ namespace Probel.LogReader.Core.Plugins
 
         public void Save(AppSettings settings) => _fileManager.Save(settings);
 
+        public void Save(Action<AppSettings> update)
+        {
+            var input = Get();
+            update(input);
+            Save(input);
+        }
+
         public async Task SaveAsync(AppSettings settings) => await _fileManager.SaveAsync(settings);
+
+        public async Task SaveAsync(Action<AppSettings> update)
+        {
+            var input = await GetAsync();
+            update(input);
+            await SaveAsync(input);
+        }
 
         public async Task UpdateAsync(RepositorySettings info)
         {
