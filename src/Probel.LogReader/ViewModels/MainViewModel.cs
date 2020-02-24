@@ -2,7 +2,6 @@ using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
-using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Models;
@@ -22,7 +21,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
-        private readonly IFilterTranslator _filterTranslator;        
+        private readonly IFilterTranslator _filterTranslator;
         private readonly ManageFilterViewModel _manageFilterViewModel;
         private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private readonly IPluginInfoManager _pluginInfoManager;
@@ -47,7 +46,7 @@ namespace Probel.LogReader.ViewModels
             , IUserInteraction userInteraction)
         {
             eventAggregator.Subscribe(this);
-            
+
             _configurationManager = cfg;
             _userInteraction = userInteraction;
             _pluginInfoManager = pluginInfoManager;
@@ -85,74 +84,6 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
-        private void LoadDays(IPlugin plugin)
-        {
-            var waiter = _userInteraction.NotifyWait();
-
-            var t1 = Task.Run(() =>
-            {
-                var r = plugin.GetDays();
-
-                _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
-                _vmDaysViewModel.Plugin = plugin;
-
-                _vmLogsViewModel.ClearCache();
-            });
-            t1.OnErrorHandle(_userInteraction);
-
-            var token = new CancellationToken();
-            var sched = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var t2 = t1.ContinueWith(r =>
-            {
-                ActivateItem(_vmDaysViewModel);
-                waiter.Dispose();
-            }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
-            t2.OnErrorHandle(_userInteraction, token, sched);
-        }
-
-        private void LoadFilter(IFilterComposite filterComposite)
-        {
-            _vmLogsViewModel.ResetCache();
-            var logs = filterComposite.Filter(_vmLogsViewModel.Logs);
-            _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
-        }
-
-        private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
-        {
-            var menus = new List<MenuItemModel>();
-            var aps = new AppSettingsDecorator(app);
-            var filters = aps.GetFilters(OrderBy.Asc);
-            foreach (var filter in filters)
-            {
-                menus.Add(new MenuItemModel
-                {
-                    Name = filter.Name ?? _filterTranslator.Translate(filter),
-                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id))),
-                });
-            }
-            return menus;
-        }
-
-        private IEnumerable<MenuItemModel> LoadMenuRepository(AppSettings app)
-        {
-            var pil = _pluginInfoManager.GetPluginsInfo();
-            var repositories = (from r in app.Repositories
-                                where pil.Where(e => e.Id == r.PluginId).Count() > 0
-                                select r).OrderBy(e => e.Name);
-
-            var menus = new List<MenuItemModel>();
-            foreach (var repo in repositories)
-            {
-                menus.Add(new MenuItemModel
-                {
-                    Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadDays(_pluginManager.Build(repo)))
-                });
-            }
-            return menus;
-        }
-
         public void Handle(UiEvent message)
         {
             if (message.Event == UiEvents.RefreshMenus)
@@ -186,15 +117,15 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
                     _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
+                    _vmLogsViewModel.Plugin = plugin;
+                    _vmLogsViewModel.Date = day;
+                    _vmLogsViewModel.Listener = plugin;
 
                     _vmLogsViewModel.GoBack = () => LoadDays(plugin);
-                    _vmLogsViewModel.RefreshData = () => LoadLogs(plugin, day);
-                    _vmLogsViewModel.Listener = plugin;
 
                     _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
                     _vmLogsViewModel.CanListen = plugin.CanListen;
                     _vmLogsViewModel.FilePath = path;
-
                 }
             });
             t1.OnErrorHandle(_userInteraction);
@@ -233,6 +164,74 @@ namespace Probel.LogReader.ViewModels
         {
             _manageRepositoryViewModel.Load();
             ActivateItem(_manageRepositoryViewModel);
+        }
+
+        private void LoadDays(IPlugin plugin)
+        {
+            var waiter = _userInteraction.NotifyWait();
+
+            var t1 = Task.Run(() =>
+            {
+                var r = plugin.GetDays();
+
+                _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
+                _vmDaysViewModel.Plugin = plugin;
+
+                _vmLogsViewModel.ClearCache();
+            });
+            t1.OnErrorHandle(_userInteraction);
+
+            var token = new CancellationToken();
+            var sched = TaskScheduler.FromCurrentSynchronizationContext();
+
+            var t2 = t1.ContinueWith(r =>
+            {
+                ActivateItem(_vmDaysViewModel);
+                waiter.Dispose();
+            }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
+            t2.OnErrorHandle(_userInteraction, token, sched);
+        }
+
+        private void LoadFilter(IFilterComposite filterComposite)
+        {
+            var logs = filterComposite.Filter(_vmLogsViewModel.GetLogRows());
+            _vmLogsViewModel.Cache(logs);
+            _vmLogsViewModel.Filter();
+        }
+
+        private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
+        {
+            var menus = new List<MenuItemModel>();
+            var aps = new AppSettingsDecorator(app);
+            var filters = aps.GetFilters(OrderBy.Asc);
+            foreach (var filter in filters)
+            {
+                menus.Add(new MenuItemModel
+                {
+                    Name = filter.Name ?? _filterTranslator.Translate(filter),
+                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id))),
+                });
+            }
+            return menus;
+        }
+
+        private IEnumerable<MenuItemModel> LoadMenuRepository(AppSettings app)
+        {
+            var pil = _pluginInfoManager.GetPluginsInfo();
+            var repositories = (from r in app.Repositories
+                                where pil.Where(e => e.Id == r.PluginId).Count() > 0
+                                select r).OrderBy(e => e.Name);
+
+            var menus = new List<MenuItemModel>();
+            foreach (var repo in repositories)
+            {
+                menus.Add(new MenuItemModel
+                {
+                    Name = repo.Name,
+                    MenuCommand = new RelayCommand(() => LoadDays(_pluginManager.Build(repo)))
+                });
+            }
+            return menus;
         }
 
         #endregion Methods

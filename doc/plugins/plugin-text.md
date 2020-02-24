@@ -36,7 +36,7 @@ The regex should contain in group the year, month, day of the date of log. The g
 
 ## Preconfigured
 ### Github desktop log files
-| Query | Regular expression                                                                                                  |
-| ----- | ------------------------------------------------------------------------------------------------------------------- |
-| Day   | `(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.log`                                                    |
-| Log   | `(?<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}).*(?<level>(trace|debug|info|warn|error|fatal)):(?<message>.*)` |
+| Query | Regular expression                                                                                                                                 |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Day   | `(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})\..*\.log`                                                                                   |
+| Log   | `^(?<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z).*(?<level>(trace|debug|info|warn|error|fatal)):(?<message>.*[\s\S]*?)(?=\d{4}-\d{2}-\d{2})` |

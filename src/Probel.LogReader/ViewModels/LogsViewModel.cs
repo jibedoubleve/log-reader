@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
@@ -18,6 +19,7 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
+        private static Stopwatch _stopwatch = new Stopwatch();
         private readonly IConfigurationManager _config;
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
@@ -55,6 +57,7 @@ namespace Probel.LogReader.ViewModels
             _eventAggregator = eventAggregator;
             _configManager = configManager;
             _config = config;
+            _stopwatch.Start();
         }
 
         #endregion Constructors
@@ -178,13 +181,21 @@ namespace Probel.LogReader.ViewModels
 
         public int LogsCount => Logs.Count();
 
-        public System.Action RefreshData { get; set; }
+        public void RefreshData()
+        {
+            var l = GetLogRows();
+            Cache(l);
+            Filter();
+        }
+
+        public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
 
         public string RepositoryName
         {
             get => _repositoryName;
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
+        public IPlugin Plugin { get; internal set; }
 
         #endregion Properties
 
@@ -193,14 +204,29 @@ namespace Probel.LogReader.ViewModels
         public void Cache(IEnumerable<LogRow> logs)
         {
             _cachedLogs = logs;
-            Date = logs.Select(e => e.Time.Date).Distinct().FirstOrDefault();
         }
 
         public void ClearCache() => _cachedLogs = null;
 
+        public void Filter(IEnumerable<LogRow> logs)
+        {
+            var src = logs == null ? _cachedLogs : logs;
+            var levels = GetLevels();
+
+            var filtered = (from l in src
+                            where levels.Contains(l.Level.ToLower())
+                            select l).ToList();
+            Logs = new ObservableCollection<LogRow>(filtered);
+        }
+
+        /// <summary>
+        /// This method is used for the <see cref="ICommand"/>
+        /// </summary>
+        public void Filter() => Filter(null);
+
         public void LoadDays() => GoBack?.Invoke();
 
-        public void ResetCache()
+        public void ResetFromCache()
         {
             if (_cachedLogs == null) { Logs = new ObservableCollection<LogRow>(); }
             else
@@ -247,15 +273,6 @@ namespace Probel.LogReader.ViewModels
             t1.OnErrorHandle(_ui);
         }
 
-        private void Filter()
-        {
-            var levels = GetLevels();
-            var logs = (from l in _cachedLogs
-                        where levels.Contains(l.Level.ToLower())
-                        select l).ToList();
-            Logs = new ObservableCollection<LogRow>(logs);
-        }
-
         private IEnumerable<string> GetLevels()
         {
             var levels = new List<string>();
@@ -268,23 +285,24 @@ namespace Probel.LogReader.ViewModels
             return levels;
         }
 
-        private Stopwatch _stopwatch = new Stopwatch();
         private void OnDataChanged(object sender, EventArgs e)
         {
-
             if (IsListeningFile)
             {
                 _stopwatch.Stop();
-                if (_stopwatch.ElapsedMilliseconds == 0 || _stopwatch.ElapsedMilliseconds > 100)
+                if (_stopwatch.ElapsedMilliseconds > 500)
                 {
-                    _log.Trace("Log file changed!");
+                    _log.Trace($"Log file changed! Last event {_stopwatch.ElapsedMilliseconds} msec ago.");
                     ChangeCount++;
-                    Task.Run(() => RefreshData?.Invoke())
-                        .OnErrorHandle(_ui);
+                    Task.Run(() =>
+                    {
+                        RefreshData();
+                        Filter();
+                    }).OnErrorHandle(_ui);
                 }
-                _stopwatch.Reset();
-                _stopwatch.Start();
             }
+            _stopwatch.Reset();
+            _stopwatch.Start();
         }
 
         private void RegisterListener()
