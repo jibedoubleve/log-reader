@@ -1,6 +1,8 @@
 ﻿using CsvHelper;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Plugins.Csv.Config;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -30,7 +32,7 @@ namespace Probel.LogReader.Plugins.Csv.IO
 
         #region Methods
 
-        public IEnumerable<LogRow> GetLogs()
+        public IEnumerable<LogRow> GetLogs(OrderBy orderby)
         {
             var ci = CultureInfo.InvariantCulture;
             var encoding = Encoding.GetEncoding(_querylog.Encoding);
@@ -40,8 +42,18 @@ namespace Probel.LogReader.Plugins.Csv.IO
             {
                 csv.Configure(_querylog);
 
-                var records = csv.GetRecords<LogRow>().ToList();
-                return records;
+                var records = csv.GetRecords<LogRow>();
+
+                switch (orderby)
+                {
+                    case OrderBy.Asc:
+                        return records.OrderBy(e => e.Time).ToList();
+                    case OrderBy.Desc:
+                        return records.OrderByDescending(e => e.Time).ToList();
+                    case OrderBy.None:
+                        return records.ToList();
+                    default: throw new NotSupportedException($"Sort type '{orderby}' is not supported!");
+                }
             }
         }
 

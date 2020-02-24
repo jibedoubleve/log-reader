@@ -120,9 +120,7 @@
                         </TextBlock>
                     </StackPanel>
                 </ToggleButton>
-            </ToolBar>
-            <ToolBar Visibility="{Binding CanListen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Button x:Name="SortLogs">
+                <Button x:Name="ToggleSortLogs">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -132,10 +130,10 @@
                                 <Style TargetType="iconPacks:PackIconMaterial">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Kind" Value="SortAscending" />
+                                            <Setter Property="Kind" Value="SortDescending" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                            <Setter Property="Kind" Value="SortDescending" />
+                                            <Setter Property="Kind" Value="SortAscending" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -146,10 +144,10 @@
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="Text" Value="Sort ascending" />
+                                            <Setter Property="Text" Value="Sort descending" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                            <Setter Property="Text" Value="Sort descending" />
+                                            <Setter Property="Text" Value="Sort ascending" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -157,6 +155,8 @@
                         </TextBlock>
                     </StackPanel>
                 </Button>
+            </ToolBar>
+            <ToolBar Visibility="{Binding CanListen, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ToggleButton x:Name="_isListeningFile" IsChecked="{Binding IsListeningFile}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
@@ -460,7 +460,7 @@
             <StatusBarItem>
                 <TextBlock>
                     <Run Text="Date:" />
-                    <Run Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
+                    <Run FontWeight="Bold" Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
                 </TextBlock>
             </StatusBarItem>
             <Separator Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
@@ -480,25 +480,41 @@
                 </TextBlock>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <iconPacks:PackIconMaterial
-                    Margin="0,0,5,0"
-                    VerticalAlignment="Center"
-                    VerticalContentAlignment="Center">
-                    <iconPacks:PackIconMaterial.Style>
-                        <Style TargetType="iconPacks:PackIconMaterial">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                    <Setter Property="Kind" Value="SortAscending" />
-                                    <Setter Property="ToolTip" Value="Sorted ascending" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="Kind" Value="SortDescending" />
-                                    <Setter Property="ToolTip" Value="Sorted descending" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </iconPacks:PackIconMaterial.Style>
-                </iconPacks:PackIconMaterial>
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center">
+                        <iconPacks:PackIconMaterial.Style>
+                            <Style TargetType="iconPacks:PackIconMaterial">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="Kind" Value="SortAscending" />
+                                        <Setter Property="ToolTip" Value="Sorted ascending" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                        <Setter Property="Kind" Value="SortDescending" />
+                                        <Setter Property="ToolTip" Value="Sorted descending" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </iconPacks:PackIconMaterial.Style>
+                    </iconPacks:PackIconMaterial>
+                    <TextBlock Margin="5,0,5,0">
+                        <TextBlock.Resources>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="Text" Value="Ascending" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsOrderByAsc, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                        <Setter Property="Text" Value="Descending" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Resources>
+                    </TextBlock>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>

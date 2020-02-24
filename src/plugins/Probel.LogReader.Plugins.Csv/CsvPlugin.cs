@@ -59,7 +59,7 @@ namespace Probel.LogReader.Plugins.Csv
             if (d != null)
             {
                 var reader = new CsvFileReader(s, d.FilePath);
-                return reader.GetLogs();
+                return reader.GetLogs(orderby);
             }
             return new List<LogRow>();
         }

@@ -12,7 +12,7 @@ namespace Probel.LogReader.Core.Configuration
         [JsonProperty("show-threadid")]
         public bool ShowThreadId { get; set; }
 
-        [JsonProperty("is-log-order-ascendent")]
+        [JsonProperty("log-sorted-ascending")]
         public bool IsLogOrderAsc { get; set; } = true;
 
         #endregion Properties

@@ -17,8 +17,8 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
-        private readonly IConfigurationManager _configManager;
         private readonly IConfigurationManager _config;
+        private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _log;
         private readonly IUserInteraction _ui;
@@ -199,7 +199,24 @@ namespace Probel.LogReader.ViewModels
 
         public void LoadDays() => GoBack?.Invoke();
 
-        public void ResetCache() => Logs = (_cachedLogs == null) ? new ObservableCollection<LogRow>() : new ObservableCollection<LogRow>(_cachedLogs);
+        public void ResetCache()
+        {
+            if (_cachedLogs == null) { Logs = new ObservableCollection<LogRow>(); }
+            else
+            {
+                var l = IsOrderByAsc
+                    ? _cachedLogs.OrderBy(e => e.Time)
+                    : _cachedLogs.OrderByDescending(e => e.Time);
+                Logs = new ObservableCollection<LogRow>(l);
+            }
+        }
+
+        public void ToggleSortLogs()
+        {
+            IsOrderByAsc = !IsOrderByAsc;
+            SortLogs(IsOrderByAsc);
+
+        }
 
         protected override void OnActivate()
         {
@@ -212,7 +229,6 @@ namespace Probel.LogReader.ViewModels
                 = IsFatalVisible
                 = true;
             if (IsListeningFile) { RegisterListener(); }
-            IsOrderByAsc = _config.Get().Ui.IsLogOrderAsc;
         }
 
         protected override void OnDeactivate(bool close)
@@ -229,11 +245,6 @@ namespace Probel.LogReader.ViewModels
                 SaveConfig();
             });
             t1.OnErrorHandle(_ui);
-        }
-
-        private void SaveConfig()
-        {
-            _config.Save(e => e.Ui.IsLogOrderAsc = IsOrderByAsc);
         }
 
         private void Filter()
@@ -279,6 +290,16 @@ namespace Probel.LogReader.ViewModels
             else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
+        private void SaveConfig() => _config.Save(e => e.Ui.IsLogOrderAsc = IsOrderByAsc);
+
+        private void SortLogs(bool sortAsc)
+        {
+            var l = (sortAsc)
+                ? Logs.OrderBy(e => e.Time)
+                : Logs.OrderByDescending(e => e.Time);
+            Logs = new ObservableCollection<LogRow>(l);
+        }
+
         private void UnregisterListener()
         {
             if (Listener != null)
@@ -288,16 +309,6 @@ namespace Probel.LogReader.ViewModels
             }
             else { _log.Trace("No listener to deactivate."); }
         }
-
-        public void SortLogs()
-        {
-            Logs = (IsOrderByAsc)
-                ? new ObservableCollection<LogRow>(Logs.OrderBy(e => e.Time))
-                : new ObservableCollection<LogRow>(Logs.OrderByDescending(e => e.Time));
-
-            IsOrderByAsc = !IsOrderByAsc;
-        }
-
 
         #endregion Methods
     }

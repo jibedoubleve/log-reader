@@ -175,8 +175,11 @@ namespace Probel.LogReader.ViewModels
                 using (_userInteraction.NotifyWait())
                 {
                     var cfg = _configurationManager.Get();
-                    var logs = plugin.GetLogs(day);
 
+                    var orderby = cfg.Ui.IsLogOrderAsc ? OrderBy.Asc : OrderBy.Desc;
+                    var logs = plugin.GetLogs(day, orderby);
+
+                    _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
                     _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
