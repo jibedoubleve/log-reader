@@ -194,9 +194,12 @@ namespace Probel.LogReader.ViewModels
 
         private void LoadFilter(IFilter filter)
         {
-            var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
-            _vmLogsViewModel.Cache(logs);
-            _vmLogsViewModel.Filter();
+            using (_userInteraction.NotifyWait())
+            {
+                var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
+                _vmLogsViewModel.Cache(logs);
+                _vmLogsViewModel.Filter();
+            }
         }
 
         private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
