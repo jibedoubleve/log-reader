@@ -196,6 +196,7 @@ namespace Probel.LogReader.ViewModels
         {
             using (_userInteraction.NotifyWait())
             {
+                _vmLogsViewModel.LastFilter = filter;
                 var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
                 _vmLogsViewModel.Cache(logs);
                 _vmLogsViewModel.Filter();

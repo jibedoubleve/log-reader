@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
@@ -185,7 +186,7 @@ namespace Probel.LogReader.ViewModels
         {
             var l = GetLogRows();
             Cache(l);
-            Filter();
+            Filter(LastFilter.Filter(l));
         }
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
@@ -196,6 +197,7 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
         public IPlugin Plugin { get; internal set; }
+        public IFilter LastFilter { get; internal set; }
 
         #endregion Properties
 
@@ -208,7 +210,7 @@ namespace Probel.LogReader.ViewModels
 
         public void ClearCache() => _cachedLogs = null;
 
-        public void Filter(IEnumerable<LogRow> logs)
+        private void Filter(IEnumerable<LogRow> logs)
         {
             var src = logs == null ? _cachedLogs : logs;
             var levels = GetLevels();
@@ -297,7 +299,6 @@ namespace Probel.LogReader.ViewModels
                     Task.Run(() =>
                     {
                         RefreshData();
-                        Filter();
                     }).OnErrorHandle(_ui);
                 }
             }
