@@ -12,7 +12,7 @@ namespace Probel.LogReader.Converters
         {
             if (value is string text)
             {
-                text = text.Replace(Environment.NewLine, " ");
+                text = text.Replace("\n", " ").Replace("\r", " ");
                 return text;
             }
             else { return value; }
