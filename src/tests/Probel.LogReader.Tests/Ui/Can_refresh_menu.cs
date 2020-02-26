@@ -95,16 +95,16 @@ namespace Probel.LogReader.Tests.Ui
             var settings = new RepositorySettings { PluginId = PluginType.Debug, Name = "debug" };
             var expression = new List<FilterExpressionSettings>()
             {
-                new FilterExpressionSettings() { Operation = FilterType.Time , Operand = Rand.Text, Operator = Rand.Text},
-                new FilterExpressionSettings() { Operation = FilterType.Category, Operand = Rand.Text, Operator = Rand.Text},
-                new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.Text},
+                new FilterExpressionSettings() { Operation = FilterType.Time , Operand = Rand.IntegerAsString, Operator = Rand.ComparisionOperator},
+                new FilterExpressionSettings() { Operation = FilterType.Category, Operand = Rand.Text, Operator = Rand.EnsembleOperator},
+                new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.EnsembleOperator},
             };
 
             IPluginManager pm = new PluginManager(new DebugLoader());
             IFilterManager fm = new FilterManager();
 
             var p = pm.Build(settings);
-            var f = fm.Build(expression);
+            var f = fm.Build(expression, "and");
 
             var day = p.GetDays().ElementAt(0);
             var logs = f.Filter(p.GetLogs(day));

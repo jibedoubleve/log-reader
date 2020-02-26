@@ -15,6 +15,7 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly EditSubfilterViewModel _editSubfilterViewModel;
+        private readonly IUserInteraction _userInteraction;
         private IList<FilterExpressionSettings> _cachedSubfilter;
         private FilterExpressionSettings _currentSubfilter;
         private FilterSettings _filter;
@@ -53,8 +54,6 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand DeleteCurrentFilterCommand { get; private set; }
-
-        private readonly IUserInteraction _userInteraction;
 
         public FilterSettings Filter
         {

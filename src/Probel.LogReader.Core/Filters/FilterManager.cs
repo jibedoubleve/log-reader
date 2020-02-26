@@ -32,13 +32,13 @@ namespace Probel.LogReader.Core.Filters
 
         public static IEnumerable<string> GetOperators(FilterOperations operation) => FilterHelper.GetOperators(operation);
 
-        public IFilterComposite Build(IEnumerable<FilterExpressionSettings> expression)
+        public IFilterComposite Build(IEnumerable<FilterExpressionSettings> expression, string @operator)
         {
             var filters = new List<IFilterExpression>();
 
             foreach (var item in expression) { filters.Add(Create(item)); }
 
-            var composite = new AndFilterComposite();
+            var composite = (@operator.ToLower() == "and") ? (IFilterComposite)new AndFilterComposite() : new OrFilterComposite();
             composite.Add(filters.ToArray());
 
             return composite;
@@ -48,9 +48,9 @@ namespace Probel.LogReader.Core.Filters
         {
             var expStg = (from f in _filters
                           where f.Id == id
-                          select f.Expression).FirstOrDefault();
+                          select f).FirstOrDefault();
 
-            if (expStg != null) { return Build(expStg); }
+            if (expStg != null) { return Build(expStg.Expression, expStg.Operator); }
             else { throw new NotSupportedException($"No filter expression with name '{id}' found in the configuration"); }
         }
 
@@ -75,6 +75,7 @@ namespace Probel.LogReader.Core.Filters
             }
             else { return new EmptyFilter(); }
         }
+
 
         #endregion Methods
     }

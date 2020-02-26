@@ -192,9 +192,9 @@ namespace Probel.LogReader.ViewModels
             t2.OnErrorHandle(_userInteraction, token, sched);
         }
 
-        private void LoadFilter(IFilterComposite filterComposite)
+        private void LoadFilter(IFilter filter)
         {
-            var logs = filterComposite.Filter(_vmLogsViewModel.GetLogRows());
+            var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
             _vmLogsViewModel.Cache(logs);
             _vmLogsViewModel.Filter();
         }

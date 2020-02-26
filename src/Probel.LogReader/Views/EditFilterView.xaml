@@ -8,6 +8,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:Probel.LogReader.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     x:Name="_self"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -34,6 +35,11 @@
                 <!--  Name  -->
                 <Label>Name:</Label>
                 <TextBox Text="{Binding Filter.Name, UpdateSourceTrigger=PropertyChanged}" />
+                <Label>Operator:</Label>
+                <ComboBox SelectedItem="{Binding Filter.Operator}">
+                    <sys:String>And</sys:String>
+                    <sys:String>Or</sys:String>
+                </ComboBox>
             </StackPanel>
             <ListView
                 Grid.Row="10"

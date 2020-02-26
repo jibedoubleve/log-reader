@@ -8,7 +8,7 @@ namespace Probel.LogReader.Core.Filters
     {
         #region Methods
 
-        IFilterComposite Build(IEnumerable<FilterExpressionSettings> expression);
+        IFilterComposite Build(IEnumerable<FilterExpressionSettings> expression, string @operator);
 
         IFilterComposite Build(Guid id);
 

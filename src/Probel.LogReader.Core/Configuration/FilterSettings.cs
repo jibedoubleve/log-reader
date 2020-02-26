@@ -76,6 +76,9 @@ namespace Probel.LogReader.Core.Configuration
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("operator")]
+        public string Operator { get; set; } = "And";
+
         #endregion Properties
     }
 }

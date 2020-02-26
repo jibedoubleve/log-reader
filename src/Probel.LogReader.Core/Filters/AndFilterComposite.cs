@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Probel.LogReader.Core.Filters
 {
@@ -13,8 +14,20 @@ namespace Probel.LogReader.Core.Filters
         /// <returns>Filters enumeration of <see cref="LogRow"/></returns>
         public override IEnumerable<LogRow> Filter(IEnumerable<LogRow> rows)
         {
-            foreach (var filter in Filters) { rows = filter.Filter(rows); }
-            return rows;
+            var results = new List<IEnumerable<LogRow>>();
+            foreach (var filter in Filters)
+            {
+                var r = filter.Filter(rows);
+                results.Add(new List<LogRow>(r));
+            }
+
+            var intersection = results
+                .Skip(1)
+                .Aggregate(
+                    new HashSet<LogRow>(results.First()),
+                    (h, e) => { h.IntersectWith(e); return h; }
+                );
+            return intersection;            
         }
 
     }
