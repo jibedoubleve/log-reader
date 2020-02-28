@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
-using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
 using Probel.LogReader.Properties;
@@ -15,13 +14,13 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
+        public readonly IUserInteraction _userInteraction;
         private readonly IConfigurationManager _configManager;
         private readonly EditRepositoryViewModel _editRepositoryViewModel;
         private readonly IEventAggregator _eventAggregator;
         private AppSettings _cachedAppSettings;
         private RepositorySettings _currentRepositorySettings;
         private ObservableCollection<RepositorySettings> _repositories;
-        public readonly IUserInteraction _userInteraction;
 
         #endregion Fields
 
@@ -33,6 +32,8 @@ namespace Probel.LogReader.ViewModels
             , IUserInteraction userInteraction)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
+            SaveAllCommand = new RelayCommand(SaveAll);
+
             _userInteraction = userInteraction;
             _eventAggregator = eventAggregator;
             _editRepositoryViewModel = editRepositoryViewModel;
@@ -57,18 +58,11 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositories, value, nameof(Repositories));
         }
 
+        public ICommand SaveAllCommand { get; private set; }
+
         #endregion Properties
 
         #region Methods
-
-        private void DeleteCurrentRepository()
-        {
-            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
-            {
-                _cachedAppSettings.Repositories.Remove(CurrentRepository);
-                Repositories.Remove(CurrentRepository);
-            }
-        }
 
         public void ActivateCurrentRepository()
         {
@@ -117,9 +111,18 @@ namespace Probel.LogReader.ViewModels
                 _configManager.Save(_cachedAppSettings);
 
                 _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-                _userInteraction.NotifySuccess(Strings.Msg_InformSaved);
+                _userInteraction.NotifySuccess(Strings.Msg_InformRepositorySaved);
             });
             t1.OnErrorHandle(_userInteraction);
+        }
+
+        private void DeleteCurrentRepository()
+        {
+            if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
+            {
+                _cachedAppSettings.Repositories.Remove(CurrentRepository);
+                Repositories.Remove(CurrentRepository);
+            }
         }
 
         #endregion Methods

@@ -16,6 +16,12 @@
             <MenuItem Command="{Binding Source={x:Reference _self}, Path=DataContext.DeleteCurrentFilterCommand}" Header="Delete this Filter" />
         </ContextMenu>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding
+            Key="S"
+            Command="{Binding SaveAllCommand}"
+            Modifiers="Ctrl" />
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

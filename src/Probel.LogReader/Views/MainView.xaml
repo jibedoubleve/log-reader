@@ -50,6 +50,9 @@
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
                 <MenuItem Header="_Help">
+                    <MenuItem Click="OnViewWebsite" Header="_Github" />
+                    <MenuItem Click="OnViewLicense" Header="V_iew license" />
+                    <Separator />
                     <MenuItem Click="OnClickAbout" Header="_About" />
                 </MenuItem>
             </Menu>
