@@ -20,6 +20,10 @@
             Key="S"
             Command="{Binding SaveAllCommand}"
             Modifiers="Ctrl" />
+        <KeyBinding
+            Key="N"
+            Command="{Binding CreateRepositoryCommand}"
+            Modifiers="Ctrl" />
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

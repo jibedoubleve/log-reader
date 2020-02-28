@@ -32,6 +32,7 @@ namespace Probel.LogReader.ViewModels
             , IUserInteraction userInteraction)
         {
             DeleteCurrentRepositoryCommand = new RelayCommand(DeleteCurrentRepository);
+            CreateRepositoryCommand = new RelayCommand(CreateRepository);
             SaveAllCommand = new RelayCommand(SaveAll);
 
             _userInteraction = userInteraction;
@@ -43,6 +44,8 @@ namespace Probel.LogReader.ViewModels
         #endregion Constructors
 
         #region Properties
+
+        public ICommand CreateRepositoryCommand { get; private set; }
 
         public RepositorySettings CurrentRepository
         {

@@ -29,7 +29,8 @@ namespace Probel.LogReader.ViewModels
         #endregion Fields
 
         #region Constructors
-
+        public ICommand CreateFilterCommand { get; private set; }
+        public ICommand CreateSubFilterCommand { get; private set; }
         public ManageFilterViewModel(IConfigurationManager configManager
                     , EditFilterViewModel editSubfilterViewModel
             , IEventAggregator eventAggregator
@@ -38,6 +39,8 @@ namespace Probel.LogReader.ViewModels
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
             SaveAllCommand = new RelayCommand(SaveAll);
+            CreateSubFilterCommand = new RelayCommand(CreateSubFilter);
+            CreateFilterCommand = new RelayCommand(CreateFilter);
 
             _log = log;
             _userInteraction = userInteraction;

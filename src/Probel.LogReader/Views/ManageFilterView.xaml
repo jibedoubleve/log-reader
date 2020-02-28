@@ -21,6 +21,14 @@
             Key="S"
             Command="{Binding SaveAllCommand}"
             Modifiers="Ctrl" />
+        <KeyBinding
+            Key="N"
+            Command="{Binding CreateFilterCommand}"
+            Modifiers="Ctrl" />
+        <KeyBinding
+            Key="N"
+            Command="{Binding CreateSubFilterCommand}"
+            Modifiers="Ctrl+Shift" />
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
