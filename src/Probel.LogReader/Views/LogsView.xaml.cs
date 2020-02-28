@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Probel.LogReader.ViewModels;
+using System;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Probel.LogReader.Views
 {
@@ -18,7 +21,25 @@ namespace Probel.LogReader.Views
 
         #endregion Constructors
 
+        #region Properties
+
+        private LogsViewModel ViewModel => DataContext as LogsViewModel;
+
+        #endregion Properties
+
         #region Methods
+
+        private void OnDockingManagerLoaded(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel?.IsDetailVisible ?? false)
+            {
+                _detailPane.ToggleAutoHide();
+            }
+        }
+
+        private void OnLogsMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+        }
 
         private void OnRequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
@@ -33,9 +54,13 @@ namespace Probel.LogReader.Views
 
         #endregion Methods
 
-        private void OnLogsMouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnToggleButtonClick(object sender, RoutedEventArgs e)
         {
-
+            _detailPane.ToggleAutoHide();
+            if (ViewModel != null)
+            {
+                ViewModel.IsDetailVisible = !ViewModel.IsDetailVisible;
+            }
         }
     }
 }

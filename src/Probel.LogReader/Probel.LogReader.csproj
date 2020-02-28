@@ -118,6 +118,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Colouration\Colourator.cs" />
     <Compile Include="Colouration\IColourator.cs" />
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\InvertBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\LowercaseConverter.cs" />
     <Compile Include="Converters\StringToOneLinerConverter.cs" />
