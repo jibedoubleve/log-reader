@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -186,7 +187,7 @@ namespace Probel.LogReader.ViewModels
         {
             var l = GetLogRows();
             Cache(l);
-            Filter(LastFilter.Filter(l));
+            Filter(LastFilter?.Filter(l) ?? l);
         }
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
@@ -339,6 +340,14 @@ namespace Probel.LogReader.ViewModels
             ChangeCount = 0;
         }
 
+        public void RefreshLogs()
+        {
+            _ui.NotifyInformation("Refresging logs...");
+            var t1 = Task.Run(() => RefreshData());
+            t1.OnErrorHandle(_ui);
+
+            t1.ContinueWith(r => _ui.NotifySuccess("Refresh done."), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
         #endregion Methods
     }
 }
