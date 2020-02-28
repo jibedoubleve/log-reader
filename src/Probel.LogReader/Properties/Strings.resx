@@ -123,7 +123,10 @@
   <data name="Msg_AskReset" xml:space="preserve">
     <value>Do you want to reset all the changes?</value>
   </data>
-  <data name="Msg_InformSaved" xml:space="preserve">
-    <value>Item saved!</value>
+  <data name="Msg_InformFilterSaved" xml:space="preserve">
+    <value>Filter configuration saved.</value>
+  </data>
+  <data name="Msg_InformRepositorySaved" xml:space="preserve">
+    <value>Repository configuration saved.</value>
   </data>
 </root>

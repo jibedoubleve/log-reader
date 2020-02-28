@@ -29,7 +29,8 @@ namespace Probel.LogReader.ViewModels
         #endregion Fields
 
         #region Constructors
-
+        public ICommand CreateFilterCommand { get; private set; }
+        public ICommand CreateSubFilterCommand { get; private set; }
         public ManageFilterViewModel(IConfigurationManager configManager
                     , EditFilterViewModel editSubfilterViewModel
             , IEventAggregator eventAggregator
@@ -37,6 +38,9 @@ namespace Probel.LogReader.ViewModels
             , ILogger log)
         {
             DeleteCurrentFilterCommand = new RelayCommand(DeleteCurrentFilter);
+            SaveAllCommand = new RelayCommand(SaveAll);
+            CreateSubFilterCommand = new RelayCommand(CreateSubFilter);
+            CreateFilterCommand = new RelayCommand(CreateFilter);
 
             _log = log;
             _userInteraction = userInteraction;
@@ -64,6 +68,8 @@ namespace Probel.LogReader.ViewModels
             get => _filters;
             set => Set(ref _filters, value, nameof(Filters));
         }
+
+        public ICommand SaveAllCommand { get; private set; }
 
         #endregion Properties
 
@@ -137,7 +143,7 @@ namespace Probel.LogReader.ViewModels
                 _configManager.SaveAsync(_app);
 
                 _eventAggregator.PublishOnBackgroundThread(UiEvent.RefreshMenus);
-                _userInteraction.NotifySuccess(Strings.Msg_InformSaved);
+                _userInteraction.NotifySuccess(Strings.Msg_InformFilterSaved);
             });
             t1.OnErrorHandle(_userInteraction);
         }

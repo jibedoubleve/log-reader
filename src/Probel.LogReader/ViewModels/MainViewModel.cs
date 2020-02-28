@@ -113,8 +113,9 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.Cache(logs);
 
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
-                    _vmLogsViewModel.IsLoggerVisible = cfg.Ui.ShowLogger;
-                    _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.ShowThreadId;
+                    _vmLogsViewModel.IsLoggerVisible = cfg.Ui.IsLoggerVisible;
+                    _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.isThreadIdVisible;
+                    _vmLogsViewModel.IsDetailVisible = cfg.Ui.IsDetailVisible;
                     _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
                     _vmLogsViewModel.Plugin = plugin;
@@ -194,9 +195,13 @@ namespace Probel.LogReader.ViewModels
 
         private void LoadFilter(IFilter filter)
         {
-            var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
-            _vmLogsViewModel.Cache(logs);
-            _vmLogsViewModel.Filter();
+            using (_userInteraction.NotifyWait())
+            {
+                _vmLogsViewModel.LastFilter = filter;
+                var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
+                _vmLogsViewModel.Cache(logs);
+                _vmLogsViewModel.Filter();
+            }
         }
 
         private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)

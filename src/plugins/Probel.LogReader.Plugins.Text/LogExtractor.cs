@@ -19,7 +19,7 @@ namespace Probel.LogReader.Plugins.Text
 
         public LogExtractor(string pattern)
         {
-            _regex = new Regex(pattern);
+            _regex = new Regex(pattern, RegexOptions.Multiline);
         }
 
         #endregion Constructors

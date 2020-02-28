@@ -19,19 +19,20 @@ namespace Probel.LogReader.Core.Filters
 
         protected override Func<LogRow, string, bool> GetFilter()
         {
-            var now = DateTime.Now.TrimSeconds();
+            var now = DateTime.Now.TrimSeconds();          
             switch (Operator)
             {
-                //r.Time.Date == now.Date &&
-                case ">": return (r, t) => r.Time.Date == now.Date && r.Time.TrimSeconds() > now.AddMinutes(Parse(t));
-                case ">=": return (r, t) => r.Time.Date == now.Date && r.Time.TrimSeconds() >= now.AddMinutes(Parse(t));
-                case "<": return (r, t) => r.Time.Date == now.Date && r.Time.TrimSeconds() < now.AddMinutes(Parse(t));
-                case "<=": return (r, t) => r.Time.Date == now.Date && r.Time.TrimSeconds() <= now.AddMinutes(Parse(t));
-                case "!=": return (r, t) => r.Time.Date != now.Date || r.Time.TrimSeconds() != now.AddMinutes(Parse(t));
-                case "==": return (r, t) => r.Time.Date == now.Date && r.Time.TrimSeconds() == now.AddMinutes(Parse(t));
+                case ">": return (r, t) => MinutesBetween(r.Time, now) > Parse(t);
+                case ">=": return (r, t) => MinutesBetween(r.Time, now) >= Parse(t);
+                case "<": return (r, t) => MinutesBetween(r.Time, now) < Parse(t);
+                case "<=": return (r, t) => MinutesBetween(r.Time, now) <= Parse(t);
+                case "!=": return (r, t) => MinutesBetween(r.Time, now) != Parse(t);
+                case "==": return (r, t) => MinutesBetween(r.Time, now) == Parse(t);
                 default: throw new NotSupportedException($"Cannot build a filter. Operator '{Operator}' is not supported.");
             }
         }
+
+        private double MinutesBetween(DateTime r, DateTime n) => (int)Math.Abs((r.TrimSeconds() - n.TrimSeconds()).TotalMinutes);
 
         private double Parse(string time)
         {

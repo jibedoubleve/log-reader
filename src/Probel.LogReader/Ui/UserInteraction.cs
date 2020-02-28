@@ -94,6 +94,7 @@ namespace Probel.LogReader.Ui
                 Message = message,
                 Type = type
             };
+            WaitNotification.EndWaiting();
             _notifyer.Show(content, areaName: "WindowArea");
         }
 

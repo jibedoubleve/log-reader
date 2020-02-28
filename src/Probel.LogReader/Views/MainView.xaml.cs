@@ -1,6 +1,7 @@
 ﻿using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.ViewModels;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace Probel.LogReader.Views
         #endregion Properties
 
         #region Methods
-        private void OnWindowLoaded(object sender, RoutedEventArgs e) =>  ViewModel?.LoadMenus();
+        private void OnWindowLoaded(object sender, RoutedEventArgs e) => ViewModel?.LoadMenus();
 
         #endregion Methods
 
@@ -37,5 +38,9 @@ namespace Probel.LogReader.Views
             var msg = $"Version: {v.Version}{nl}File Version: {v.FileVersion}{nl}SemVer: {v.SemVer}{nl}Author: JB Wautier";
             MessageBox.Show(msg, "Log Reader", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
+        private void OnViewWebsite(object sender, RoutedEventArgs e) => Process.Start("https://github.com/jibedoubleve/log-reader");
+
+        private void OnViewLicense(object sender, RoutedEventArgs e) => Process.Start("https://github.com/jibedoubleve/log-reader/blob/develop/LICENSE");
     }
 }

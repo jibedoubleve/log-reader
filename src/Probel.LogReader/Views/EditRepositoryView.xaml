@@ -44,9 +44,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!--  PluginInfo  -->
@@ -83,37 +80,48 @@
         <!--  ConnectionString  -->
         <Label Grid.Row="6">Connection string:</Label>
         <TextBox Grid.Row="7" Text="{Binding Repository.ConnectionString, UpdateSourceTrigger=PropertyChanged}" />
-        <!--  Query Day  -->
-        <Label Grid.Row="8">Query for days:</Label>
-        <Border
-            Grid.Row="9"
-            Margin="5"
-            Style="{StaticResource BorderStyle}">
-            <avalonEdit:TextEditor
-                x:Name="_dayEditor"
-                FontFamily="Consolas"
-                FontSize="10pt"
-                SyntaxHighlighting="Sql">
-                <i:Interaction.Behaviors>
-                    <b:AvalonEditBehaviour Text="{Binding Repository.QueryDay, UpdateSourceTrigger=PropertyChanged}" />
-                </i:Interaction.Behaviors>
-            </avalonEdit:TextEditor>
-        </Border>
-        <!--  Query Log  -->
-        <Label Grid.Row="10">Query for logs:</Label>
-        <Border
-            Grid.Row="11"
-            Margin="5"
-            Style="{StaticResource BorderStyle}">
-            <avalonEdit:TextEditor
-                x:Name="_logEditor"
-                FontFamily="Consolas"
-                FontSize="10pt"
-                SyntaxHighlighting="Sql">
-                <i:Interaction.Behaviors>
-                    <b:AvalonEditBehaviour Text="{Binding Repository.QueryLog, UpdateSourceTrigger=PropertyChanged}" />
-                </i:Interaction.Behaviors>
-            </avalonEdit:TextEditor>
-        </Border>
+        <Grid Grid.Row="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <DockPanel>
+                <!--  Query Day  -->
+                <Label DockPanel.Dock="Top">Query for days:</Label>
+                <Border Margin="5" Style="{StaticResource BorderStyle}">
+                    <avalonEdit:TextEditor
+                        x:Name="_dayEditor"
+                        FontFamily="Consolas"
+                        FontSize="10pt"
+                        SyntaxHighlighting="Sql">
+                        <i:Interaction.Behaviors>
+                            <b:AvalonEditBehaviour Text="{Binding Repository.QueryDay, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+                    </avalonEdit:TextEditor>
+                </Border>
+            </DockPanel>
+            <!--  SEPARATOR  -->
+            <GridSplitter
+                Grid.Row="1"
+                Height="5"
+                HorizontalAlignment="Stretch" />
+            <DockPanel Grid.Row="2">
+                <!--  Query Log  -->
+                <Label DockPanel.Dock="Top">Query for logs:</Label>
+                <Border Margin="5" Style="{StaticResource BorderStyle}">
+                    <avalonEdit:TextEditor
+                        x:Name="_logEditor"
+                        FontFamily="Consolas"
+                        FontSize="10pt"
+                        SyntaxHighlighting="Sql">
+                        <i:Interaction.Behaviors>
+                            <b:AvalonEditBehaviour Text="{Binding Repository.QueryLog, UpdateSourceTrigger=PropertyChanged}" />
+                        </i:Interaction.Behaviors>
+                    </avalonEdit:TextEditor>
+                </Border>
+            </DockPanel>
+        </Grid>
+
     </Grid>
 </UserControl>

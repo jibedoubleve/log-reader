@@ -15,6 +15,16 @@
             <MenuItem Command="{Binding Source={x:Reference _self}, Path=DataContext.DeleteCurrentRepositoryCommand}" Header="Delete this repository" />
         </ContextMenu>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding
+            Key="S"
+            Command="{Binding SaveAllCommand}"
+            Modifiers="Ctrl" />
+        <KeyBinding
+            Key="N"
+            Command="{Binding CreateRepositoryCommand}"
+            Modifiers="Ctrl" />
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

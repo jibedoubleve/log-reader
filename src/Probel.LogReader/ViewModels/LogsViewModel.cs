@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
@@ -44,6 +45,8 @@ namespace Probel.LogReader.ViewModels
         private ObservableCollection<LogRow> _logs;
 
         private string _repositoryName;
+
+        private bool _isDetailsVisible;
 
         #endregion Fields
 
@@ -165,6 +168,8 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _isWarnVisible, value, nameof(IsWarnVisible));
         }
 
+        public IFilter LastFilter { get; internal set; }
+
         public IDataListener Listener { get; set; }
 
         public ObservableCollection<LogRow> Logs
@@ -181,21 +186,19 @@ namespace Probel.LogReader.ViewModels
 
         public int LogsCount => Logs.Count();
 
-        public void RefreshData()
-        {
-            var l = GetLogRows();
-            Cache(l);
-            Filter();
-        }
-
-        public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
+        public IPlugin Plugin { get; internal set; }
 
         public string RepositoryName
         {
             get => _repositoryName;
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
-        public IPlugin Plugin { get; internal set; }
+
+        public bool IsDetailVisible
+        {
+            get => _isDetailsVisible;
+            set => Set(ref _isDetailsVisible, value, nameof(IsDetailVisible));
+        }
 
         #endregion Properties
 
@@ -208,23 +211,30 @@ namespace Probel.LogReader.ViewModels
 
         public void ClearCache() => _cachedLogs = null;
 
-        public void Filter(IEnumerable<LogRow> logs)
-        {
-            var src = logs == null ? _cachedLogs : logs;
-            var levels = GetLevels();
-
-            var filtered = (from l in src
-                            where levels.Contains(l.Level.ToLower())
-                            select l).ToList();
-            Logs = new ObservableCollection<LogRow>(filtered);
-        }
-
         /// <summary>
         /// This method is used for the <see cref="ICommand"/>
         /// </summary>
         public void Filter() => Filter(null);
 
+        public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
+
         public void LoadDays() => GoBack?.Invoke();
+
+        public void RefreshData()
+        {
+            var l = GetLogRows();
+            Cache(l);
+            Filter(LastFilter?.Filter(l) ?? l);
+        }
+
+        public void RefreshLogs()
+        {
+            _ui.NotifyInformation("Refresging logs...");
+            var t1 = Task.Run(() => RefreshData());
+            t1.OnErrorHandle(_ui);
+
+            t1.ContinueWith(r => _ui.NotifySuccess("Refresh done."), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
 
         public void ResetFromCache()
         {
@@ -265,12 +275,31 @@ namespace Probel.LogReader.ViewModels
 
             var t1 = Task.Run(() =>
             {
-                var stg = _configManager.Get();
-                stg.Ui.ShowLogger = IsLoggerVisible;
-                stg.Ui.ShowThreadId = IsThreadIdVisible;
-                _configManager.Save(stg);
+                _configManager.Save(stg =>
+                {
+                    stg.Ui.IsLoggerVisible = IsLoggerVisible;
+                    stg.Ui.isThreadIdVisible = IsThreadIdVisible;
+                    stg.Ui.IsDetailVisible = IsDetailVisible;
+                });
+                //_configManager.Save(stg);
             });
             t1.OnErrorHandle(_ui);
+        }
+
+        private void Filter(IEnumerable<LogRow> logs)
+        {
+            var src = logs == null ? _cachedLogs : logs;
+            var levels = GetLevels();
+
+            var filtered = (from l in src
+                            where levels.Contains(l.Level.ToLower())
+                            select l).ToList();
+
+            filtered = IsOrderByAsc
+                ? filtered.OrderBy(e => e.Time).ToList()
+                : filtered.OrderByDescending(e => e.Time).ToList();
+
+            Logs = new ObservableCollection<LogRow>(filtered);
         }
 
         private IEnumerable<string> GetLevels()
@@ -297,7 +326,6 @@ namespace Probel.LogReader.ViewModels
                     Task.Run(() =>
                     {
                         RefreshData();
-                        Filter();
                     }).OnErrorHandle(_ui);
                 }
             }
@@ -316,7 +344,11 @@ namespace Probel.LogReader.ViewModels
             else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
-        private void SaveConfig() => _config.Save(e => e.Ui.IsLogOrderAsc = IsOrderByAsc);
+        private void SaveConfig() => _config.Save(e =>
+        {
+            e.Ui.IsLogOrderAsc = IsOrderByAsc;
+            e.Ui.IsDetailVisible = IsDetailVisible;
+        });
 
         private void SortLogs(bool sortAsc)
         {

@@ -4,17 +4,13 @@ using System.Windows.Data;
 
 namespace Probel.LogReader.Converters
 {
-    public class StringToOneLinerConverter : IValueConverter
+    public class InvertBooleanConverter : IValueConverter
     {
         #region Methods
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string text)
-            {
-                text = text.Replace("\n", " ").Replace("\r", " ");
-                return text;
-            }
+            if (value is bool boolean) { return !boolean; }
             else { return value; }
         }
 

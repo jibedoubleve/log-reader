@@ -79,11 +79,20 @@ namespace Probel.LogReader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Item saved!.
+        ///   Looks up a localized string similar to Filter configuration saved..
         /// </summary>
-        internal static string Msg_InformSaved {
+        internal static string Msg_InformFilterSaved {
             get {
-                return ResourceManager.GetString("Msg_InformSaved", resourceCulture);
+                return ResourceManager.GetString("Msg_InformFilterSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository configuration saved..
+        /// </summary>
+        internal static string Msg_InformRepositorySaved {
+            get {
+                return ResourceManager.GetString("Msg_InformRepositorySaved", resourceCulture);
             }
         }
     }

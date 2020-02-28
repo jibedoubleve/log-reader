@@ -30,6 +30,14 @@ namespace Probel.LogReader.Core.Configuration
 
     public class RepositorySettings
     {
+        #region Fields
+
+        private string _queryDay;
+
+        private string _queryLog;
+
+        #endregion Fields
+
         #region Properties
 
         [JsonProperty("connection-string")]
@@ -45,10 +53,22 @@ namespace Probel.LogReader.Core.Configuration
         public Guid PluginId { get; set; }
 
         [JsonProperty("query-day")]
-        public string QueryDay { get; set; }
+        public string QueryDay
+        {
+            // With AvalonEdit, with a null value, does not clear the text
+            // Therefore, when value is null, return string.Empty
+            get => _queryDay ?? string.Empty;
+            set => _queryDay = value;
+        }
 
         [JsonProperty("query-log")]
-        public string QueryLog { get; set; }
+        public string QueryLog
+        {
+            // With AvalonEdit, with a null value, does not clear the text
+            // Therefore, when value is null, return string.Empty
+            get => _queryLog ?? string.Empty;
+            set => _queryLog = value;
+        }
 
         #endregion Properties
     }

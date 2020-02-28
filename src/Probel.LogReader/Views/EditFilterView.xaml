@@ -70,8 +70,6 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <ScrollViewer Grid.Column="1">
-            <ContentControl x:Name="ActiveItem" />
-        </ScrollViewer>
+        <ContentControl x:Name="ActiveItem" Grid.Column="1" />
     </Grid>
 </UserControl>
