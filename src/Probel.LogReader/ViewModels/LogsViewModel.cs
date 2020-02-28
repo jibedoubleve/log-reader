@@ -294,6 +294,11 @@ namespace Probel.LogReader.ViewModels
             var filtered = (from l in src
                             where levels.Contains(l.Level.ToLower())
                             select l).ToList();
+
+            filtered = IsOrderByAsc
+                ? filtered.OrderBy(e => e.Time).ToList()
+                : filtered.OrderByDescending(e => e.Time).ToList();
+
             Logs = new ObservableCollection<LogRow>(filtered);
         }
 
