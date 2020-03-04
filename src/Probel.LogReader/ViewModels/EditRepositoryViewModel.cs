@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Colouration;
 using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Ui;
 using System;
@@ -15,19 +16,18 @@ namespace Probel.LogReader.ViewModels
 
         public readonly IUserInteraction _user;
         private readonly IPluginInfoManager _infoManager;
-
         private IColourator _colourator;
         private ObservableCollection<PluginInfo> _pluginInfo;
         private RepositorySettings _repository;
-
         private PluginInfo _selectedPlugin;
 
         #endregion Fields
 
         #region Constructors
 
-        public EditRepositoryViewModel(IPluginInfoManager infoManager, IUserInteraction userInteraction)
+        public EditRepositoryViewModel(IPluginInfoManager infoManager, IUserInteraction userInteraction, ILogger logger)
         {
+            _logger = logger;
             _user = userInteraction;
             _infoManager = infoManager;
         }
@@ -36,6 +36,7 @@ namespace Probel.LogReader.ViewModels
 
         #region Properties
 
+        private readonly ILogger _logger;
         public bool CanDeleteRepository => Repository.HasValidId();
 
         public ObservableCollection<PluginInfo> PluginInfoList
@@ -87,7 +88,14 @@ namespace Probel.LogReader.ViewModels
             ActivateColourator(SelectedPlugin?.Colouration);
         }
 
-        public void RefreshForUpdate() => Repository.PluginId = SelectedPlugin?.Id ?? new Guid();
+        public void RefreshForUpdate()
+        {
+            if (Repository != null)
+            {
+                Repository.PluginId = SelectedPlugin?.Id ?? new Guid();
+            }
+            else { _logger.Debug("Current repository is null. Skip save."); }
+        }
 
         protected override void OnDeactivate(bool close) => Repository = new RepositorySettings();
 
