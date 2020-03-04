@@ -138,9 +138,9 @@ Task("Zip")
 
 Task("Inno-Setup")
     .Does(() => {
-        var path = binDirectory.Replace("/", "\\").TrimStart('.').TrimStart('\\');
-        var pluginDir = binPluginDir.Replace("/", "\\").TrimStart('.').TrimStart('\\');
-        var plugins = new string[] { "csv", "text", "oracle" };        
+        var path      = MakeAbsolute(Directory(binDirectory)).FullPath + "\\";
+        var pluginDir = MakeAbsolute(Directory(binPluginDir)).FullPath + "\\";
+        var plugins   = new string[] { "csv", "text", "oracle" };        
 
         Information("Bin path   : {0}: ", path);
         Information("Plugin path: {0}: ", pluginDir);
