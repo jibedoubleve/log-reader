@@ -1,0 +1,8 @@
+{
+  "name": "MsSql Database",
+  "plugin-id": "a2a312f6-9064-4c61-a039-2cfa999421b3",
+  "dll": "Probel.LogReader.Plugins.MsSql.dll",
+  "explanation": "Get logs from an MsSql database",
+  "doc-url": "https://github.com/jibedoubleve/log-reader/blob/master/doc/plugins/plugin-mssql.md",
+  "colouration": "sql"
+}
