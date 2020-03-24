@@ -4,5 +4,6 @@
     {
         RefreshMenus,
         FilterVisibility,
+        FilterApplied,
     }
 }

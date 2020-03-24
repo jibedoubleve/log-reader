@@ -24,6 +24,7 @@
         <conv:StringToOneLinerConverter x:Key="StringToOneLinerConverter" />
         <conv:UppercaseConverter x:Key="UppercaseConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -585,6 +586,13 @@
                 <TextBlock>
                     <Run Text="{Binding ChangeCount}" />
                     <Run Text="Change(s)" />
+                </TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Visibility="{Binding FilterApplied, Converter={StaticResource StringToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
+                <!--<StatusBarItem>-->
+                <TextBlock>
+                    <Run Text="Filter: " />
+                    <Run Text="{Binding FilterApplied}" />
                 </TextBlock>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">

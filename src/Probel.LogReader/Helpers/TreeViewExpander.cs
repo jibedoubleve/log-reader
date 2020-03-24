@@ -28,7 +28,7 @@ namespace Probel.LogReader.Helpers
         private static void SetExpansion(ItemsControl parent, bool isExpanded)
         {
             if (parent is TreeViewItem tvi) { tvi.IsExpanded = isExpanded; }
-            if (parent.HasItems)
+            if (parent?.HasItems ?? false)
             {
                 foreach (var item in parent.Items.Cast<object>().Select(i => GetTreeViewItem(parent, i, isExpanded)))
                 {

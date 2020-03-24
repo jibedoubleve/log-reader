@@ -18,6 +18,7 @@ namespace Probel.LogReader.ViewModels
 {
     public class MainViewModel : Conductor<IScreen>, IHandle<UiEvent>
     {
+        private readonly IEventAggregator _eventAggregator;
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
@@ -45,6 +46,7 @@ namespace Probel.LogReader.ViewModels
             , IUserInteraction userInteraction)
         {
             eventAggregator.Subscribe(this);
+            _eventAggregator = eventAggregator;
 
             _configurationManager = cfg;
             _userInteraction = userInteraction;
@@ -94,7 +96,7 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public void LoadLogs(IPlugin plugin)
+        public void LoadRepository(IPlugin plugin)
         {
             var token = new CancellationToken();
             var scheduler = TaskScheduler.Current;
@@ -106,7 +108,7 @@ namespace Probel.LogReader.ViewModels
                     var cfg = _configurationManager.Get();
 
                     var orderby = cfg.Ui.IsLogOrderAsc ? OrderBy.Asc : OrderBy.Desc;
-                    var days = plugin.GetDays();                    
+                    var days = plugin.GetDays();
 
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.IsLoggerVisible;
@@ -117,6 +119,7 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.Listener = plugin;
 
                     _vmLogsViewModel.LoadDays(days);
+                    _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));
 
                     _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
                     _vmLogsViewModel.CanListen = plugin.CanListen;
@@ -161,7 +164,7 @@ namespace Probel.LogReader.ViewModels
             ActivateItem(_manageRepositoryViewModel);
         }
 
-        private void LoadFilter(IFilter filter)
+        private void LoadFilter(IFilter filter, string filterName)
         {
             using (_userInteraction.NotifyWait())
             {
@@ -169,6 +172,7 @@ namespace Probel.LogReader.ViewModels
                 var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
                 _vmLogsViewModel.Cache(logs);
                 _vmLogsViewModel.Filter();
+                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(filterName));
             }
         }
 
@@ -179,10 +183,11 @@ namespace Probel.LogReader.ViewModels
             var filters = aps.GetFilters(OrderBy.Asc);
             foreach (var filter in filters)
             {
+                var filterName = filter.Name ?? _filterTranslator.Translate(filter);
                 menus.Add(new MenuItemModel
                 {
-                    Name = filter.Name ?? _filterTranslator.Translate(filter),
-                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id))),
+                    Name = filterName,
+                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id), filterName)),
                 });
             }
             return menus;
@@ -201,7 +206,7 @@ namespace Probel.LogReader.ViewModels
                 menus.Add(new MenuItemModel
                 {
                     Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadLogs(_pluginManager.Build(repo)))
+                    MenuCommand = new RelayCommand(() => LoadRepository(_pluginManager.Build(repo)))
                 });
             }
             return menus;

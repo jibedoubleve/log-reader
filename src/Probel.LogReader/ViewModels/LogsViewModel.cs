@@ -18,7 +18,7 @@ using System.Windows.Input;
 
 namespace Probel.LogReader.ViewModels
 {
-    public class LogsViewModel : Screen
+    public class LogsViewModel : Screen, IHandle<UiEvent>
     {
         #region Fields
 
@@ -34,6 +34,7 @@ namespace Probel.LogReader.ViewModels
         private DateTime _date;
         private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
+        private string _filterApplied;
         private bool _isDebugVisible = true;
         private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
@@ -54,8 +55,14 @@ namespace Probel.LogReader.ViewModels
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log, IUserInteraction ui, IConfigurationManager config)
+        public LogsViewModel(IConfigurationManager configManager,
+            IEventAggregator eventAggregator,
+            ILogger log,
+            IUserInteraction ui,
+            IConfigurationManager config)
         {
+            eventAggregator.Subscribe(this);
+
             _ui = ui;
             _log = log;
             FilterCommand = new RelayCommand(Filter);
@@ -87,7 +94,6 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _date, value, nameof(Date));
         }
 
-        public void LoadDays(IEnumerable<DateTime> days) => Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
         public ObservableCollection<IHierarchy<DateTime>> Days
         {
             get => _days;
@@ -98,6 +104,12 @@ namespace Probel.LogReader.ViewModels
         {
             get => _filePath;
             set => Set(ref _filePath, value, nameof(FilePath));
+        }
+
+        public string FilterApplied
+        {
+            get => _filterApplied;
+            set => Set(ref _filterApplied, value, nameof(FilterApplied));
         }
 
         public ICommand FilterCommand { get; set; }
@@ -220,6 +232,17 @@ namespace Probel.LogReader.ViewModels
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
 
+        public void Handle(UiEvent message)
+        {
+            if (message.Event == UiEvents.FilterApplied)
+            {
+                if (message.Context is string msg) { FilterApplied = msg; }
+                else if (message.Context == null) { FilterApplied = null; }
+            }
+        }
+
+        public void LoadDays(IEnumerable<DateTime> days) => Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
+
         public void LoadLogs(DateTime day)
         {
             var token = new CancellationToken();
@@ -237,7 +260,11 @@ namespace Probel.LogReader.ViewModels
             });
             t1.OnErrorHandle(_ui);
 
-            var t2 = t1.ContinueWith(r => Logs = new ObservableCollection<LogRow>(r.Result));
+            var t2 = t1.ContinueWith(r =>
+            {
+                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));
+                Logs = new ObservableCollection<LogRow>(r.Result);
+            });
             t2.OnErrorHandle(_ui, token, scheduler);
         }
 
