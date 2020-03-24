@@ -4,8 +4,8 @@
  * ----------------------------------------------------------------------------
  * This script uses environment variables. To run correctly, this script needs
  * these variables to be set: 
- *  - CAKE_GITHUB_TOKEN    - Github token of the LogReader repository
- *  - CAKE_GITHUB_USERNAME - Github username with R/W for LogReader repository
+ *  - CAKE_LOGREADER_GITHUB_TOKEN    - Github token of the LogReader repository
+ *  - CAKE_LOGREADER_GITHUB_USERNAME - Github username with R/W for LogReader repository
  */
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS / ADDINS
@@ -161,8 +161,8 @@ Task("Inno-Setup")
 Task("Release-GitHub")
     .Does(()=>{
         //https://stackoverflow.com/questions/42761777/hide-services-passwords-in-cake-build
-        var token = EnvironmentVariable("CAKE_GITHUB_TOKEN");
-        var owner = EnvironmentVariable("CAKE_GITHUB_USERNAME");
+        var token = EnvironmentVariable("CAKE_LOGREADER_GITHUB_TOKEN");
+        var owner = EnvironmentVariable("CAKE_LOGREADER_GITHUB_USERNAME");
 
         var stg = new GitReleaseManagerCreateSettings 
         {
