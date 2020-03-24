@@ -166,16 +166,16 @@ Task("Release-GitHub")
 
         var stg = new GitReleaseManagerCreateSettings 
         {
-            Milestone         = "V" + gitVersion.MajorMinorPatch,            
-            Name              = gitVersion.SemVer,
-            Prerelease        = gitVersion.SemVer.Contains("alpha"),
-            Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-mssql-" + gitVersion.SemVer + ".bin.zip,"
-                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
+            Milestone  = "V" + gitVersion.MajorMinorPatch,            
+            Name       = gitVersion.SemVer,
+            Prerelease = gitVersion.SemVer.Contains("alpha"),
+            Assets     = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
+                                    + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-mssql-" + gitVersion.SemVer + ".bin.zip,"
+                                    + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
