@@ -1,4 +1,5 @@
-﻿using Probel.LogReader.ViewModels;
+﻿using Probel.LogReader.Helpers;
+using Probel.LogReader.ViewModels;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -29,6 +30,12 @@ namespace Probel.LogReader.Views
 
         #region Methods
 
+        private void SetExpansion(TreeView item, bool doExpand)
+        {
+        }
+
+        private void OnCollapseAll(object sender, RoutedEventArgs e) => treeView.SetExpansion(false);
+
         private void OnDockingManagerLoaded(object sender, RoutedEventArgs e)
         {
             if (ViewModel?.IsDetailVisible ?? false)
@@ -36,6 +43,8 @@ namespace Probel.LogReader.Views
                 _detailPane.ToggleAutoHide();
             }
         }
+
+        private void OnExpandAll(object sender, RoutedEventArgs e) => treeView.SetExpansion(true);
 
         private void OnLogsMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -52,8 +61,6 @@ namespace Probel.LogReader.Views
             }
         }
 
-        #endregion Methods
-
         private void OnToggleButtonClick(object sender, RoutedEventArgs e)
         {
             _detailPane.ToggleAutoHide();
@@ -62,5 +69,15 @@ namespace Probel.LogReader.Views
                 ViewModel.IsDetailVisible = !ViewModel.IsDetailVisible;
             }
         }
+
+        private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is IHierarchy<DateTime> day)
+            {
+                ViewModel.LoadLogs(day.Value);
+            }
+        }
+
+        #endregion Methods
     }
 }

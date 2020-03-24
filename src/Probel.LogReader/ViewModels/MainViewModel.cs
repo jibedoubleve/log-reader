@@ -27,7 +27,6 @@ namespace Probel.LogReader.ViewModels
         private readonly IPluginInfoManager _pluginInfoManager;
         private readonly IPluginManager _pluginManager;
         private readonly IUserInteraction _userInteraction;
-        private readonly DaysViewModel _vmDaysViewModel;
         private readonly LogsViewModel _vmLogsViewModel;
         private bool _isFilterVisible = false;
         private ObservableCollection<MenuItemModel> _menuFile;
@@ -52,7 +51,6 @@ namespace Probel.LogReader.ViewModels
             _pluginInfoManager = pluginInfoManager;
             _pluginManager = pluginManager;
             _filterTranslator = filterTranslator;
-            _vmDaysViewModel = views.DaysViewModel;
             _vmLogsViewModel = views.LogsViewModel;
             _manageRepositoryViewModel = views.ManageRepositoryViewModel;
             _manageFilterViewModel = views.ManageFilterViewModel;
@@ -96,7 +94,7 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public void LoadLogs(IPlugin plugin, DateTime day)
+        public void LoadLogs(IPlugin plugin)
         {
             var token = new CancellationToken();
             var scheduler = TaskScheduler.Current;
@@ -108,21 +106,17 @@ namespace Probel.LogReader.ViewModels
                     var cfg = _configurationManager.Get();
 
                     var orderby = cfg.Ui.IsLogOrderAsc ? OrderBy.Asc : OrderBy.Desc;
-                    var logs = plugin.GetLogs(day, orderby);
-
-                    _vmLogsViewModel.Cache(logs);
+                    var days = plugin.GetDays();                    
 
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.IsLoggerVisible;
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.isThreadIdVisible;
                     _vmLogsViewModel.IsDetailVisible = cfg.Ui.IsDetailVisible;
-                    _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
                     _vmLogsViewModel.Plugin = plugin;
-                    _vmLogsViewModel.Date = day;
                     _vmLogsViewModel.Listener = plugin;
 
-                    _vmLogsViewModel.GoBack = () => LoadDays(plugin);
+                    _vmLogsViewModel.LoadDays(days);
 
                     _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
                     _vmLogsViewModel.CanListen = plugin.CanListen;
@@ -167,32 +161,6 @@ namespace Probel.LogReader.ViewModels
             ActivateItem(_manageRepositoryViewModel);
         }
 
-        private void LoadDays(IPlugin plugin)
-        {
-            var waiter = _userInteraction.NotifyWait();
-
-            var t1 = Task.Run(() =>
-            {
-                var r = plugin.GetDays();
-
-                _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
-                _vmDaysViewModel.Plugin = plugin;
-
-                _vmLogsViewModel.ClearCache();
-            });
-            t1.OnErrorHandle(_userInteraction);
-
-            var token = new CancellationToken();
-            var sched = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var t2 = t1.ContinueWith(r =>
-            {
-                ActivateItem(_vmDaysViewModel);
-                waiter.Dispose();
-            }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
-            t2.OnErrorHandle(_userInteraction, token, sched);
-        }
-
         private void LoadFilter(IFilter filter)
         {
             using (_userInteraction.NotifyWait())
@@ -233,12 +201,11 @@ namespace Probel.LogReader.ViewModels
                 menus.Add(new MenuItemModel
                 {
                     Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadDays(_pluginManager.Build(repo)))
+                    MenuCommand = new RelayCommand(() => LoadLogs(_pluginManager.Build(repo)))
                 });
             }
             return menus;
         }
-
         #endregion Methods
     }
 }

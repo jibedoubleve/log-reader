@@ -5,12 +5,14 @@ using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Models;
 using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -20,7 +22,7 @@ namespace Probel.LogReader.ViewModels
     {
         #region Fields
 
-        private static Stopwatch _stopwatch = new Stopwatch();
+        private static readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly IConfigurationManager _config;
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
@@ -30,8 +32,10 @@ namespace Probel.LogReader.ViewModels
         private bool _canListen;
         private int _changeCount;
         private DateTime _date;
+        private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
         private bool _isDebugVisible = true;
+        private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
         private bool _isFile;
@@ -45,8 +49,6 @@ namespace Probel.LogReader.ViewModels
         private ObservableCollection<LogRow> _logs;
 
         private string _repositoryName;
-
-        private bool _isDetailsVisible;
 
         #endregion Fields
 
@@ -85,6 +87,13 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _date, value, nameof(Date));
         }
 
+        public void LoadDays(IEnumerable<DateTime> days) => Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
+        public ObservableCollection<IHierarchy<DateTime>> Days
+        {
+            get => _days;
+            private set => Set(ref _days, value, nameof(Days));
+        }
+
         public string FilePath
         {
             get => _filePath;
@@ -93,12 +102,16 @@ namespace Probel.LogReader.ViewModels
 
         public ICommand FilterCommand { get; set; }
 
-        public System.Action GoBack { get; internal set; }
-
         public bool IsDebugVisible
         {
             get => _isDebugVisible;
             set => Set(ref _isDebugVisible, value, nameof(IsDebugVisible));
+        }
+
+        public bool IsDetailVisible
+        {
+            get => _isDetailsVisible;
+            set => Set(ref _isDetailsVisible, value, nameof(IsDetailVisible));
         }
 
         public bool IsErrorVisible
@@ -184,7 +197,7 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public int LogsCount => Logs.Count();
+        public int LogsCount => Logs?.Count() ?? 0;
 
         public IPlugin Plugin { get; internal set; }
 
@@ -194,22 +207,11 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
 
-        public bool IsDetailVisible
-        {
-            get => _isDetailsVisible;
-            set => Set(ref _isDetailsVisible, value, nameof(IsDetailVisible));
-        }
-
         #endregion Properties
 
         #region Methods
 
-        public void Cache(IEnumerable<LogRow> logs)
-        {
-            _cachedLogs = logs;
-        }
-
-        public void ClearCache() => _cachedLogs = null;
+        public void Cache(IEnumerable<LogRow> logs) => _cachedLogs = logs;
 
         /// <summary>
         /// This method is used for the <see cref="ICommand"/>
@@ -218,7 +220,26 @@ namespace Probel.LogReader.ViewModels
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
 
-        public void LoadDays() => GoBack?.Invoke();
+        public void LoadLogs(DateTime day)
+        {
+            var token = new CancellationToken();
+            var scheduler = TaskScheduler.Current;
+
+            var t1 = Task.Run(() =>
+            {
+                using (_ui.NotifyWait())
+                {
+                    Date = day;
+                    var logs = Plugin.GetLogs(day);
+                    Cache(logs);
+                    return logs;
+                }
+            });
+            t1.OnErrorHandle(_ui);
+
+            var t2 = t1.ContinueWith(r => Logs = new ObservableCollection<LogRow>(r.Result));
+            t2.OnErrorHandle(_ui, token, scheduler);
+        }
 
         public void RefreshData()
         {
@@ -229,7 +250,7 @@ namespace Probel.LogReader.ViewModels
 
         public void RefreshLogs()
         {
-            _ui.NotifyInformation("Refresging logs...");
+            _ui.NotifyInformation("Refreshing logs...");
             var t1 = Task.Run(() => RefreshData());
             t1.OnErrorHandle(_ui);
 
@@ -288,7 +309,7 @@ namespace Probel.LogReader.ViewModels
 
         private void Filter(IEnumerable<LogRow> logs)
         {
-            var src = logs == null ? _cachedLogs : logs;
+            var src = logs ?? _cachedLogs;
             var levels = GetLevels();
 
             var filtered = (from l in src

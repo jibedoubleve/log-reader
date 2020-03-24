@@ -59,7 +59,6 @@ namespace Probel.LogReader
             /* VIEWS */
             _container.RegisterType<MainViewModelPack>();
             _container.RegisterType<MainViewModel>();
-            _container.RegisterType<DaysViewModel>();
             _container.RegisterType<LogsViewModel>();
             _container.RegisterType<ManageRepositoryViewModel>();
         }
