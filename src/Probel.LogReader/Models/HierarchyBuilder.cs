@@ -29,8 +29,8 @@ namespace Probel.LogReader.Models
                                                          Level = 3,
                                                          Value = date,
                                                          Children = null,
-                                                     }),
-                                     })
+                                                     }).Cast<IHierarchy<DateTime>>().ToList(),
+                                     }).Cast<IHierarchy<DateTime>>().ToList()
                      });
             return d;
         }

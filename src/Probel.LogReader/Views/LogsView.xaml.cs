@@ -29,8 +29,6 @@ namespace Probel.LogReader.Views
             _timer.Tick += OnTimerTicked;
         }
 
-        private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
-
         #endregion Constructors
 
         #region Properties
@@ -41,7 +39,26 @@ namespace Probel.LogReader.Views
 
         #region Methods
 
-        private void OnCollapseAll(object sender, RoutedEventArgs e) => treeView.SetExpansion(false);
+        private void OnAutoRefreshTimesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _timer.Stop();
+            if (_autoRefreshTimes.SelectedIndex > 0 && _autoRefreshTimes.SelectedItem is ComboBoxItem cbi)
+            {
+                var seconds = int.Parse(cbi?.Tag as string ?? "0");
+                _timer.Interval = TimeSpan.FromSeconds(seconds);
+                _timer.Start();
+            }
+        }
+
+        private void OnCollapseAll(object sender, RoutedEventArgs e) => _treeView.SetExpansion(false);
+
+        private void OnDetailPanePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_detailPane.IsAutoHidden) && ViewModel != null)
+            {
+                ViewModel.IsDetailVisible = _detailPane.IsAutoHidden;
+            }
+        }
 
         private void OnDockingManagerLoaded(object sender, RoutedEventArgs e)
         {
@@ -51,7 +68,7 @@ namespace Probel.LogReader.Views
             }
         }
 
-        private void OnExpandAll(object sender, RoutedEventArgs e) => treeView.SetExpansion(true);
+        private void OnExpandAll(object sender, RoutedEventArgs e) => _treeView.SetExpansion(true);
 
         private void OnLogsMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -67,6 +84,8 @@ namespace Probel.LogReader.Views
                  */
             }
         }
+
+        private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
 
         private void OnToggleButtonClick(object sender, RoutedEventArgs e)
         {
@@ -86,24 +105,5 @@ namespace Probel.LogReader.Views
         }
 
         #endregion Methods
-
-        private void OnAutoRefreshTimesSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _timer.Stop();
-            if (_autoRefreshTimes.SelectedIndex > 0 && _autoRefreshTimes.SelectedItem is ComboBoxItem cbi)
-            {
-                var seconds = int.Parse(cbi?.Tag as string ?? "0");
-                _timer.Interval = TimeSpan.FromSeconds(seconds);
-                _timer.Start();
-            }
-        }
-
-        private void OnDetailPanePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(_detailPane.IsAutoHidden) && ViewModel != null)
-            {
-                ViewModel.IsDetailVisible = _detailPane.IsAutoHidden;
-            }
-        }
     }
 }

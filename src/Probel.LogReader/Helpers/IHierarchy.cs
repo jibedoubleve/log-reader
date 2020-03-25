@@ -6,7 +6,8 @@ namespace Probel.LogReader.Helpers
     {
         #region Properties
 
-        IEnumerable<IHierarchy<T>> Children { get; set; }
+        IList<IHierarchy<T>> Children { get; set; }
+        bool IsExpanded { get; set; }
         int Level { get; set; }
 
         T Value { get; set; }

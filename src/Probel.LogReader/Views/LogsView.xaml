@@ -263,10 +263,15 @@
                                         </Button>
                                     </StackPanel>
                                     <TreeView
-                                        x:Name="treeView"
+                                        x:Name="_treeView"
                                         Grid.Row="1"
                                         ItemsSource="{Binding Days}"
                                         SelectedItemChanged="OnTreeViewSelectedItemChanged">
+                                        <TreeView.ItemContainerStyle>
+                                            <Style TargetType="TreeViewItem">
+                                                <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                                            </Style>
+                                        </TreeView.ItemContainerStyle>
                                         <TreeView.ItemTemplate>
                                             <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                                 <StackPanel Orientation="Horizontal">

@@ -258,7 +258,21 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public void LoadDays(IEnumerable<DateTime> days) => Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
+        public void LoadDays(IEnumerable<DateTime> days)
+        {
+            Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
+
+            //Expand first year, first month; collapse all other
+            if (Days.Count() > 0)
+            {
+                Days[0].IsExpanded = true;
+                if (Days[0].Children.Count() > 0)
+                {
+                    var item = Days[0].Children[0];
+                    item.IsExpanded = true;
+                }
+            }
+        }
 
         public void LoadLogs(DateTime day)
         {

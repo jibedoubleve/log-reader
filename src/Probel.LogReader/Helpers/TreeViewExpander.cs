@@ -11,8 +11,7 @@ namespace Probel.LogReader.Helpers
 
         private static TreeViewItem ContainerFromItem(ItemsControl parent, object item) => (TreeViewItem)parent.ItemContainerGenerator.ContainerFromItem(item);
 
-        private static TreeViewItem GetTreeViewItem(
-          ItemsControl parent, object item, bool isExpanded)
+        private static TreeViewItem GetTreeViewItem(ItemsControl parent, object item, bool isExpanded)
         {
             if (item is TreeViewItem tvi) { return tvi; }
 
