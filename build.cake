@@ -79,6 +79,11 @@ Setup(ctx =>
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
+Task("info")
+    .Does(()=> { 
+        /*Does nothing but specifying information of the build*/ 
+});
+
 Task("Clean")
     .Does(()=> {
         var dirToDelete = GetDirectories("./**/obj")
