@@ -47,6 +47,7 @@ namespace Probel.LogReader.ViewModels
         private bool _isThreadIdVisible;
         private bool _isTraceVisible = true;
         private bool _isWarnVisible = true;
+        private DateTime _lastRefresh = DateTime.Now;
         private ObservableCollection<LogRow> _logs;
 
         private string _repositoryName;
@@ -195,6 +196,12 @@ namespace Probel.LogReader.ViewModels
 
         public IFilter LastFilter { get; internal set; }
 
+        public DateTime LastRefresh
+        {
+            get => _lastRefresh;
+            set => Set(ref _lastRefresh, value, nameof(LastRefresh));
+        }
+
         public IDataListener Listener { get; set; }
 
         public ObservableCollection<LogRow> Logs
@@ -275,13 +282,17 @@ namespace Probel.LogReader.ViewModels
             Filter(LastFilter?.Filter(l) ?? l);
         }
 
-        public void RefreshLogs()
+        public void RefreshLogs(bool doLog = true)
         {
-            _ui.NotifyInformation("Refreshing logs...");
+            if (doLog) { _ui.NotifyInformation("Refreshing logs..."); }
             var t1 = Task.Run(() => RefreshData());
             t1.OnErrorHandle(_ui);
 
-            t1.ContinueWith(r => _ui.NotifySuccess("Refresh done."), TaskContinuationOptions.OnlyOnRanToCompletion);
+            t1.ContinueWith(r =>
+            {
+                if (doLog) { _ui.NotifySuccess("Refresh done."); }
+                LastRefresh = DateTime.Now;
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public void ResetFromCache()

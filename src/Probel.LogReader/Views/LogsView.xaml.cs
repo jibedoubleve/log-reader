@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Probel.LogReader.Views
 {
@@ -13,12 +14,21 @@ namespace Probel.LogReader.Views
     /// </summary>
     public partial class LogsView : UserControl
     {
+        #region Fields
+
+        private readonly DispatcherTimer _timer = new DispatcherTimer();
+
+        #endregion Fields
+
         #region Constructors
 
         public LogsView()
         {
             InitializeComponent();
+            _timer.Tick += OnTimerTicked;
         }
+
+        private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
 
         #endregion Constructors
 
@@ -29,10 +39,6 @@ namespace Probel.LogReader.Views
         #endregion Properties
 
         #region Methods
-
-        private void SetExpansion(TreeView item, bool doExpand)
-        {
-        }
 
         private void OnCollapseAll(object sender, RoutedEventArgs e) => treeView.SetExpansion(false);
 
@@ -79,5 +85,16 @@ namespace Probel.LogReader.Views
         }
 
         #endregion Methods
+
+        private void OnAutoRefreshTimesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _timer.Stop();
+            if (_autoRefreshTimes.SelectedIndex > 0 && _autoRefreshTimes.SelectedItem is ComboBoxItem cbi)
+            {
+                var seconds = int.Parse(cbi?.Tag as string ?? "0");
+                _timer.Interval = TimeSpan.FromSeconds(seconds);
+                _timer.Start();
+            }
+        }
     }
 }
