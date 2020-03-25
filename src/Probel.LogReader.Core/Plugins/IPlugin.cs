@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -45,6 +46,8 @@ namespace Probel.LogReader.Core.Plugins
         #region Properties
 
         string RepositoryName { get; }
+
+        ILogger Logger { get; }
 
         #endregion Properties
 

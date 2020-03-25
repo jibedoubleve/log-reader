@@ -127,7 +127,6 @@
     <Compile Include="Converters\SubfilterToTextConverter.cs" />
     <Compile Include="Converters\TextToVisibilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />
-    <Compile Include="Helpers\BasicLogger.cs" />
     <Compile Include="Helpers\IHierarchy.cs" />
     <Compile Include="Helpers\InvariantCultureLayoutRendererWrapper.cs" />
     <Compile Include="Helpers\NLogLogger.cs" />

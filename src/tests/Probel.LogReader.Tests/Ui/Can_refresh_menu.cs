@@ -1,8 +1,9 @@
-﻿using Probel.LogReader.Core.Configuration;
+﻿using NSubstitute;
+using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
 using Probel.LogReader.Core.Filters;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Core.Plugins.Loaders;
 using Probel.LogReader.Plugins.Debug;
 using Probel.LogReader.Tests.Constants;
 using Probel.LogReader.Tests.Helpers;
@@ -16,6 +17,12 @@ namespace Probel.LogReader.Tests.Ui
 {
     public class Can_refresh_menu
     {
+        #region Fields
+
+        private readonly ILogger _logger = Substitute.For<ILogger>();
+
+        #endregion Fields
+
         #region Methods
 
         [Fact]
@@ -40,7 +47,7 @@ namespace Probel.LogReader.Tests.Ui
             });
             cfg.Repositories.Add(new RepositorySettings { PluginId = PluginType.Debug, });
 
-            IPluginManager pm = new PluginManager(new DebugLoader());
+            IPluginManager pm = new PluginManager(new DebugLoader(), _logger);
             IConfigurationManager cm = new ConfigurationManager(new MemorySettingsManager());
 
             await cm.SaveAsync(cfg);
@@ -78,7 +85,7 @@ namespace Probel.LogReader.Tests.Ui
                 stg.Repositories.Add(new RepositorySettings { PluginId = PluginType.Debug, Name = i.ToString() }); ;
             }
 
-            var pm = new PluginManager(new DebugLoader());
+            var pm = new PluginManager(new DebugLoader(), _logger);
             foreach (var repo in stg.Repositories)
             {
                 var menuName = repo.Name;
@@ -100,7 +107,7 @@ namespace Probel.LogReader.Tests.Ui
                 new FilterExpressionSettings() { Operation = FilterType.Level , Operand = Rand.Text, Operator = Rand.EnsembleOperator},
             };
 
-            IPluginManager pm = new PluginManager(new DebugLoader());
+            IPluginManager pm = new PluginManager(new DebugLoader(), _logger);
             IFilterManager fm = new FilterManager();
 
             var p = pm.Build(settings);

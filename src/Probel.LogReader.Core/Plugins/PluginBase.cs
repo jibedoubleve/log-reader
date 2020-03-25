@@ -18,6 +18,8 @@ namespace Probel.LogReader.Core.Plugins
 
         public virtual bool CanListen => false;
 
+        public ILogger Logger { get; private set; }
+
         public string RepositoryName => Settings?.Name ?? "EMPTY";
 
         protected RepositorySettings Settings { get; private set; }
@@ -30,7 +32,13 @@ namespace Probel.LogReader.Core.Plugins
 
         public abstract IEnumerable<LogRow> GetLogs(DateTime day, OrderBy orderby = OrderBy.Desc);
 
-        public void Initialise(RepositorySettings settings) => Settings = settings;
+        public void Initialise(RepositorySettings settings, ILogger logger)
+        {
+            Settings = settings;
+            Logger = logger ?? new BasicLogger();
+        }
+
+        public void Initialise(RepositorySettings settings) => throw new NotImplementedException();
 
         public bool IsFile()
         {
