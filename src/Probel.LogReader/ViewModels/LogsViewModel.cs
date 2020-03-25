@@ -124,7 +124,13 @@ namespace Probel.LogReader.ViewModels
         public bool IsDetailVisible
         {
             get => _isDetailsVisible;
-            set => Set(ref _isDetailsVisible, value, nameof(IsDetailVisible));
+            set
+            {
+                if (Set(ref _isDetailsVisible, value, nameof(IsDetailVisible)))
+                {
+                    SaveConfig();
+                }
+            }
         }
 
         public bool IsErrorVisible

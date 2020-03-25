@@ -1,6 +1,7 @@
 ﻿using Probel.LogReader.Helpers;
 using Probel.LogReader.ViewModels;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -94,6 +95,14 @@ namespace Probel.LogReader.Views
                 var seconds = int.Parse(cbi?.Tag as string ?? "0");
                 _timer.Interval = TimeSpan.FromSeconds(seconds);
                 _timer.Start();
+            }
+        }
+
+        private void OnDetailPanePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_detailPane.IsAutoHidden) && ViewModel != null)
+            {
+                ViewModel.IsDetailVisible = _detailPane.IsAutoHidden;
             }
         }
     }

@@ -15,7 +15,6 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <conv:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         <GridLength x:Key="DefaultHeight">400</GridLength>
         <sys:Double x:Key="AutoHideHeight">400</sys:Double>
         <GridLength x:Key="DefaultWidth">250</GridLength>
@@ -24,6 +23,7 @@
         <conv:StringToOneLinerConverter x:Key="StringToOneLinerConverter" />
         <conv:UppercaseConverter x:Key="UppercaseConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <conv:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
@@ -112,7 +112,7 @@
                         </TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <Button Click="OnToggleButtonClick">
+                <ToggleButton Click="OnToggleButtonClick" IsChecked="{Binding ElementName=_detailPane, Path=IsAutoHidden, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertBooleanConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -146,7 +146,7 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </StackPanel>
-                </Button>
+                </ToggleButton>
                 <Button x:Name="ToggleSortLogs">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
@@ -420,7 +420,8 @@
                                     AutoHideHeight="{StaticResource AutoHideHeight}"
                                     CanClose="False"
                                     CanDockAsTabbedDocument="False"
-                                    CanHide="False">
+                                    CanHide="False"
+                                    PropertyChanged="OnDetailPanePropertyChanged">
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="150" />
