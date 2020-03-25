@@ -241,7 +241,11 @@ namespace Probel.LogReader.ViewModels
         /// <summary>
         /// This method is used for the <see cref="ICommand"/>
         /// </summary>
-        public void Filter() => Filter(null);
+        public void Filter()
+        {
+            var logs = Filter(null);
+            Logs = new ObservableCollection<LogRow>(logs);
+        }
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
 
@@ -268,7 +272,8 @@ namespace Probel.LogReader.ViewModels
                     Date = day;
                     var logs = Plugin.GetLogs(day);
                     Cache(logs);
-                    return logs;
+                    var l = Filter(logs);
+                    return l;
                 }
             });
             t1.OnErrorHandle(_ui);
@@ -285,7 +290,8 @@ namespace Probel.LogReader.ViewModels
         {
             var l = GetLogRows();
             Cache(l);
-            Filter(LastFilter?.Filter(l) ?? l);
+            var logs = Filter(LastFilter?.Filter(l) ?? l);
+            Logs = new ObservableCollection<LogRow>(logs);
         }
 
         public void RefreshLogs(bool doLog = true)
@@ -351,20 +357,18 @@ namespace Probel.LogReader.ViewModels
             t1.OnErrorHandle(_ui);
         }
 
-        private void Filter(IEnumerable<LogRow> logs)
+        private IEnumerable<LogRow> Filter(IEnumerable<LogRow> logs)
         {
             var src = logs ?? _cachedLogs;
             var levels = GetLevels();
 
-            var filtered = (from l in src
+            var filtered = (from l in src ?? new List<LogRow>()
                             where levels.Contains(l.Level.ToLower())
                             select l).ToList();
 
-            filtered = IsOrderByAsc
+            return IsOrderByAsc
                 ? filtered.OrderBy(e => e.Time).ToList()
                 : filtered.OrderByDescending(e => e.Time).ToList();
-
-            Logs = new ObservableCollection<LogRow>(filtered);
         }
 
         private IEnumerable<string> GetLevels()
