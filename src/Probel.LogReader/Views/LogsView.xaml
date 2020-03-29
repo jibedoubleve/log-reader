@@ -19,6 +19,7 @@
         <sys:Double x:Key="AutoHideHeight">400</sys:Double>
         <GridLength x:Key="DefaultWidth">250</GridLength>
         <!--  ====  -->
+        <conv:StringToDataGridGridLinesVisibilityConverter x:Key="StringToDataGridGridLinesVisibilityConverter" />
         <conv:TextToVisibilityConverter x:Key="TextToVisibilityConverter" />
         <conv:StringToOneLinerConverter x:Key="StringToOneLinerConverter" />
         <conv:UppercaseConverter x:Key="UppercaseConverter" />
@@ -317,7 +318,7 @@
                                         CanUserSortColumns="False"
                                         FontFamily="Consolas"
                                         FontSize="11"
-                                        GridLinesVisibility="Horizontal"
+                                        GridLinesVisibility="{Binding GridLinesVisibility, Converter={StaticResource StringToDataGridGridLinesVisibilityConverter}}"
                                         HorizontalGridLinesBrush="#0C000000"
                                         IsReadOnly="True"
                                         ItemsSource="{Binding Logs}"

@@ -23,7 +23,6 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private static readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly IConfigurationManager _config;
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _log;
@@ -35,6 +34,7 @@ namespace Probel.LogReader.ViewModels
         private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
         private string _filterApplied;
+        private string _gridLinesVisibility;
         private bool _isDebugVisible = true;
         private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
@@ -59,8 +59,7 @@ namespace Probel.LogReader.ViewModels
         public LogsViewModel(IConfigurationManager configManager,
             IEventAggregator eventAggregator,
             ILogger log,
-            IUserInteraction ui,
-            IConfigurationManager config)
+            IUserInteraction ui)
         {
             eventAggregator.Subscribe(this);
 
@@ -69,7 +68,6 @@ namespace Probel.LogReader.ViewModels
             FilterCommand = new RelayCommand(Filter);
             _eventAggregator = eventAggregator;
             _configManager = configManager;
-            _config = config;
             _stopwatch.Start();
         }
 
@@ -114,6 +112,12 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand FilterCommand { get; set; }
+
+        public string GridLinesVisibility
+        {
+            get => _gridLinesVisibility;
+            set => Set(ref _gridLinesVisibility, value, nameof(GridLinesVisibility));
+        }
 
         public bool IsDebugVisible
         {
@@ -306,6 +310,7 @@ namespace Probel.LogReader.ViewModels
             Cache(l);
             var logs = Filter(LastFilter?.Filter(l) ?? l);
             Logs = new ObservableCollection<LogRow>(logs);
+            LastRefresh = DateTime.Now;
         }
 
         public void RefreshLogs(bool doLog = true)
@@ -351,6 +356,8 @@ namespace Probel.LogReader.ViewModels
                 = IsFatalVisible
                 = true;
             if (IsListeningFile) { RegisterListener(); }
+
+            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
         }
 
         protected override void OnDeactivate(bool close)
@@ -363,10 +370,9 @@ namespace Probel.LogReader.ViewModels
                 _configManager.Save(stg =>
                 {
                     stg.Ui.IsLoggerVisible = IsLoggerVisible;
-                    stg.Ui.isThreadIdVisible = IsThreadIdVisible;
+                    stg.Ui.IsThreadIdVisible = IsThreadIdVisible;
                     stg.Ui.IsDetailVisible = IsDetailVisible;
                 });
-                //_configManager.Save(stg);
             });
             t1.OnErrorHandle(_ui);
         }
@@ -427,7 +433,7 @@ namespace Probel.LogReader.ViewModels
             else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
-        private void SaveConfig() => _config.Save(e =>
+        private void SaveConfig() => _configManager.Save(e =>
         {
             e.Ui.IsLogOrderAsc = IsOrderByAsc;
             e.Ui.IsDetailVisible = IsDetailVisible;
