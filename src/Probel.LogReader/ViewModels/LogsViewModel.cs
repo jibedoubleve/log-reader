@@ -5,23 +5,24 @@ using Probel.LogReader.Core.Filters;
 using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Models;
 using Probel.LogReader.Ui;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Probel.LogReader.ViewModels
 {
-    public class LogsViewModel : Screen
+    public class LogsViewModel : Screen, IHandle<UiEvent>
     {
         #region Fields
 
-        private static Stopwatch _stopwatch = new Stopwatch();
-        private readonly IConfigurationManager _config;
+        private static readonly Stopwatch _stopwatch = new Stopwatch();
         private readonly IConfigurationManager _configManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _log;
@@ -30,8 +31,12 @@ namespace Probel.LogReader.ViewModels
         private bool _canListen;
         private int _changeCount;
         private DateTime _date;
+        private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
+        private string _filterApplied;
+        private string _gridLinesVisibility;
         private bool _isDebugVisible = true;
+        private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
         private bool _isFile;
@@ -42,24 +47,27 @@ namespace Probel.LogReader.ViewModels
         private bool _isThreadIdVisible;
         private bool _isTraceVisible = true;
         private bool _isWarnVisible = true;
+        private DateTime _lastRefresh = DateTime.Now;
         private ObservableCollection<LogRow> _logs;
 
         private string _repositoryName;
-
-        private bool _isDetailsVisible;
 
         #endregion Fields
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager, IEventAggregator eventAggregator, ILogger log, IUserInteraction ui, IConfigurationManager config)
+        public LogsViewModel(IConfigurationManager configManager,
+            IEventAggregator eventAggregator,
+            ILogger log,
+            IUserInteraction ui)
         {
+            eventAggregator.Subscribe(this);
+
             _ui = ui;
             _log = log;
             FilterCommand = new RelayCommand(Filter);
             _eventAggregator = eventAggregator;
             _configManager = configManager;
-            _config = config;
             _stopwatch.Start();
         }
 
@@ -85,20 +93,48 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _date, value, nameof(Date));
         }
 
+        public ObservableCollection<IHierarchy<DateTime>> Days
+        {
+            get => _days;
+            private set => Set(ref _days, value, nameof(Days));
+        }
+
         public string FilePath
         {
             get => _filePath;
             set => Set(ref _filePath, value, nameof(FilePath));
         }
 
+        public string FilterApplied
+        {
+            get => _filterApplied;
+            set => Set(ref _filterApplied, value, nameof(FilterApplied));
+        }
+
         public ICommand FilterCommand { get; set; }
 
-        public System.Action GoBack { get; internal set; }
+        public string GridLinesVisibility
+        {
+            get => _gridLinesVisibility;
+            set => Set(ref _gridLinesVisibility, value, nameof(GridLinesVisibility));
+        }
 
         public bool IsDebugVisible
         {
             get => _isDebugVisible;
             set => Set(ref _isDebugVisible, value, nameof(IsDebugVisible));
+        }
+
+        public bool IsDetailVisible
+        {
+            get => _isDetailsVisible;
+            set
+            {
+                if (Set(ref _isDetailsVisible, value, nameof(IsDetailVisible)))
+                {
+                    SaveConfig();
+                }
+            }
         }
 
         public bool IsErrorVisible
@@ -170,6 +206,12 @@ namespace Probel.LogReader.ViewModels
 
         public IFilter LastFilter { get; internal set; }
 
+        public DateTime LastRefresh
+        {
+            get => _lastRefresh;
+            set => Set(ref _lastRefresh, value, nameof(LastRefresh));
+        }
+
         public IDataListener Listener { get; set; }
 
         public ObservableCollection<LogRow> Logs
@@ -184,7 +226,7 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public int LogsCount => Logs.Count();
+        public int LogsCount => Logs?.Count() ?? 0;
 
         public IPlugin Plugin { get; internal set; }
 
@@ -194,46 +236,94 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
 
-        public bool IsDetailVisible
-        {
-            get => _isDetailsVisible;
-            set => Set(ref _isDetailsVisible, value, nameof(IsDetailVisible));
-        }
-
         #endregion Properties
 
         #region Methods
 
-        public void Cache(IEnumerable<LogRow> logs)
-        {
-            _cachedLogs = logs;
-        }
-
-        public void ClearCache() => _cachedLogs = null;
+        public void Cache(IEnumerable<LogRow> logs) => _cachedLogs = logs;
 
         /// <summary>
         /// This method is used for the <see cref="ICommand"/>
         /// </summary>
-        public void Filter() => Filter(null);
+        public void Filter()
+        {
+            var logs = Filter(null);
+            Logs = new ObservableCollection<LogRow>(logs);
+        }
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);
 
-        public void LoadDays() => GoBack?.Invoke();
+        public void Handle(UiEvent message)
+        {
+            if (message.Event == UiEvents.FilterApplied)
+            {
+                if (message.Context is string msg) { FilterApplied = msg; }
+                else if (message.Context == null) { FilterApplied = null; }
+            }
+        }
+
+        public void LoadDays(IEnumerable<DateTime> days)
+        {
+            Days = new ObservableCollection<IHierarchy<DateTime>>(days.ToHierarchy());
+
+            //Expand first year, first month; collapse all other
+            if (Days.Count() > 0)
+            {
+                Days[0].IsExpanded = true;
+                if (Days[0].Children.Count() > 0)
+                {
+                    var item = Days[0].Children[0];
+                    item.IsExpanded = true;
+                }
+            }
+        }
+
+        public void LoadLogs(DateTime day)
+        {
+            var token = new CancellationToken();
+            var scheduler = TaskScheduler.Current;
+
+            var t1 = Task.Run(() =>
+            {
+                using (_ui.NotifyWait())
+                {
+                    Date = day;
+                    var logs = Plugin.GetLogs(day);
+                    Cache(logs);
+                    var l = Filter(logs);
+                    return l;
+                }
+            });
+            t1.OnErrorHandle(_ui);
+
+            var t2 = t1.ContinueWith(r =>
+            {
+                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));
+                Logs = new ObservableCollection<LogRow>(r.Result);
+            });
+            t2.OnErrorHandle(_ui, token, scheduler);
+        }
 
         public void RefreshData()
         {
             var l = GetLogRows();
             Cache(l);
-            Filter(LastFilter?.Filter(l) ?? l);
+            var logs = Filter(LastFilter?.Filter(l) ?? l);
+            Logs = new ObservableCollection<LogRow>(logs);
+            LastRefresh = DateTime.Now;
         }
 
-        public void RefreshLogs()
+        public void RefreshLogs(bool doLog = true)
         {
-            _ui.NotifyInformation("Refresging logs...");
+            if (doLog) { _ui.NotifyInformation("Refreshing logs..."); }
             var t1 = Task.Run(() => RefreshData());
             t1.OnErrorHandle(_ui);
 
-            t1.ContinueWith(r => _ui.NotifySuccess("Refresh done."), TaskContinuationOptions.OnlyOnRanToCompletion);
+            t1.ContinueWith(r =>
+            {
+                if (doLog) { _ui.NotifySuccess("Refresh done."); }
+                LastRefresh = DateTime.Now;
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public void ResetFromCache()
@@ -266,6 +356,8 @@ namespace Probel.LogReader.ViewModels
                 = IsFatalVisible
                 = true;
             if (IsListeningFile) { RegisterListener(); }
+
+            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
         }
 
         protected override void OnDeactivate(bool close)
@@ -278,28 +370,25 @@ namespace Probel.LogReader.ViewModels
                 _configManager.Save(stg =>
                 {
                     stg.Ui.IsLoggerVisible = IsLoggerVisible;
-                    stg.Ui.isThreadIdVisible = IsThreadIdVisible;
+                    stg.Ui.IsThreadIdVisible = IsThreadIdVisible;
                     stg.Ui.IsDetailVisible = IsDetailVisible;
                 });
-                //_configManager.Save(stg);
             });
             t1.OnErrorHandle(_ui);
         }
 
-        private void Filter(IEnumerable<LogRow> logs)
+        private IEnumerable<LogRow> Filter(IEnumerable<LogRow> logs)
         {
-            var src = logs == null ? _cachedLogs : logs;
+            var src = logs ?? _cachedLogs;
             var levels = GetLevels();
 
-            var filtered = (from l in src
+            var filtered = (from l in src ?? new List<LogRow>()
                             where levels.Contains(l.Level.ToLower())
                             select l).ToList();
 
-            filtered = IsOrderByAsc
+            return IsOrderByAsc
                 ? filtered.OrderBy(e => e.Time).ToList()
                 : filtered.OrderByDescending(e => e.Time).ToList();
-
-            Logs = new ObservableCollection<LogRow>(filtered);
         }
 
         private IEnumerable<string> GetLevels()
@@ -344,7 +433,7 @@ namespace Probel.LogReader.ViewModels
             else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
-        private void SaveConfig() => _config.Save(e =>
+        private void SaveConfig() => _configManager.Save(e =>
         {
             e.Ui.IsLogOrderAsc = IsOrderByAsc;
             e.Ui.IsDetailVisible = IsDetailVisible;

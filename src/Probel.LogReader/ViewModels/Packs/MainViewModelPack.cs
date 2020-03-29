@@ -4,10 +4,9 @@
     {
         #region Constructors
 
-        public MainViewModelPack(DaysViewModel daysViewModel, LogsViewModel logsViewModel, ManageRepositoryViewModel manageRepositoryViewModel, ManageFilterViewModel manageFilterViewModel)
+        public MainViewModelPack(LogsViewModel logsViewModel, ManageRepositoryViewModel manageRepositoryViewModel, ManageFilterViewModel manageFilterViewModel)
         {
             ManageFilterViewModel = manageFilterViewModel;
-            DaysViewModel = daysViewModel;
             LogsViewModel = logsViewModel;
             ManageRepositoryViewModel = manageRepositoryViewModel;
         }
@@ -16,7 +15,6 @@
 
         #region Properties
 
-        public DaysViewModel DaysViewModel { get; set; }
         public LogsViewModel LogsViewModel { get; }
         public ManageFilterViewModel ManageFilterViewModel { get; set; }
         public ManageRepositoryViewModel ManageRepositoryViewModel { get; }

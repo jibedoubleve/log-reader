@@ -1,5 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interactivity;
 
@@ -53,7 +54,9 @@ namespace Probel.LogReader.Behaviours
                 {
                     var caretOffset = editor.CaretOffset;
                     editor.Document.Text = dependencyPropertyChangedEventArgs.NewValue?.ToString() ?? string.Empty;
-                    editor.CaretOffset = caretOffset;
+
+                    if (editor.Document.TextLength > caretOffset) { editor.CaretOffset = caretOffset; }
+                    else { Debug.WriteLine($"Carret is outside of the text. Don't set carret."); }
                 }
             }
         }

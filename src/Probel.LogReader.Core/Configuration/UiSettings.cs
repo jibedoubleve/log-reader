@@ -16,7 +16,17 @@ namespace Probel.LogReader.Core.Configuration
         public bool IsLoggerVisible { get; set; }
 
         [JsonProperty("is-threadid-visible")]
-        public bool isThreadIdVisible { get; set; }
+        public bool IsThreadIdVisible { get; set; }
+
+        /// <summary>
+        /// Accepted values are
+        ///  * All
+        ///  * Horizontal
+        ///  * None
+        ///  * Vertical
+        /// </summary>
+        [JsonProperty("grid-line-visibility")]
+        public string GridLineVisibility { get; set; } = "All";
 
         #endregion Properties
     }

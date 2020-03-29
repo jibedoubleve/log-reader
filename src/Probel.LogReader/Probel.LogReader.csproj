@@ -39,6 +39,9 @@
     <ApplicationIcon>logs.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AvalonDock, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dirkster.AvalonDock.4.0.0\lib\net40\AvalonDock.dll</HintPath>
+    </Reference>
     <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
@@ -98,9 +101,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.6.2.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dirkster.AvalonDock.3.6.2\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -121,17 +121,22 @@
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\InvertBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\LowercaseConverter.cs" />
+    <Compile Include="Converters\StringToDataGridGridLinesVisibilityConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="Converters\StringToOneLinerConverter.cs" />
     <Compile Include="Converters\PluginInfoToVisibilityConverter.cs" />
     <Compile Include="Converters\SubfilterToTextConverter.cs" />
     <Compile Include="Converters\TextToVisibilityConverter.cs" />
     <Compile Include="Converters\UppercaseConverter.cs" />
-    <Compile Include="Helpers\BasicLogger.cs" />
+    <Compile Include="Helpers\IHierarchy.cs" />
     <Compile Include="Helpers\InvariantCultureLayoutRendererWrapper.cs" />
     <Compile Include="Helpers\NLogLogger.cs" />
     <Compile Include="Helpers\RelayArgCommand.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\TaskExtension.cs" />
+    <Compile Include="Helpers\TreeViewExpander.cs" />
+    <Compile Include="Models\DateHierarchy.cs" />
+    <Compile Include="Models\HierarchyBuilder.cs" />
     <Compile Include="Models\MenuItemModel.cs" />
     <Compile Include="Ui\IUserInteraction.cs" />
     <Compile Include="Ui\UiEvent.cs" />
@@ -139,7 +144,6 @@
     <Compile Include="Ui\UserInteraction.cs" />
     <Compile Include="Ui\WaitNotification.cs" />
     <Compile Include="ViewModels\NotificationViewModel.cs" />
-    <Compile Include="ViewModels\DaysViewModel.cs" />
     <Compile Include="ViewModels\EditFilterViewModel.cs" />
     <Compile Include="ViewModels\EditRepositoryViewModel.cs" />
     <Compile Include="ViewModels\EditSubfilterViewModel.cs" />
@@ -151,9 +155,6 @@
     <Compile Include="ViewModels\Packs\MainViewModelPack.cs" />
     <Compile Include="Views\Controls\DayControl.xaml.cs">
       <DependentUpon>DayControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DaysView.xaml.cs">
-      <DependentUpon>DaysView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditFilterView.xaml.cs">
       <DependentUpon>EditFilterView.xaml</DependentUpon>
@@ -215,10 +216,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\Controls\DayControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\DaysView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

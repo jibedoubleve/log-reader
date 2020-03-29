@@ -4,8 +4,8 @@
  * ----------------------------------------------------------------------------
  * This script uses environment variables. To run correctly, this script needs
  * these variables to be set: 
- *  - CAKE_GITHUB_TOKEN    - Github token of the LogReader repository
- *  - CAKE_GITHUB_USERNAME - Github username with R/W for LogReader repository
+ *  - CAKE_PUBLUC_GITHUB_TOKEN    - Github token of the LogReader repository
+ *  - CAKE_PUBLUC_GITHUB_USERNAME - Github username with R/W for LogReader repository
  */
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS / ADDINS
@@ -79,6 +79,11 @@ Setup(ctx =>
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
+Task("info")
+    .Does(()=> { 
+        /*Does nothing but specifying information of the build*/ 
+});
+
 Task("Clean")
     .Does(()=> {
         var dirToDelete = GetDirectories("./**/obj")
@@ -140,7 +145,7 @@ Task("Inno-Setup")
     .Does(() => {
         var path      = MakeAbsolute(Directory(binDirectory)).FullPath + "\\";
         var pluginDir = MakeAbsolute(Directory(binPluginDir)).FullPath + "\\";
-        var plugins   = new string[] { "csv", "text", "oracle" };        
+        var plugins   = new string[] { "csv", "text", "oracle", "mssql" };        
 
         Information("Bin path   : {0}: ", path);
         Information("Plugin path: {0}: ", pluginDir);
@@ -153,6 +158,7 @@ Task("Inno-Setup")
                  { "CsvPluginDir", String.Format(pluginDir, plugins[0]) },
                  { "TextPluginDir", String.Format(pluginDir, plugins[1]) },
                  { "OraclePluginDir", String.Format(pluginDir, plugins[2]) },
+                 { "MsSqlPluginDir", String.Format(pluginDir, plugins[3]) },
             }
         });
 });
@@ -160,20 +166,21 @@ Task("Inno-Setup")
 Task("Release-GitHub")
     .Does(()=>{
         //https://stackoverflow.com/questions/42761777/hide-services-passwords-in-cake-build
-        var token = EnvironmentVariable("CAKE_GITHUB_TOKEN");
-        var owner = EnvironmentVariable("CAKE_GITHUB_USERNAME");
+        var token = EnvironmentVariable("CAKE_PUBLUC_GITHUB_TOKEN");
+        var owner = EnvironmentVariable("CAKE_PUBLUC_GITHUB_USERNAME");
 
         var stg = new GitReleaseManagerCreateSettings 
         {
-            Milestone         = "V" + gitVersion.MajorMinorPatch,            
-            Name              = gitVersion.SemVer,
-            Prerelease        = gitVersion.SemVer.Contains("alpha"),
-            Assets            = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                              + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
-                              + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
+            Milestone  = "V" + gitVersion.MajorMinorPatch,            
+            Name       = gitVersion.SemVer,
+            Prerelease = gitVersion.SemVer.Contains("alpha"),
+            Assets     = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
+                                    + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-mssql-" + gitVersion.SemVer + ".bin.zip,"
+                                    + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
+                                    + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  

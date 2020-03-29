@@ -57,6 +57,9 @@
                 cal:Message.Attach="[SelectionChanged] = [ActivateCurrentRepository]"
                 DisplayMemberPath="Name"
                 SelectedItem="{Binding CurrentRepository}">
+                <ListView.InputBindings>
+                    <KeyBinding Key="Delete" Command="{Binding DeleteCurrentRepositoryCommand}" />
+                </ListView.InputBindings>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="ContextMenu" Value="{StaticResource _fiterContextMenu}" />

@@ -69,7 +69,7 @@ namespace Probel.LogReader.Plugins.Text
                      select dd).FirstOrDefault();
 
             if (d != null) { InitialiseFileWatcher(d.FilePath); }
-            else { throw new NotSupportedException($"No logs found to the specifie day '{day}'"); }
+            else { Logger.Warn($"No logs found to the specified day '{day}'"); }
         }
 
         public override void StopListening() => ClearFileWatcher();
