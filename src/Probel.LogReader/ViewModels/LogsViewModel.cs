@@ -34,6 +34,7 @@ namespace Probel.LogReader.ViewModels
         private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
         private string _filterApplied;
+        private string _gridLinesVisibility;
         private bool _isDebugVisible = true;
         private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
@@ -111,6 +112,12 @@ namespace Probel.LogReader.ViewModels
         }
 
         public ICommand FilterCommand { get; set; }
+
+        public string GridLinesVisibility
+        {
+            get => _gridLinesVisibility;
+            set => Set(ref _gridLinesVisibility, value, nameof(GridLinesVisibility));
+        }
 
         public bool IsDebugVisible
         {
@@ -303,6 +310,7 @@ namespace Probel.LogReader.ViewModels
             Cache(l);
             var logs = Filter(LastFilter?.Filter(l) ?? l);
             Logs = new ObservableCollection<LogRow>(logs);
+            LastRefresh = DateTime.Now;
         }
 
         public void RefreshLogs(bool doLog = true)
@@ -349,15 +357,9 @@ namespace Probel.LogReader.ViewModels
                 = true;
             if (IsListeningFile) { RegisterListener(); }
 
-            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString()??"All";
+            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
         }
 
-        private string _gridLinesVisibility;
-        public string GridLinesVisibility
-        {
-            get => _gridLinesVisibility;
-            set => Set(ref _gridLinesVisibility, value, nameof(GridLinesVisibility));
-        }
         protected override void OnDeactivate(bool close)
         {
             _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
