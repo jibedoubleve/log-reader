@@ -1,4 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins.Loaders;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Probel.LogReader.Core.Plugins
         #region Fields
 
         private const string _pluginRepository = @"%appdata%\probel\log-reader\plugins\";
+        private readonly ILogger _logger;
         private readonly IPluginLoader _pluginLoader;
         private readonly Dictionary<string, Type> _pluginTypes = new Dictionary<string, Type>();
         private IList<IPluginMetadata> _metadataList;
@@ -19,8 +21,9 @@ namespace Probel.LogReader.Core.Plugins
 
         #region Constructors
 
-        public PluginManager(IPluginLoader loader)
+        public PluginManager(IPluginLoader loader, ILogger logger)
         {
+            _logger = logger;
             _pluginLoader = loader;
         }
 
@@ -43,7 +46,7 @@ namespace Probel.LogReader.Core.Plugins
                 var plugin = Activator.CreateInstance(type);
 
                 var p = plugin as PluginBase;
-                p?.Initialise(settings);
+                p?.Initialise(settings, _logger);
                 return p;
             }
             else { throw new NotSupportedException($"Cannot instanciate the plugin '{metadata.Dll}'. Did you forget to load the plugins?"); }

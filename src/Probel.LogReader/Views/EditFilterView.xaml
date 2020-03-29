@@ -47,6 +47,9 @@
                 cal:Message.Attach="[SelectionChanged] = [ActivateCurrentSubfilter]"
                 ItemsSource="{Binding Subfilters, UpdateSourceTrigger=PropertyChanged}"
                 SelectedItem="{Binding CurrentSubfilter}">
+                <ListView.InputBindings>
+                    <KeyBinding Key="Delete" Command="{Binding DeleteCurrentFilterCommand}" />
+                </ListView.InputBindings>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="ContextMenu" Value="{StaticResource _fiterContextMenu}" />

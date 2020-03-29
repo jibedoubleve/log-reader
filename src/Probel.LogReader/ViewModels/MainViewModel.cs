@@ -18,6 +18,7 @@ namespace Probel.LogReader.ViewModels
 {
     public class MainViewModel : Conductor<IScreen>, IHandle<UiEvent>
     {
+        private readonly IEventAggregator _eventAggregator;
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
@@ -27,7 +28,6 @@ namespace Probel.LogReader.ViewModels
         private readonly IPluginInfoManager _pluginInfoManager;
         private readonly IPluginManager _pluginManager;
         private readonly IUserInteraction _userInteraction;
-        private readonly DaysViewModel _vmDaysViewModel;
         private readonly LogsViewModel _vmLogsViewModel;
         private bool _isFilterVisible = false;
         private ObservableCollection<MenuItemModel> _menuFile;
@@ -46,13 +46,13 @@ namespace Probel.LogReader.ViewModels
             , IUserInteraction userInteraction)
         {
             eventAggregator.Subscribe(this);
+            _eventAggregator = eventAggregator;
 
             _configurationManager = cfg;
             _userInteraction = userInteraction;
             _pluginInfoManager = pluginInfoManager;
             _pluginManager = pluginManager;
             _filterTranslator = filterTranslator;
-            _vmDaysViewModel = views.DaysViewModel;
             _vmLogsViewModel = views.LogsViewModel;
             _manageRepositoryViewModel = views.ManageRepositoryViewModel;
             _manageFilterViewModel = views.ManageFilterViewModel;
@@ -96,7 +96,7 @@ namespace Probel.LogReader.ViewModels
             }
         }
 
-        public void LoadLogs(IPlugin plugin, DateTime day)
+        public void LoadRepository(IPlugin plugin)
         {
             var token = new CancellationToken();
             var scheduler = TaskScheduler.Current;
@@ -108,21 +108,18 @@ namespace Probel.LogReader.ViewModels
                     var cfg = _configurationManager.Get();
 
                     var orderby = cfg.Ui.IsLogOrderAsc ? OrderBy.Asc : OrderBy.Desc;
-                    var logs = plugin.GetLogs(day, orderby);
-
-                    _vmLogsViewModel.Cache(logs);
+                    var days = plugin.GetDays();
 
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.IsLoggerVisible;
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.isThreadIdVisible;
                     _vmLogsViewModel.IsDetailVisible = cfg.Ui.IsDetailVisible;
-                    _vmLogsViewModel.Logs = new ObservableCollection<LogRow>(logs);
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
                     _vmLogsViewModel.Plugin = plugin;
-                    _vmLogsViewModel.Date = day;
                     _vmLogsViewModel.Listener = plugin;
 
-                    _vmLogsViewModel.GoBack = () => LoadDays(plugin);
+                    _vmLogsViewModel.LoadDays(days);
+                    _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));
 
                     _vmLogsViewModel.IsFile = plugin.TryGetFile(out var path);
                     _vmLogsViewModel.CanListen = plugin.CanListen;
@@ -167,33 +164,7 @@ namespace Probel.LogReader.ViewModels
             ActivateItem(_manageRepositoryViewModel);
         }
 
-        private void LoadDays(IPlugin plugin)
-        {
-            var waiter = _userInteraction.NotifyWait();
-
-            var t1 = Task.Run(() =>
-            {
-                var r = plugin.GetDays();
-
-                _vmDaysViewModel.Days = new ObservableCollection<DateTime>(r);
-                _vmDaysViewModel.Plugin = plugin;
-
-                _vmLogsViewModel.ClearCache();
-            });
-            t1.OnErrorHandle(_userInteraction);
-
-            var token = new CancellationToken();
-            var sched = TaskScheduler.FromCurrentSynchronizationContext();
-
-            var t2 = t1.ContinueWith(r =>
-            {
-                ActivateItem(_vmDaysViewModel);
-                waiter.Dispose();
-            }, token, TaskContinuationOptions.OnlyOnRanToCompletion, sched);
-            t2.OnErrorHandle(_userInteraction, token, sched);
-        }
-
-        private void LoadFilter(IFilter filter)
+        private void LoadFilter(IFilter filter, string filterName)
         {
             using (_userInteraction.NotifyWait())
             {
@@ -201,6 +172,7 @@ namespace Probel.LogReader.ViewModels
                 var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
                 _vmLogsViewModel.Cache(logs);
                 _vmLogsViewModel.Filter();
+                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(filterName));
             }
         }
 
@@ -211,10 +183,11 @@ namespace Probel.LogReader.ViewModels
             var filters = aps.GetFilters(OrderBy.Asc);
             foreach (var filter in filters)
             {
+                var filterName = filter.Name ?? _filterTranslator.Translate(filter);
                 menus.Add(new MenuItemModel
                 {
-                    Name = filter.Name ?? _filterTranslator.Translate(filter),
-                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id))),
+                    Name = filterName,
+                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id), filterName)),
                 });
             }
             return menus;
@@ -233,12 +206,11 @@ namespace Probel.LogReader.ViewModels
                 menus.Add(new MenuItemModel
                 {
                     Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadDays(_pluginManager.Build(repo)))
+                    MenuCommand = new RelayCommand(() => LoadRepository(_pluginManager.Build(repo)))
                 });
             }
             return menus;
         }
-
         #endregion Methods
     }
 }

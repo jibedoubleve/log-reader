@@ -35,10 +35,7 @@ namespace Probel.LogReader.Helpers
         /// <param name="canExecute">The execution status logic.</param>
         public RelayArgCommand(Action<object> execute, Func<object, bool> canExecute)
         {
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-
-            this.execute = execute;
+            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
         }
 
@@ -53,13 +50,11 @@ namespace Probel.LogReader.Helpers
         {
             add
             {
-                if (this.canExecute != null)
-                    CommandManager.RequerySuggested += value;
+                if (canExecute != null) { CommandManager.RequerySuggested += value; }
             }
             remove
             {
-                if (this.canExecute != null)
-                    CommandManager.RequerySuggested -= value;
+                if (canExecute != null) { CommandManager.RequerySuggested -= value; }
             }
         }
 
@@ -74,19 +69,13 @@ namespace Probel.LogReader.Helpers
         /// <returns>
         /// true if this command can be executed; otherwise, false.
         /// </returns>
-        public bool CanExecute(object parameter)
-        {
-            return this.canExecute == null ? true : this.canExecute(parameter);
-        }
+        public bool CanExecute(object parameter) => canExecute == null ? true : canExecute(parameter);
 
         /// <summary>
         /// Defines the method to be called when the command is invoked.
         /// </summary>
         /// <param name="parameter">Data used by the command.  If the command does not require data to be passed, this object can be set to null.</param>
-        public void Execute(object parameter)
-        {
-            this.execute(parameter);
-        }
+        public void Execute(object parameter) => execute(parameter);
 
         #endregion Methods
     }

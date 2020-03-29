@@ -1,6 +1,7 @@
-﻿using Probel.LogReader.Core.Configuration;
+﻿using NSubstitute;
+using Probel.LogReader.Core.Configuration;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
-using Probel.LogReader.Core.Plugins.Loaders;
 using Probel.LogReader.Tests.Helpers;
 using System;
 using System.Linq;
@@ -11,13 +12,19 @@ namespace Probel.LogReader.Tests.Plugins
 {
     public sealed class Check_plugin_manager
     {
+        #region Fields
+
+        private readonly ILogger _logger = Substitute.For<ILogger>();
+
+        #endregion Fields
+
         #region Methods
 
         [Fact]
         public async Task Can_get_plugin_from_configuration()
         {
             var cm = new ConfigurationManager(new MemorySettingsManager());
-            IPluginManager mgr = new PluginManager(new DebugLoader());
+            IPluginManager mgr = new PluginManager(new DebugLoader(), _logger);
 
             var cfg = new AppSettings();
             cfg.Repositories.Add(new RepositorySettings { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") });
@@ -39,7 +46,7 @@ namespace Probel.LogReader.Tests.Plugins
         [Fact]
         public void Can_istanciate_debug_plugin()
         {
-            IPluginManager mgr = new PluginManager(new DebugLoader());
+            IPluginManager mgr = new PluginManager(new DebugLoader(), _logger);
             var cfg = new RepositorySettings() { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") };
 
             var plugin = mgr.Build(cfg);
@@ -54,7 +61,7 @@ namespace Probel.LogReader.Tests.Plugins
         [Fact]
         public void Can_istanciate_debug_plugin_multiple_times()
         {
-            IPluginManager mgr = new PluginManager(new DebugLoader());
+            IPluginManager mgr = new PluginManager(new DebugLoader(), _logger);
             var cfg = new RepositorySettings { PluginId = new Guid("c6d28753-2a41-4e03-a2ab-c9ddcc8652cf") };
 
             for (var i = 0; i < 3; i++)
