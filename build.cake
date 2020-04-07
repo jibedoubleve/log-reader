@@ -153,12 +153,12 @@ Task("Inno-Setup")
         InnoSetup(inno_setup, new InnoSetupSettings { 
             OutputDirectory = publishDir,
             Defines = new Dictionary<string, string> {
-                 { "MyAppVersion", gitVersion.SemVer },
-                 { "BinDirectory", path },
-                 { "CsvPluginDir", String.Format(pluginDir, plugins[0]) },
-                 { "TextPluginDir", String.Format(pluginDir, plugins[1]) },
-                 { "OraclePluginDir", String.Format(pluginDir, plugins[2]) },
-                 { "MsSqlPluginDir", String.Format(pluginDir, plugins[3]) },
+                { "MyAppVersion", gitVersion.SemVer },
+                { "BinDirectory", path },
+                { "CsvPluginDir", String.Format(pluginDir, plugins[0]) },
+                { "TextPluginDir", String.Format(pluginDir, plugins[1]) },
+                { "OraclePluginDir", String.Format(pluginDir, plugins[2]) },
+                { "MsSqlPluginDir", String.Format(pluginDir, plugins[3]) },
             }
         });
 });
@@ -175,12 +175,12 @@ Task("Release-GitHub")
             Name       = gitVersion.SemVer,
             Prerelease = gitVersion.SemVer.Contains("alpha"),
             Assets     = publishDir + "/logreader." + gitVersion.SemVer + ".bin.zip," 
-                                    + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
-                                    + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
-                                    + publishDir + "/plugin-mssql-" + gitVersion.SemVer + ".bin.zip,"
-                                    + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
-                                    + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
-                                    + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
+                       + publishDir + "/logreader." + gitVersion.SemVer + ".setup.exe,"
+                       + publishDir + "/plugin-oracle-" + gitVersion.SemVer + ".bin.zip," 
+                       + publishDir + "/plugin-mssql-" + gitVersion.SemVer + ".bin.zip,"
+                       + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
+                       + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
+                       + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
