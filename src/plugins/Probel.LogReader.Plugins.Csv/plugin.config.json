@@ -3,5 +3,5 @@
   "plugin-id": "59602b32-f019-498d-8d78-9099a5f7ec32",
   "dll": "Probel.LogReader.Plugins.Csv.dll",
   "explanation": "Get logs from CSV files.",
-  "doc-url": "https://github.com/jibedoubleve/log-reader/blob/master/doc/plugins/plugin-csv.md"
+  "doc-url": "https://github.com/jibedoubleve/log-reader/wiki/plugin-csv"
 }
