@@ -189,7 +189,10 @@ namespace Probel.LogReader.Plugins.Csv
             _fw.Changed += OnFileChanged;
         }
 
-        private void OnFileChanged(object sender, FileSystemEventArgs e) => OnChanged();
+        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            if (e.ChangeType == WatcherChangeTypes.Changed) { OnChanged(); }
+        }
 
         #endregion Methods
     }
