@@ -87,7 +87,9 @@ namespace Probel.LogReader.Views
 
         private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
 
-        private void OnToggleButtonClick(object sender, RoutedEventArgs e)
+        private void OnToggleButtonClick(object sender, RoutedEventArgs e) => ToggleDetails();
+
+        private void ToggleDetails()
         {
             _detailPane.ToggleAutoHide();
             if (ViewModel != null)
@@ -105,5 +107,12 @@ namespace Probel.LogReader.Views
         }
 
         #endregion Methods
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F4) { ToggleDetails(); }
+            else if (e.Key == Key.F5) { ViewModel.RefreshLogs(true); }
+            e.Handled = false;
+        }
     }
 }

@@ -34,10 +34,16 @@ namespace Probel.LogReader.Plugins.Csv.IO
 
         public IEnumerable<LogRow> GetLogs(OrderBy orderby)
         {
+            return TryGetLogs(orderby);
+        }
+
+        private IEnumerable<LogRow> TryGetLogs(OrderBy orderby)
+        {
             var ci = CultureInfo.InvariantCulture;
             var encoding = Encoding.GetEncoding(_querylog.Encoding);
 
-            using (var reader = new StreamReader(_path, encoding))
+            using (var file = File.Open(_path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var reader = new StreamReader(file, encoding))
             using (var csv = new CsvReader(reader, ci))
             {
                 csv.Configure(_querylog);
@@ -48,10 +54,13 @@ namespace Probel.LogReader.Plugins.Csv.IO
                 {
                     case OrderBy.Asc:
                         return records.OrderBy(e => e.Time).ToList();
+
                     case OrderBy.Desc:
                         return records.OrderByDescending(e => e.Time).ToList();
+
                     case OrderBy.None:
                         return records.ToList();
+
                     default: throw new NotSupportedException($"Sort type '{orderby}' is not supported!");
                 }
             }
