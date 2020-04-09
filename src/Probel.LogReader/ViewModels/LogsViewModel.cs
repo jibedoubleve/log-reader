@@ -313,15 +313,19 @@ namespace Probel.LogReader.ViewModels
             LastRefresh = DateTime.Now;
         }
 
-        public void RefreshLogs(bool doLog = true)
+        /// <summary>
+        /// Refreshes the logs
+        /// </summary>
+        /// <param name="notifyUser">Indicates whether to notify user logs has been updated</param>
+        public void RefreshLogs(bool notifyUser = true)
         {
-            if (doLog) { _ui.NotifyInformation("Refreshing logs..."); }
+            if (notifyUser) { _ui.NotifyInformation("Refreshing logs..."); }
             var t1 = Task.Run(() => RefreshData());
             t1.OnErrorHandle(_ui);
 
             t1.ContinueWith(r =>
             {
-                if (doLog) { _ui.NotifySuccess("Refresh done."); }
+                if (notifyUser) { _ui.NotifySuccess("Refresh done."); }
                 LastRefresh = DateTime.Now;
             }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }

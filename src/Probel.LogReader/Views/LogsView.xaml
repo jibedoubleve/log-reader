@@ -11,9 +11,12 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:xcad="https://github.com/Dirkster99/AvalonDock"
     x:Name="_self"
+    cal:Message.Attach="[Gesture F5] = [RefreshLogs]"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    KeyDown="OnKeyDown"
     mc:Ignorable="d">
+    <UserControl.InputBindings />
     <UserControl.Resources>
         <GridLength x:Key="DefaultHeight">400</GridLength>
         <sys:Double x:Key="AutoHideHeight">400</sys:Double>
