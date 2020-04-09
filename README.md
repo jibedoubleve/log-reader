@@ -5,5 +5,5 @@ Generic log reader in WPF
 
 # Documentation
 
-- [Analyse](./doc/analyse.md)
-- [UI](./doc/ui.md)
+- [Analyse](doc/Analyse.md)
+- [Development machine](doc/Dev.md)
