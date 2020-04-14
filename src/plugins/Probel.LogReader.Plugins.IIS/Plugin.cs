@@ -14,8 +14,8 @@ namespace Probel.LogReader.Plugins.IIS
     {
         #region Fields
 
-        private IEnumerable<LogSource> _dates;
         private const string _pattern = @"^(?<datetime>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?<s_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) (?<cs_method>\w{0,9}) (?<cs_uri_stem>.*) (?<cs_uri_query>[^\s]*) (?<s_port>[^\s]*) (?<cs_username>[^\s]*) (?<c_ip>[^\s]*) (?<cs_user_agent>[^\s]*) (?<cs_referer>[^\s]*) (?<sc_status>[^\s]*) (?<sc_substatus>[^\s]*) (?<sc_win32_status>[^\s]*) (?<time_taken>[^\s]*)";
+        private IEnumerable<LogSource> _dates;
 
         #endregion Fields
 
@@ -23,7 +23,11 @@ namespace Probel.LogReader.Plugins.IIS
 
         public override IEnumerable<DateTime> GetDays(OrderBy orderby = OrderBy.Desc)
         {
-            _dates = GetFiles(Settings.ConnectionString);
+            var cs = (string.IsNullOrWhiteSpace(Settings.ConnectionString))
+                ? @"u_ex(?<year>\d{2})(?<month>\d{2})(?<day>\d{2}).log"
+                : Settings.ConnectionString;
+
+            _dates = GetFiles(cs);
 
             switch (orderby)
             {

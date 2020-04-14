@@ -52,6 +52,7 @@
     <ProjectReference Include="..\..\Probel.LogReader.Core\Probel.LogReader.Core.csproj">
       <Project>{daf94458-76e2-4c4b-97d4-cd76763b03c5}</Project>
       <Name>Probel.LogReader.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

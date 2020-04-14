@@ -145,7 +145,8 @@ Task("Inno-Setup")
     .Does(() => {
         var path      = MakeAbsolute(Directory(binDirectory)).FullPath + "\\";
         var pluginDir = MakeAbsolute(Directory(binPluginDir)).FullPath + "\\";
-        var plugins   = new string[] { "csv", "text", "oracle", "mssql" };        
+        var plugins   = new string[] { "csv", "text", "oracle", "mssql", "iis" };   
+        var i = 0;
 
         Information("Bin path   : {0}: ", path);
         Information("Plugin path: {0}: ", pluginDir);
@@ -155,10 +156,11 @@ Task("Inno-Setup")
             Defines = new Dictionary<string, string> {
                 { "MyAppVersion", gitVersion.SemVer },
                 { "BinDirectory", path },
-                { "CsvPluginDir", String.Format(pluginDir, plugins[0]) },
-                { "TextPluginDir", String.Format(pluginDir, plugins[1]) },
-                { "OraclePluginDir", String.Format(pluginDir, plugins[2]) },
-                { "MsSqlPluginDir", String.Format(pluginDir, plugins[3]) },
+                { "CsvPluginDir", String.Format(pluginDir, plugins[i++]) },
+                { "TextPluginDir", String.Format(pluginDir, plugins[i++]) },
+                { "OraclePluginDir", String.Format(pluginDir, plugins[i++]) },
+                { "MsSqlPluginDir", String.Format(pluginDir, plugins[i++]) },
+                { "IISPluginDir", String.Format(pluginDir, plugins[i++]) },
             }
         });
 });
