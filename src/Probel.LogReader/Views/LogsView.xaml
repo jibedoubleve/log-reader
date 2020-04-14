@@ -29,6 +29,8 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <conv:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <conv:TwoDigitsToFourDigitsYearConverter x:Key="TwoDigitsToFourDigitsYearConverter" />
+        <conv:TwoDigitsToFullYearConverter x:Key="TwoDigitsToFullYearConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -287,7 +289,7 @@
                                                 </StackPanel>
                                                 <HierarchicalDataTemplate.Triggers>
                                                     <DataTrigger Binding="{Binding Level}" Value="1">
-                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, StringFormat=yyyy}" />
+                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFullYearConverter}}" />
                                                         <Setter TargetName="IconPack" Property="Kind" Value="Calendar" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Level}" Value="2">
@@ -295,7 +297,7 @@
                                                         <Setter TargetName="IconPack" Property="Kind" Value="Calendar31" />
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Level}" Value="3">
-                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, StringFormat=dd MMMM yyyy}" />
+                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFourDigitsYearConverter}}" />
                                                         <Setter TargetName="IconPack" Property="Kind" Value="Calendar14" />
                                                     </DataTrigger>
                                                 </HierarchicalDataTemplate.Triggers>
@@ -579,7 +581,7 @@
             <StatusBarItem>
                 <TextBlock>
                     <Run Text="Date:" />
-                    <Run FontWeight="Bold" Text="{Binding Date, Mode=OneWay, StringFormat={}dd MMMM yyyy}" />
+                    <Run FontWeight="Bold" Text="{Binding Date, Mode=OneWay, Converter={StaticResource TwoDigitsToFourDigitsYearConverter}}" />
                 </TextBlock>
             </StatusBarItem>
             <Separator Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />

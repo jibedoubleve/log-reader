@@ -15,10 +15,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = Guid.NewGuid().ToString() };
 
-            ((DebugPlugin)plugin).SetCategory("category");
+            ((Plugin)plugin).SetCategory("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -31,10 +31,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive_no_result_case_insensitive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "category" };
 
-            ((DebugPlugin)plugin).SetCategory("cAtEgOrY");
+            ((Plugin)plugin).SetCategory("cAtEgOrY");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -47,10 +47,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive_no_result_multiple()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "blahblah, CATEGORY " };
 
-            ((DebugPlugin)plugin).SetCategory("cAtEgOrY");
+            ((Plugin)plugin).SetCategory("cAtEgOrY");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -63,10 +63,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_exclusive_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "not in", Operand = "category" };
 
-            ((DebugPlugin)plugin).SetCategory("category");
+            ((Plugin)plugin).SetCategory("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -79,10 +79,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_inclusive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "in", Operand = "category" };
 
-            ((DebugPlugin)plugin).SetCategory("category");
+            ((Plugin)plugin).SetCategory("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -95,10 +95,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_category_inclusive_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new CategoryFilter() { Operator = "in", Operand = Guid.NewGuid().ToString() };
 
-            ((DebugPlugin)plugin).SetCategory("category");
+            ((Plugin)plugin).SetCategory("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -111,10 +111,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_exclusive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = Guid.NewGuid().ToString() };
 
-            ((DebugPlugin)plugin).SetLevel("level");
+            ((Plugin)plugin).SetLevel("level");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -127,10 +127,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_exclusive_no_result_case_insensitive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = "level" };
 
-            ((DebugPlugin)plugin).SetLevel("lEvEl");
+            ((Plugin)plugin).SetLevel("lEvEl");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -143,10 +143,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_exclusive_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new LevelFilter() { Operator = "not in", Operand = "category" };
 
-            ((DebugPlugin)plugin).SetLevel("category");
+            ((Plugin)plugin).SetLevel("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -159,10 +159,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_inclusive()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new LevelFilter() { Operator = "in", Operand = "category" };
 
-            ((DebugPlugin)plugin).SetLevel("category");
+            ((Plugin)plugin).SetLevel("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -175,10 +175,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_level_inclusive_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new LevelFilter() { Operator = "in", Operand = Guid.NewGuid().ToString() };
 
-            ((DebugPlugin)plugin).SetLevel("category");
+            ((Plugin)plugin).SetLevel("category");
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -191,9 +191,9 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_or_equal()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             var now = DateTime.Now;
-            ((DebugPlugin)plugin)
+            ((Plugin)plugin)
                 .Clear()
                 .Add(new LogRow()
                 {
@@ -226,10 +226,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">", Operand = "15" };
 
-            ((DebugPlugin)plugin).AddMinutes(100);
+            ((Plugin)plugin).AddMinutes(100);
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -242,10 +242,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">", Operand = "15" };
 
-            ((DebugPlugin)plugin).AddMinutes(1);
+            ((Plugin)plugin).AddMinutes(1);
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -258,10 +258,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_greater_than_or_equal_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new TimeFilter() { Operator = ">=", Operand = "15" };
 
-            ((DebugPlugin)plugin).AddMinutes(1);
+            ((Plugin)plugin).AddMinutes(1);
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -274,9 +274,9 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_or_equal()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             var now = DateTime.Now;
-            ((DebugPlugin)plugin)
+            ((Plugin)plugin)
                 .Clear()
                 .Add(new LogRow()
                 {
@@ -308,9 +308,9 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_or_equal_on_multiple_days()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             var now = DateTime.Now;
-            ((DebugPlugin)plugin)
+            ((Plugin)plugin)
                 .Clear()
                 .Add(new LogRow()
                 {
@@ -340,10 +340,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_than()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new TimeFilter() { Operator = "<", Operand = "15" };
 
-            ((DebugPlugin)plugin).AddMinutes(1);
+            ((Plugin)plugin).AddMinutes(1);
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -356,10 +356,10 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void On_time_less_than_or_equal()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             IFilterExpression filter = new TimeFilter() { Operator = "<=", Operand = "15" };
 
-            ((DebugPlugin)plugin).AddMinutes(1);
+            ((Plugin)plugin).AddMinutes(1);
             var days = plugin.GetDays();
             foreach (var day in days)
             {
@@ -372,11 +372,11 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_Can_filter()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
 
-            ((DebugPlugin)plugin).AddMinutes(1);
-            ((DebugPlugin)plugin).SetCategory("group");
-            ((DebugPlugin)plugin).SetLevel("debug");
+            ((Plugin)plugin).AddMinutes(1);
+            ((Plugin)plugin).SetCategory("group");
+            ((Plugin)plugin).SetLevel("debug");
 
             IFilterExpression filter1 = new TimeFilter() { Operator = "<=", Operand = "15" };
             IFilterExpression filter2 = new CategoryFilter() { Operator = "in", Operand = "group" };
@@ -397,11 +397,11 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_no_result_with_filter_that_has_results()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
 
-            ((DebugPlugin)plugin).AddMinutes(100);
-            ((DebugPlugin)plugin).SetCategory("group");
-            ((DebugPlugin)plugin).SetLevel("debug");
+            ((Plugin)plugin).AddMinutes(100);
+            ((Plugin)plugin).SetCategory("group");
+            ((Plugin)plugin).SetLevel("debug");
 
             IFilterExpression filter1 = new TimeFilter() { Operator = "<=", Operand = "15" };
             IFilterExpression filter2 = new CategoryFilter() { Operator = "in", Operand = "group" };
@@ -422,11 +422,11 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_AND_filter_no_result()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
 
-            ((DebugPlugin)plugin).AddMinutes(100);
-            ((DebugPlugin)plugin).SetCategory(Guid.NewGuid().ToString());
-            ((DebugPlugin)plugin).SetLevel(Guid.NewGuid().ToString());
+            ((Plugin)plugin).AddMinutes(100);
+            ((Plugin)plugin).SetCategory(Guid.NewGuid().ToString());
+            ((Plugin)plugin).SetLevel(Guid.NewGuid().ToString());
 
             IFilterExpression filter1 = new TimeFilter() { Operator = "<=", Operand = "15" };
             IFilterExpression filter2 = new CategoryFilter() { Operator = "in", Operand = "group" };
@@ -447,9 +447,9 @@ namespace Probel.LogReader.Tests.Filters
         [Fact]
         public void With_composite_OR_Can_filter()
         {
-            PluginBase plugin = new DebugPlugin();
+            PluginBase plugin = new Plugin();
             var now = DateTime.Now;
-            ((DebugPlugin)plugin)
+            ((Plugin)plugin)
                 .Clear()
                 .Add(new LogRow()
                 {

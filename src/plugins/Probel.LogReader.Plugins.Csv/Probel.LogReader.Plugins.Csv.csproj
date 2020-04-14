@@ -58,7 +58,7 @@
     <Compile Include="IO\CsvClassMap.cs" />
     <Compile Include="IO\CsvFileReader.cs" />
     <Compile Include="Config\QueryLogSettings.cs" />
-    <Compile Include="CsvPlugin.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="LogSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
