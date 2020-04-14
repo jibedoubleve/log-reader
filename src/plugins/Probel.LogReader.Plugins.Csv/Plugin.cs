@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using Probel.LogReader.Plugins.Csv.Config;
 using Probel.LogReader.Plugins.Csv.IO;
@@ -11,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Probel.LogReader.Plugins.Csv
 {
-    public class CsvPlugin : PluginBase
+    public class Plugin : PluginBase
     {
         #region Fields
 
@@ -110,7 +111,7 @@ namespace Probel.LogReader.Plugins.Csv
                              where regex.IsMatch(f)
                              select new LogSource
                              {
-                                 Day = AsDate(regex.Match(f)),
+                                 Day = regex.Match(f).AsDate(),
                                  FilePath = f
                              }).ToList();
                 return files;

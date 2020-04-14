@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
+using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace Probel.LogReader.Plugins.Text
 {
-    public class TextPlugin : PluginBase
+    public class Plugin : PluginBase
     {
         #region Fields
 
@@ -74,15 +75,6 @@ namespace Probel.LogReader.Plugins.Text
 
         public override void StopListening() => ClearFileWatcher();
 
-        private DateTime AsDate(Match match)
-        {
-            int.TryParse(match.Groups["year"].Value, out var year);
-            int.TryParse(match.Groups["month"].Value, out var month);
-            int.TryParse(match.Groups["day"].Value, out var day);
-
-            return new DateTime(year, month, day);
-        }
-
         private void ClearFileWatcher()
         {
             if (_fw != null)
@@ -104,7 +96,7 @@ namespace Probel.LogReader.Plugins.Text
                              where regex.IsMatch(f)
                              select new LogSource
                              {
-                                 Day = AsDate(regex.Match(f)),
+                                 Day = regex.Match(f).AsDate(),
                                  FilePath = f
                              }).ToList();
                 return files;

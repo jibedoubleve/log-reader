@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5906844-246D-49FD-8671-CEA0056101E1}</ProjectGuid>
+    <ProjectGuid>{28D6150A-AB81-4599-9814-E11C466A2CE6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Probel.LogReader.Plugins.Text</RootNamespace>
-    <AssemblyName>Probel.LogReader.Plugins.Text</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <RootNamespace>Probel.LogReader.Plugins.IIS</RootNamespace>
+    <AssemblyName>Probel.LogReader.Plugins.IIS</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -41,15 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\MatchGroupHelper.cs" />
-    <Compile Include="LogExtractor.cs" />
+    <Compile Include="HtmlCodeTranslator.cs" />
     <Compile Include="LogSource.cs" />
+    <Compile Include="MatchGroupHelper.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LogExtractor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Probel.LogReader.Core\Probel.LogReader.Core.csproj">
-      <Project>{DAF94458-76E2-4C4B-97D4-CD76763B03C5}</Project>
+      <Project>{daf94458-76e2-4c4b-97d4-cd76763b03c5}</Project>
       <Name>Probel.LogReader.Core</Name>
     </ProjectReference>
   </ItemGroup>

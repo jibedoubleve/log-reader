@@ -2,7 +2,7 @@
 
 namespace Probel.LogReader.Plugins.Text.Helpers
 {
-    public static class MatchGroupHelper
+    internal static class MatchGroupHelper
     {
         #region Methods
 
