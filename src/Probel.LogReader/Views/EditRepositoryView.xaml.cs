@@ -1,5 +1,6 @@
 ﻿using Probel.LogReader.Colouration;
 using Probel.LogReader.ViewModels;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
