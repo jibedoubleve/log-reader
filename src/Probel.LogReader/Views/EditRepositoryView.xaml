@@ -87,6 +87,18 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <DockPanel>
+
+                <TextBlock
+                    Grid.Row="5"
+                    Margin="5,5,0,0"
+                    DockPanel.Dock="Top"
+                    FontSize="14"
+                    FontWeight="DemiBold"
+                    Visibility="{Binding SelectedPlugin, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringToVisibilityConverter}}">
+                    <Hyperlink NavigateUri="https://regex101.com/" RequestNavigate="OnRequestNavigate">
+                        Test regular expression
+                    </Hyperlink>
+                </TextBlock>
                 <!--  Query Day  -->
                 <Label DockPanel.Dock="Top">Query for days:</Label>
                 <Border Margin="5" Style="{StaticResource BorderStyle}">
