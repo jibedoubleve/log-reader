@@ -41,7 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\FileFinder.cs" />
     <Compile Include="Helpers\MatchGroupHelper.cs" />
+    <Compile Include="Helpers\Query.cs" />
     <Compile Include="LogExtractor.cs" />
     <Compile Include="LogSource.cs" />
     <Compile Include="Plugin.cs" />

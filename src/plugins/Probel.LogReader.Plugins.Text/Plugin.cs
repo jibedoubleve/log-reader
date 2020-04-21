@@ -1,7 +1,7 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Constants;
-using Probel.LogReader.Core.Helpers;
 using Probel.LogReader.Core.Plugins;
+using Probel.LogReader.Plugins.Text.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -88,17 +88,12 @@ namespace Probel.LogReader.Plugins.Text
         {
             dir = Environment.ExpandEnvironmentVariables(dir);
 
-            var regex = new Regex(Settings.QueryDay);
+            //var regex = new Regex(Settings.QueryDay);
+            var finder = new FileFinder(Settings.QueryDay);
 
             if (Directory.Exists(dir))
             {
-                var files = (from f in Directory.GetFiles(dir)
-                             where regex.IsMatch(f)
-                             select new LogSource
-                             {
-                                 Day = regex.Match(f).AsDate(),
-                                 FilePath = f
-                             }).ToList();
+                var files = finder.GetFiles(dir);
                 return files;
             }
             else { throw new FileNotFoundException($"Directory '{dir}' do not exist. Impossible to find CSV files."); }
