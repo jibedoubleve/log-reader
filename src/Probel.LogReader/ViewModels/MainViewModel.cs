@@ -18,17 +18,19 @@ namespace Probel.LogReader.ViewModels
 {
     public class MainViewModel : Conductor<IScreen>, IHandle<UiEvent>
     {
-        private readonly IEventAggregator _eventAggregator;
         #region Fields
 
         private readonly IConfigurationManager _configurationManager;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IFilterTranslator _filterTranslator;
+        private readonly ManageFilterBindingsViewModel _manageFilterBindingsViewModel;
         private readonly ManageFilterViewModel _manageFilterViewModel;
         private readonly ManageRepositoryViewModel _manageRepositoryViewModel;
         private readonly IPluginInfoManager _pluginInfoManager;
         private readonly IPluginManager _pluginManager;
         private readonly IUserInteraction _userInteraction;
         private readonly LogsViewModel _vmLogsViewModel;
+        private IFilterManager _fmanager;
         private bool _isFilterVisible = false;
         private ObservableCollection<MenuItemModel> _menuFile;
         private ObservableCollection<MenuItemModel> _menuFilter;
@@ -56,6 +58,7 @@ namespace Probel.LogReader.ViewModels
             _vmLogsViewModel = views.LogsViewModel;
             _manageRepositoryViewModel = views.ManageRepositoryViewModel;
             _manageFilterViewModel = views.ManageFilterViewModel;
+            _manageFilterBindingsViewModel = views.ManageFilterBindingsViewModel;
         }
 
         #endregion Constructors
@@ -84,6 +87,59 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
+        private void LoadFilter(IFilter filter, string filterName)
+        {
+            using (_userInteraction.NotifyWait())
+            {
+                _vmLogsViewModel.LastFilter = filter;
+                var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
+                _vmLogsViewModel.Cache(logs);
+                _vmLogsViewModel.Filter();
+                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(filterName));
+            }
+        }
+
+        private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager, Guid repositoryId)
+        {
+            var menus = new List<MenuItemModel>();
+            var aps = _configurationManager.GetDecorated();
+            var filters = aps.GetFilters(repositoryId, OrderBy.Asc);
+            foreach (var filter in filters)
+            {
+                var filterName = filter.Name ?? _filterTranslator.Translate(filter);
+                menus.Add(new MenuItemModel
+                {
+                    Name = filterName,
+                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id), filterName)),
+                });
+            }
+            return menus;
+        }
+
+        private IEnumerable<MenuItemModel> LoadMenuRepository(AppSettings app)
+        {
+            var pil = _pluginInfoManager.GetPluginsInfo();
+            var repositories = (from r in app.Repositories
+                                where pil.Where(e => e.Id == r.PluginId).Count() > 0
+                                select r).OrderBy(e => e.Name);
+
+            var menus = new List<MenuItemModel>();
+            foreach (var repo in repositories)
+            {
+                menus.Add(new MenuItemModel
+                {
+                    Name = repo.Name,
+                    MenuCommand = new RelayCommand(() =>
+                    {
+                        var menuFilter = LoadMenuFilter(app, _fmanager, repo.Id);
+                        MenuFilter = new ObservableCollection<MenuItemModel>(menuFilter);
+                        LoadRepository(_pluginManager.Build(repo));
+                    })
+                });
+            }
+            return menus;
+        }
+
         public void Handle(UiEvent message)
         {
             if (message.Event == UiEvents.RefreshMenus)
@@ -94,6 +150,23 @@ namespace Probel.LogReader.ViewModels
             {
                 IsFilterVisible = isVisible;
             }
+        }
+
+        public void LoadMenus()
+        {
+            try
+            {
+                var t1 = Task.Run(() =>
+                {
+                    var app = _configurationManager.Get();
+                    _fmanager = _configurationManager.BuildFilterManager();
+
+                    var menuRepository = LoadMenuRepository(app);
+                    MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
+                });
+                t1.OnErrorHandle(_userInteraction);
+            }
+            catch (Exception ex) { throw ex; }
         }
 
         public void LoadRepository(IPlugin plugin)
@@ -132,24 +205,10 @@ namespace Probel.LogReader.ViewModels
             t2.OnErrorHandle(_userInteraction, token, scheduler);
         }
 
-        public void LoadMenus()
+        public void ManageFilterBindings()
         {
-            try
-            {
-                var t1 = Task.Run(() =>
-                {
-                    var app = _configurationManager.Get();
-                    var fmanager = _configurationManager.BuildFilterManager();
-
-                    var menuRepository = LoadMenuRepository(app);
-                    var menuFilter = LoadMenuFilter(app, fmanager);
-
-                    MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
-                    MenuFilter = new ObservableCollection<MenuItemModel>(menuFilter);
-                });
-                t1.OnErrorHandle(_userInteraction);
-            }
-            catch (Exception ex) { throw ex; }
+            _manageFilterBindingsViewModel.Load();
+            ActivateItem(_manageFilterBindingsViewModel);
         }
 
         public void ManageFilters()
@@ -164,53 +223,6 @@ namespace Probel.LogReader.ViewModels
             ActivateItem(_manageRepositoryViewModel);
         }
 
-        private void LoadFilter(IFilter filter, string filterName)
-        {
-            using (_userInteraction.NotifyWait())
-            {
-                _vmLogsViewModel.LastFilter = filter;
-                var logs = filter.Filter(_vmLogsViewModel.GetLogRows());
-                _vmLogsViewModel.Cache(logs);
-                _vmLogsViewModel.Filter();
-                _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(filterName));
-            }
-        }
-
-        private IEnumerable<MenuItemModel> LoadMenuFilter(AppSettings app, IFilterManager fManager)
-        {
-            var menus = new List<MenuItemModel>();
-            var aps = new AppSettingsDecorator(app);
-            var filters = aps.GetFilters(OrderBy.Asc);
-            foreach (var filter in filters)
-            {
-                var filterName = filter.Name ?? _filterTranslator.Translate(filter);
-                menus.Add(new MenuItemModel
-                {
-                    Name = filterName,
-                    MenuCommand = new RelayCommand(() => LoadFilter(fManager.Build(filter.Id), filterName)),
-                });
-            }
-            return menus;
-        }
-
-        private IEnumerable<MenuItemModel> LoadMenuRepository(AppSettings app)
-        {
-            var pil = _pluginInfoManager.GetPluginsInfo();
-            var repositories = (from r in app.Repositories
-                                where pil.Where(e => e.Id == r.PluginId).Count() > 0
-                                select r).OrderBy(e => e.Name);
-
-            var menus = new List<MenuItemModel>();
-            foreach (var repo in repositories)
-            {
-                menus.Add(new MenuItemModel
-                {
-                    Name = repo.Name,
-                    MenuCommand = new RelayCommand(() => LoadRepository(_pluginManager.Build(repo)))
-                });
-            }
-            return menus;
-        }
         #endregion Methods
     }
 }
