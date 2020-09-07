@@ -11,6 +11,7 @@
     Width="800"
     Height="570"
     Loaded="OnWindowLoaded"
+    WindowState="Maximized"
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -25,6 +26,7 @@
                 <MenuItem x:Name="_menuFile" Header="_File">
                     <MenuItem cal:Message.Attach="[Event Click] = [ManageRepositories]" Header="Manage _repositories..." />
                     <MenuItem cal:Message.Attach="[Event Click] = [ManageFilters]" Header="Manage _filters..." />
+                    <MenuItem cal:Message.Attach="[Event Click] = [ManageFilterBindings]" Header="Manage filter _bindings..." />
                 </MenuItem>
                 <MenuItem
                     x:Name="_repositoryFile"

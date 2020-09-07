@@ -79,7 +79,6 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -146,6 +145,8 @@
     <Compile Include="Ui\UiEvents.cs" />
     <Compile Include="Ui\UserInteraction.cs" />
     <Compile Include="Ui\WaitNotification.cs" />
+    <Compile Include="ViewModels\EditFilterBindingsViewModel.cs" />
+    <Compile Include="ViewModels\ManageFilterBindingsViewModel.cs" />
     <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\EditFilterViewModel.cs" />
     <Compile Include="ViewModels\EditRepositoryViewModel.cs" />
@@ -158,6 +159,9 @@
     <Compile Include="ViewModels\Packs\MainViewModelPack.cs" />
     <Compile Include="Views\Controls\DayControl.xaml.cs">
       <DependentUpon>DayControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EditFilterBindingsView.xaml.cs">
+      <DependentUpon>EditFilterBindingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditFilterView.xaml.cs">
       <DependentUpon>EditFilterView.xaml</DependentUpon>
@@ -176,6 +180,9 @@
     </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ManageFilterBindingsView.xaml.cs">
+      <DependentUpon>ManageFilterBindingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ManageFilterView.xaml.cs">
       <DependentUpon>ManageFilterView.xaml</DependentUpon>
@@ -222,6 +229,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\EditFilterBindingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EditFilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -243,6 +254,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ManageFilterBindingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -4,11 +4,16 @@
     {
         #region Constructors
 
-        public MainViewModelPack(LogsViewModel logsViewModel, ManageRepositoryViewModel manageRepositoryViewModel, ManageFilterViewModel manageFilterViewModel)
+        public MainViewModelPack(
+            LogsViewModel logsViewModel,
+            ManageRepositoryViewModel manageRepositoryViewModel,
+            ManageFilterViewModel manageFilterViewModel,
+            ManageFilterBindingsViewModel manageFilterBindingsViewModel)
         {
             ManageFilterViewModel = manageFilterViewModel;
             LogsViewModel = logsViewModel;
             ManageRepositoryViewModel = manageRepositoryViewModel;
+            ManageFilterBindingsViewModel = manageFilterBindingsViewModel;
         }
 
         #endregion Constructors
@@ -18,6 +23,7 @@
         public LogsViewModel LogsViewModel { get; }
         public ManageFilterViewModel ManageFilterViewModel { get; set; }
         public ManageRepositoryViewModel ManageRepositoryViewModel { get; }
+        public ManageFilterBindingsViewModel ManageFilterBindingsViewModel { get; }
 
         #endregion Properties
     }
