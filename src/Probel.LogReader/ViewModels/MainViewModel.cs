@@ -186,10 +186,10 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.IsOrderByAsc = cfg.Ui.IsLogOrderAsc;
                     _vmLogsViewModel.IsLoggerVisible = cfg.Ui.IsLoggerVisible;
                     _vmLogsViewModel.IsThreadIdVisible = cfg.Ui.IsThreadIdVisible;
-                    _vmLogsViewModel.IsDetailVisible = cfg.Ui.IsDetailVisible;
                     _vmLogsViewModel.RepositoryName = plugin.RepositoryName;
                     _vmLogsViewModel.Plugin = plugin;
                     _vmLogsViewModel.Listener = plugin;
+                    _vmLogsViewModel.Filters = MenuFilter;
 
                     _vmLogsViewModel.LoadDays(days);
                     _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));

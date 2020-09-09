@@ -15,8 +15,9 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     KeyDown="OnKeyDown"
+    Loaded="OnLoaded"
+    Unloaded="OnUnloaded"
     mc:Ignorable="d">
-    <UserControl.InputBindings />
     <UserControl.Resources>
         <GridLength x:Key="DefaultHeight">400</GridLength>
         <sys:Double x:Key="AutoHideHeight">400</sys:Double>
@@ -227,92 +228,47 @@
                     </StackPanel>
                 </Button>
             </ToolBar>
+            <ToolBar Visibility="{Binding ShowPersistenceButtons, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button Click="OnLoadLayout">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Kind="TableArrowUp" />
+                        <TextBlock Text="Load layout" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnSaveLayout">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Kind="TableArrowDown" />
+                        <TextBlock Text="Save layout" />
+                    </StackPanel>
+                </Button>
+            </ToolBar>
         </ToolBarTray>
         <xcad:DockingManager
+            x:Name="_dockingManager"
             Grid.Row="1"
             Margin="0,5,0,0"
-            AllowMixedOrientation="True"
-            Loaded="OnDockingManagerLoaded">
+            AllowMixedOrientation="True">
             <xcad:DockingManager.Theme>
                 <xcad:GenericTheme />
             </xcad:DockingManager.Theme>
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
 
-                    <xcad:LayoutAnchorablePaneGroup AllowDuplicateContent="False" DockWidth="{StaticResource DefaultWidth}">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable
-                                Title=" Days "
-                                AutoHideWidth="200"
-                                CanAutoHide="True"
-                                CanClose="False"
-                                CanDockAsTabbedDocument="False"
-                                CanFloat="False">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.Resources>
-                                            <Style TargetType="Button">
-                                                <Setter Property="BorderThickness" Value="0" />
-                                                <Setter Property="Margin" Value="3,3,0,3" />
-                                                <Setter Property="Background" Value="Transparent" />
-                                            </Style>
-                                        </StackPanel.Resources>
-                                        <Button Click="OnExpandAll">
-                                            <iconPacks:PackIconModern Kind="SectionExpandAll" />
-                                        </Button>
-                                        <Button Click="OnCollapseAll">
-                                            <iconPacks:PackIconModern Kind="SectionCollapseAll" />
-                                        </Button>
-                                    </StackPanel>
-                                    <TreeView
-                                        x:Name="_treeView"
-                                        Grid.Row="1"
-                                        ItemsSource="{Binding Days}"
-                                        SelectedItemChanged="OnTreeViewSelectedItemChanged">
-                                        <TreeView.ItemContainerStyle>
-                                            <Style TargetType="TreeViewItem">
-                                                <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
-                                            </Style>
-                                        </TreeView.ItemContainerStyle>
-                                        <TreeView.ItemTemplate>
-                                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <iconPacks:PackIconModern x:Name="IconPack" Margin="0,2,5,2" />
-                                                    <TextBlock
-                                                        x:Name="Date"
-                                                        Margin="0,2,5,2"
-                                                        VerticalAlignment="Center" />
-                                                </StackPanel>
-                                                <HierarchicalDataTemplate.Triggers>
-                                                    <DataTrigger Binding="{Binding Level}" Value="1">
-                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFullYearConverter}}" />
-                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Level}" Value="2">
-                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, StringFormat=MMMM}" />
-                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar31" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding Level}" Value="3">
-                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFourDigitsYearConverter}}" />
-                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar14" />
-                                                    </DataTrigger>
-                                                </HierarchicalDataTemplate.Triggers>
-                                            </HierarchicalDataTemplate>
-                                        </TreeView.ItemTemplate>
-                                    </TreeView>
-                                </Grid>
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                    </xcad:LayoutAnchorablePaneGroup>
-
                     <xcad:LayoutPanel Orientation="Vertical">
                         <xcad:LayoutDocumentPaneGroup>
                             <xcad:LayoutDocumentPane ShowHeader="False">
-                                <xcad:LayoutDocument Title="Logs" CanClose="False">
+                                <xcad:LayoutDocument
+                                    Title="Logs"
+                                    CanClose="False"
+                                    ContentId="_logs">
                                     <DataGrid
                                         x:Name="_logs"
                                         Grid.Row="1"
@@ -327,7 +283,6 @@
                                         HorizontalGridLinesBrush="#0C000000"
                                         IsReadOnly="True"
                                         ItemsSource="{Binding Logs}"
-                                        MouseDoubleClick="OnLogsMouseDoubleClick"
                                         SelectionMode="Single"
                                         VerticalGridLinesBrush="#82000000">
                                         <DataGrid.Resources>
@@ -429,10 +384,11 @@
                                     x:Name="_detailPane"
                                     Title="Details"
                                     AutoHideHeight="{StaticResource AutoHideHeight}"
+                                    CanAutoHide="True"
                                     CanClose="False"
                                     CanDockAsTabbedDocument="False"
                                     CanHide="False"
-                                    PropertyChanged="OnDetailPanePropertyChanged">
+                                    ContentId="_detailPane">
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="150" />
@@ -531,11 +487,14 @@
                                     </Grid>
                                 </xcad:LayoutAnchorable>
                                 <xcad:LayoutAnchorable
+                                    x:Name="_messageDetail"
                                     Title="Message"
                                     AutoHideHeight="{StaticResource AutoHideHeight}"
+                                    CanAutoHide="True"
                                     CanClose="False"
                                     CanDockAsTabbedDocument="False"
-                                    CanHide="False">
+                                    CanHide="False"
+                                    ContentId="_messageDetail">
                                     <TextBox
                                         FontFamily="Consolas"
                                         HorizontalScrollBarVisibility="Auto"
@@ -544,11 +503,14 @@
                                         VerticalScrollBarVisibility="Auto" />
                                 </xcad:LayoutAnchorable>
                                 <xcad:LayoutAnchorable
+                                    x:Name="_callstackDetail"
                                     Title="Call Stack"
                                     AutoHideHeight="{StaticResource AutoHideHeight}"
+                                    CanAutoHide="True"
                                     CanClose="False"
                                     CanDockAsTabbedDocument="False"
-                                    CanHide="False">
+                                    CanHide="False"
+                                    ContentId="_callstackDetail">
                                     <TextBox
                                         FontFamily="Consolas"
                                         HorizontalScrollBarVisibility="Auto"
@@ -559,9 +521,108 @@
                             </xcad:LayoutAnchorablePane>
                         </xcad:LayoutAnchorablePaneGroup>
                     </xcad:LayoutPanel>
+
                 </xcad:LayoutPanel>
 
+                <xcad:LayoutRoot.LeftSide>
+
+                    <xcad:LayoutAnchorSide>
+
+                        <xcad:LayoutAnchorGroup>
+
+                            <xcad:LayoutAnchorable
+                                Title=" Days "
+                                AutoHideWidth="200"
+                                CanClose="False"
+                                CanHide="False"
+                                ContentId="_days">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="BorderThickness" Value="0" />
+                                                <Setter Property="Margin" Value="3,3,0,3" />
+                                                <Setter Property="Background" Value="Transparent" />
+                                            </Style>
+                                        </StackPanel.Resources>
+                                        <Button Click="OnExpandAll">
+                                            <iconPacks:PackIconModern Kind="SectionExpandAll" />
+                                        </Button>
+                                        <Button Click="OnCollapseAll">
+                                            <iconPacks:PackIconModern Kind="SectionCollapseAll" />
+                                        </Button>
+                                    </StackPanel>
+                                    <TreeView
+                                        x:Name="_treeView"
+                                        Grid.Row="1"
+                                        ItemsSource="{Binding Days}"
+                                        SelectedItemChanged="OnTreeViewSelectedItemChanged">
+                                        <TreeView.ItemContainerStyle>
+                                            <Style TargetType="TreeViewItem">
+                                                <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                                            </Style>
+                                        </TreeView.ItemContainerStyle>
+                                        <TreeView.ItemTemplate>
+                                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <iconPacks:PackIconModern x:Name="IconPack" Margin="0,2,5,2" />
+                                                    <TextBlock
+                                                        x:Name="Date"
+                                                        Margin="0,2,5,2"
+                                                        VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <HierarchicalDataTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding Level}" Value="1">
+                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFullYearConverter}}" />
+                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="2">
+                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, StringFormat=MMMM}" />
+                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar31" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Level}" Value="3">
+                                                        <Setter TargetName="Date" Property="Text" Value="{Binding Value, Converter={StaticResource TwoDigitsToFourDigitsYearConverter}}" />
+                                                        <Setter TargetName="IconPack" Property="Kind" Value="Calendar14" />
+                                                    </DataTrigger>
+                                                </HierarchicalDataTemplate.Triggers>
+                                            </HierarchicalDataTemplate>
+                                        </TreeView.ItemTemplate>
+                                    </TreeView>
+                                </Grid>
+                            </xcad:LayoutAnchorable>
+                            <xcad:LayoutAnchorable
+                                Title=" Filters "
+                                AutoHideMinWidth="200"
+                                CanClose="False"
+                                CanHide="False"
+                                ContentId="_filters">
+                                <ListView
+                                    cal:Message.Attach="[MouseDoubleClick] = [ExecuteFilter($this.SelectedItem)]"
+                                    ItemsSource="{Binding Filters}"
+                                    SelectedItem="{Binding SelectedFilter}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <iconPacks:PackIconModern VerticalAlignment="Center" Kind="Filter" />
+                                                <Label VerticalAlignment="Center" Content="{Binding Name}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </xcad:LayoutAnchorable>
+
+                        </xcad:LayoutAnchorGroup>
+
+                    </xcad:LayoutAnchorSide>
+
+                </xcad:LayoutRoot.LeftSide>
+
             </xcad:LayoutRoot>
+
         </xcad:DockingManager>
         <StatusBar Grid.Row="4">
             <StatusBarItem>

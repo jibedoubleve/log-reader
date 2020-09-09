@@ -34,9 +34,9 @@ namespace Probel.LogReader.ViewModels
         private ObservableCollection<IHierarchy<DateTime>> _days;
         private string _filePath;
         private string _filterApplied;
+        private ObservableCollection<MenuItemModel> _filters;
         private string _gridLinesVisibility;
         private bool _isDebugVisible = true;
-        private bool _isDetailsVisible;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
         private bool _isFile;
@@ -52,16 +52,21 @@ namespace Probel.LogReader.ViewModels
 
         private string _repositoryName;
 
+        private bool _showPersistenceButtons;
+
         #endregion Fields
 
         #region Constructors
 
-        public LogsViewModel(IConfigurationManager configManager,
+        public LogsViewModel(
+                    IConfigurationManager configManager,
             IEventAggregator eventAggregator,
             ILogger log,
             IUserInteraction ui)
         {
             eventAggregator.Subscribe(this);
+
+            DockingStateFile = Environment.ExpandEnvironmentVariables(configManager?.Get()?.Ui?.LayoutFile ?? string.Empty);
 
             _ui = ui;
             _log = log;
@@ -99,6 +104,8 @@ namespace Probel.LogReader.ViewModels
             private set => Set(ref _days, value, nameof(Days));
         }
 
+        public string DockingStateFile { get; private set; }
+
         public string FilePath
         {
             get => _filePath;
@@ -113,6 +120,12 @@ namespace Probel.LogReader.ViewModels
 
         public ICommand FilterCommand { get; set; }
 
+        public ObservableCollection<MenuItemModel> Filters
+        {
+            get => _filters;
+            set => Set(ref _filters, value);
+        }
+
         public string GridLinesVisibility
         {
             get => _gridLinesVisibility;
@@ -123,18 +136,6 @@ namespace Probel.LogReader.ViewModels
         {
             get => _isDebugVisible;
             set => Set(ref _isDebugVisible, value, nameof(IsDebugVisible));
-        }
-
-        public bool IsDetailVisible
-        {
-            get => _isDetailsVisible;
-            set
-            {
-                if (Set(ref _isDetailsVisible, value, nameof(IsDetailVisible)))
-                {
-                    SaveConfig();
-                }
-            }
         }
 
         public bool IsErrorVisible
@@ -236,11 +237,139 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
 
+        public bool ShowPersistenceButtons
+        {
+            get => _showPersistenceButtons;
+            set => Set(ref _showPersistenceButtons, value);
+        }
+
         #endregion Properties
 
         #region Methods
 
+        private IEnumerable<LogRow> Filter(IEnumerable<LogRow> logs)
+        {
+            var src = logs ?? _cachedLogs;
+            var levels = GetLevels();
+
+            var filtered = (from l in src ?? new List<LogRow>()
+                            where levels.Contains(l.Level.ToLower())
+                            select l).ToList();
+
+            return IsOrderByAsc
+                ? filtered.OrderBy(e => e.Time).ToList()
+                : filtered.OrderByDescending(e => e.Time).ToList();
+        }
+
+        private IEnumerable<string> GetLevels()
+        {
+            var levels = new List<string>();
+            if (IsTraceVisible) { levels.Add("trace"); }
+            if (IsDebugVisible) { levels.Add("debug"); }
+            if (IsInfoVisible) { levels.Add("info"); }
+            if (IsWarnVisible) { levels.Add("warn"); }
+            if (IsErrorVisible) { levels.Add("error"); }
+            if (IsFatalVisible) { levels.Add("fatal"); }
+            return levels;
+        }
+
+        private void OnDataChanged(object sender, EventArgs e)
+        {
+            if (IsListeningFile)
+            {
+                _stopwatch.Stop();
+                if (_stopwatch.ElapsedMilliseconds > 500)
+                {
+                    _log.Trace($"Log file changed! Last event {_stopwatch.ElapsedMilliseconds} msec ago.");
+                    ChangeCount++;
+                    Task.Run(() =>
+                    {
+                        RefreshData();
+                    }).OnErrorHandle(_ui);
+                }
+            }
+            _stopwatch.Reset();
+            _stopwatch.Start();
+        }
+
+        private void RegisterListener()
+        {
+            if (Listener != null)
+            {
+                _log.Trace($"Activate log change listener.");
+                Listener.DataChanged += OnDataChanged;
+                Listener.StartListening(Date);
+            }
+            else { _log.Warn("Plugin can listen but no listener is configured!"); }
+        }
+
+        private void SaveConfig() => _configManager.Save(e =>
+        {
+            e.Ui.IsLogOrderAsc = IsOrderByAsc;
+        });
+
+        private void SortLogs(bool sortAsc)
+        {
+            var l = (sortAsc)
+                ? Logs.OrderBy(e => e.Time)
+                : Logs.OrderByDescending(e => e.Time);
+            Logs = new ObservableCollection<LogRow>(l);
+        }
+
+        private void UnregisterListener()
+        {
+            if (Listener != null)
+            {
+                _log.Trace($"DEACTIVATE log change listener.");
+                Listener.DataChanged -= OnDataChanged;
+            }
+            else { _log.Trace("No listener to deactivate."); }
+
+            ChangeCount = 0;
+        }
+
+        protected override void OnActivate()
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
+            IsTraceVisible
+                = IsDebugVisible
+                = IsInfoVisible
+                = IsWarnVisible
+                = IsErrorVisible
+                = IsFatalVisible
+                = true;
+            if (IsListeningFile) { RegisterListener(); }
+
+            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
+            ShowPersistenceButtons = _configManager.Get().Ui.ShowLayoutButtons;
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
+            UnregisterListener();
+
+            var t1 = Task.Run(() =>
+            {
+                _configManager.Save(stg =>
+                {
+                    stg.Ui.IsLoggerVisible = IsLoggerVisible;
+                    stg.Ui.IsThreadIdVisible = IsThreadIdVisible;
+                });
+            });
+            t1.OnErrorHandle(_ui);
+        }
+
         public void Cache(IEnumerable<LogRow> logs) => _cachedLogs = logs;
+
+        public void ExecuteFilter(MenuItemModel filter)
+        {
+            if (filter == null) { return; }
+            else if (filter.MenuCommand.CanExecute(null))
+            {
+                filter.MenuCommand.Execute(null);
+            }
+        }
 
         /// <summary>
         /// This method is used for the <see cref="ICommand"/>
@@ -347,120 +476,6 @@ namespace Probel.LogReader.ViewModels
             IsOrderByAsc = !IsOrderByAsc;
             SortLogs(IsOrderByAsc);
             SaveConfig();
-        }
-
-        protected override void OnActivate()
-        {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
-            IsTraceVisible
-                = IsDebugVisible
-                = IsInfoVisible
-                = IsWarnVisible
-                = IsErrorVisible
-                = IsFatalVisible
-                = true;
-            if (IsListeningFile) { RegisterListener(); }
-
-            GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
-            UnregisterListener();
-
-            var t1 = Task.Run(() =>
-            {
-                _configManager.Save(stg =>
-                {
-                    stg.Ui.IsLoggerVisible = IsLoggerVisible;
-                    stg.Ui.IsThreadIdVisible = IsThreadIdVisible;
-                    stg.Ui.IsDetailVisible = IsDetailVisible;
-                });
-            });
-            t1.OnErrorHandle(_ui);
-        }
-
-        private IEnumerable<LogRow> Filter(IEnumerable<LogRow> logs)
-        {
-            var src = logs ?? _cachedLogs;
-            var levels = GetLevels();
-
-            var filtered = (from l in src ?? new List<LogRow>()
-                            where levels.Contains(l.Level.ToLower())
-                            select l).ToList();
-
-            return IsOrderByAsc
-                ? filtered.OrderBy(e => e.Time).ToList()
-                : filtered.OrderByDescending(e => e.Time).ToList();
-        }
-
-        private IEnumerable<string> GetLevels()
-        {
-            var levels = new List<string>();
-            if (IsTraceVisible) { levels.Add("trace"); }
-            if (IsDebugVisible) { levels.Add("debug"); }
-            if (IsInfoVisible) { levels.Add("info"); }
-            if (IsWarnVisible) { levels.Add("warn"); }
-            if (IsErrorVisible) { levels.Add("error"); }
-            if (IsFatalVisible) { levels.Add("fatal"); }
-            return levels;
-        }
-
-        private void OnDataChanged(object sender, EventArgs e)
-        {
-            if (IsListeningFile)
-            {
-                _stopwatch.Stop();
-                if (_stopwatch.ElapsedMilliseconds > 500)
-                {
-                    _log.Trace($"Log file changed! Last event {_stopwatch.ElapsedMilliseconds} msec ago.");
-                    ChangeCount++;
-                    Task.Run(() =>
-                    {
-                        RefreshData();
-                    }).OnErrorHandle(_ui);
-                }
-            }
-            _stopwatch.Reset();
-            _stopwatch.Start();
-        }
-
-        private void RegisterListener()
-        {
-            if (Listener != null)
-            {
-                _log.Trace($"Activate log change listener.");
-                Listener.DataChanged += OnDataChanged;
-                Listener.StartListening(Date);
-            }
-            else { _log.Warn("Plugin can listen but no listener is configured!"); }
-        }
-
-        private void SaveConfig() => _configManager.Save(e =>
-        {
-            e.Ui.IsLogOrderAsc = IsOrderByAsc;
-            e.Ui.IsDetailVisible = IsDetailVisible;
-        });
-
-        private void SortLogs(bool sortAsc)
-        {
-            var l = (sortAsc)
-                ? Logs.OrderBy(e => e.Time)
-                : Logs.OrderByDescending(e => e.Time);
-            Logs = new ObservableCollection<LogRow>(l);
-        }
-
-        private void UnregisterListener()
-        {
-            if (Listener != null)
-            {
-                _log.Trace($"DEACTIVATE log change listener.");
-                Listener.DataChanged -= OnDataChanged;
-            }
-            else { _log.Trace("No listener to deactivate."); }
-
-            ChangeCount = 0;
         }
 
         #endregion Methods

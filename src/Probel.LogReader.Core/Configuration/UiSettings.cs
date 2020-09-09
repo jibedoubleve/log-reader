@@ -6,18 +6,6 @@ namespace Probel.LogReader.Core.Configuration
     {
         #region Properties
 
-        [JsonProperty("log-sorted-ascending")]
-        public bool IsLogOrderAsc { get; set; } = true;
-
-        [JsonProperty("is-details-visible")]
-        public bool IsDetailVisible { get; set; }
-
-        [JsonProperty("is-logger-visible")]
-        public bool IsLoggerVisible { get; set; }
-
-        [JsonProperty("is-threadid-visible")]
-        public bool IsThreadIdVisible { get; set; }
-
         /// <summary>
         /// Accepted values are
         ///  * All
@@ -27,6 +15,21 @@ namespace Probel.LogReader.Core.Configuration
         /// </summary>
         [JsonProperty("grid-line-visibility")]
         public string GridLineVisibility { get; set; } = "All";
+
+        [JsonProperty("is-logger-visible")]
+        public bool IsLoggerVisible { get; set; }
+
+        [JsonProperty("log-sorted-ascending")]
+        public bool IsLogOrderAsc { get; set; } = true;
+
+        [JsonProperty("is-threadid-visible")]
+        public bool IsThreadIdVisible { get; set; }
+
+        [JsonProperty("layout-file")]
+        public string LayoutFile { get; set; } = "%appdata%\\probel\\log-reader\\layout.bin";
+
+        [JsonProperty("show-layout-buttons")]
+        public bool ShowLayoutButtons { get; set; } = false;
 
         #endregion Properties
     }
