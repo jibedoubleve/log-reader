@@ -131,19 +131,22 @@ namespace Probel.LogReader.Core.Configuration
 
         public void BindFilters(Guid repositoryId, IEnumerable<FilterSettings> filters)
         {
-            //It works fast enough, I don't need to optimise this code
-
-            var toRemove = (from f in _appSettings.RepositoryFilters
-                            where f.RepositoryId == repositoryId
-                            select f).ToList();
-            foreach (var item in toRemove)
+            if (filters == null) { return; }
+            else
             {
-                _appSettings.RepositoryFilters.Remove(item);
-            }
+                //It works fast enough, I don't need to optimise this code
+                var toRemove = (from f in _appSettings.RepositoryFilters
+                                where f.RepositoryId == repositoryId
+                                select f).ToList();
+                foreach (var item in toRemove)
+                {
+                    _appSettings.RepositoryFilters.Remove(item);
+                }
 
-            foreach (var filter in filters)
-            {
-                _appSettings.RepositoryFilters.Add(new RepositoryFilterSettings() { FilterId = filter.Id, RepositoryId = repositoryId });
+                foreach (var filter in filters)
+                {
+                    _appSettings.RepositoryFilters.Add(new RepositoryFilterSettings() { FilterId = filter.Id, RepositoryId = repositoryId });
+                }
             }
         }
 

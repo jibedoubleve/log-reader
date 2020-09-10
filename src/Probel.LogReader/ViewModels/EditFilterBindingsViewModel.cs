@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
 using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Core.Plugins;
-using System;
+using Probel.LogReader.Ui;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -12,19 +12,21 @@ namespace Probel.LogReader.ViewModels
         #region Fields
 
         private readonly IConfigurationManager _configManager;
-        private ObservableCollection<FilterSettings> _activeFilters;
-
-        private Guid _id;
-        private ObservableCollection<FilterSettings> _inactiveFilters;
-
+        private readonly IUserInteraction _userInteraction;
+        private ObservableCollection<FilterSettings> _activeFilters = new ObservableCollection<FilterSettings>();
+        private ObservableCollection<FilterSettings> _inactiveFilters = new ObservableCollection<FilterSettings>();
         private bool _isDirty;
+        private RepositorySettings _repository;
 
         #endregion Fields
 
         #region Constructors
 
-        public EditFilterBindingsViewModel(IConfigurationManager configManager)
+        public EditFilterBindingsViewModel(
+            IConfigurationManager configManager,
+            IUserInteraction userInteraction)
         {
+            _userInteraction = userInteraction;
             _configManager = configManager;
         }
 
@@ -92,12 +94,12 @@ namespace Probel.LogReader.ViewModels
             IsDirty = true;
         }
 
-        public void Load(Guid id)
+        public void Load(RepositorySettings repository)
         {
-            _id = id;
+            _repository = repository;
             var appSettings = _configManager.GetDecorated();
 
-            var af = appSettings.GetActiveFilters(id);
+            var af = appSettings.GetActiveFilters(repository.Id);
             ActiveFilters = new ObservableCollection<FilterSettings>(af);
 
             var ia = appSettings.GetFilters(exept: af);
@@ -108,12 +110,21 @@ namespace Probel.LogReader.ViewModels
 
         public void Save()
         {
-            var appstg = _configManager.GetDecorated();
-            appstg.BindFilters(_id, _activeFilters);
+            if (_repository != null)
+            {
+                var appstg = _configManager.GetDecorated();
+                appstg.BindFilters(_repository.Id, _activeFilters);
 
-            _configManager.Save(appstg.Cast());
+                _configManager.Save(appstg.Cast());
 
-            IsDirty = false;
+                _userInteraction.NotifyInformation($"Linked {_activeFilters.Count()} filter(s) to repository {_repository.Name}.");
+
+                IsDirty = false;
+            }
+            else
+            {
+                _userInteraction.NotifyInformation("Nothing to save.");
+            }
         }
 
         #endregion Methods

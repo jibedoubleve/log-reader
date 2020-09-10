@@ -69,7 +69,7 @@ namespace Probel.LogReader.ViewModels
 
             if (CurrentRepository != null)
             {
-                _editFilterBindingsViewModel.Load(CurrentRepository.Id);
+                _editFilterBindingsViewModel.Load(CurrentRepository);
                 ActivateItem(_editFilterBindingsViewModel);
             }
         }
