@@ -1,23 +1,41 @@
 param(
-    $release = "beta"
+    $configuration = "beta"
 )
-
+<################################################################################
+ # VARIABLES
+ ################################################################################>
 $ErrorActionPreference = 'Stop'; 
-function GetSemVersion() {
-    $items = Get-ChildItem "..\Publish\logreader.*.setup.exe"
 
-    $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
-    return "$($Matches[1])$(GetMode).$($Matches[2])"
+$publishDir = "..\Publish"
+$installer = "$publishDir\logreader.*.setup.exe"
+$outputDir = "$publishDir\logreader"
+
+<################################################################################
+ # FUNCTIONS
+ ################################################################################>
+function GetSemVersion() {
+    
+
+    if ($items = Get-ChildItem $installer) {    
+        $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
+        return "$($Matches[1])$(GetMode).$($Matches[2])"
+    }
+    else {
+        throw "Cannot extract semver: Cannot find file '$installer'. [PWD] $pwd"
+    }
 }
 function GetVersion() {
-    $items = Get-ChildItem "..\Publish\logreader.*.setup.exe"
-
-    $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
-    return "$($Matches[1]).$($Matches[2])"
+    if ($items = Get-ChildItem $installer) {
+        $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
+        return "$($Matches[1]).$($Matches[2])"
+    }
+    else {
+        throw "Cannot extract version: Cannot find file '$installer'. [PWD] $pwd"
+    }
 }
 
 function GetMode() {
-    if (@("beta", "debug").Contains($release.ToLower())) {
+    if (@("beta", "debug").Contains($configuration.ToLower())) {
         return "-beta"
     }
     else {
@@ -25,15 +43,24 @@ function GetMode() {
     }
 }
 
+<################################################################################
+ # MAIN
+ ################################################################################>
 
-if (Test-Path  "..\Publish\logreader") {
-    Remove-Item -Force -Recurse "..\Publish\logreader"
+ Write-Host "========================================" -ForegroundColor Cyan
+ Write-Host "=== BUILDING CHOCOLATEY PACKAGE      ===" -ForegroundColor Cyan
+ Write-Host "========================================" -ForegroundColor Cyan
+ Write-Host "=== Working dir: $pwd" -ForegroundColor Yellow
+ Write-Host "----" -ForegroundColor Yellow
+
+if (Test-Path  $outputDir) {
+    Remove-Item -Force -Recurse $outputDir
 }
 
-Copy-Item .\logreader ..\Publish -Recurse
+Copy-Item .\logreader $publishDir -Recurse -Force
 
-$nuspec = "..\Publish\logreader\logreader.nuspec"
-$instScr = "..\Publish\logreader\tools\chocolateyinstall.ps1"
+$nuspec = "$outputDir\logreader.nuspec"
+$instScr = "$outputDir\tools\chocolateyinstall.ps1"
 $version = GetVersion
 $semVersion = GetSemVersion
 
@@ -42,6 +69,10 @@ write-host $version -ForegroundColor Cyan
 $(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$version</version>" | Set-Content -Path $nuspec
 $(Get-Content $instScr) -replace "toolsDir 'logreader.(.*).setup.exe'", "toolsDir 'logreader.$semVersion.setup.exe'" | Set-Content -Path $instScr
 
-Copy-Item "..\Publish\logreader.*.setup.exe" "..\Publish\logreader\tools"
+Copy-Item $installer "$outputDir\tools"
 
-choco pack $nuspec -out "..\Publish"
+choco pack $nuspec -out $publishDir
+
+if (Test-Path  $outputDir) {
+    Remove-Item -Force -Recurse $outputDir
+}
