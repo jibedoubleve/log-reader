@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Probel.LogReader.Plugins.Debug
 {
-    public class DebugPlugin : PluginBase
+    public class Plugin : PluginBase
     {
         #region Fields
 
@@ -22,7 +22,7 @@ namespace Probel.LogReader.Plugins.Debug
 
         #region Constructors
 
-        public DebugPlugin()
+        public Plugin()
         {
             for (var i = 0; i < 10; i++)
             {
@@ -37,7 +37,7 @@ namespace Probel.LogReader.Plugins.Debug
 
         #region Methods
 
-        public DebugPlugin Add(params LogRow[] logRow)
+        public Plugin Add(params LogRow[] logRow)
         {
             if (_tempLogRows == null) { _tempLogRows = new List<LogRow>(); }
             _tempLogRows.AddRange(logRow);
@@ -53,7 +53,7 @@ namespace Probel.LogReader.Plugins.Debug
             _dates.Add(now.Date);
         }
 
-        public DebugPlugin Clear()
+        public Plugin Clear()
         {
             _doClear = true;
             return this;

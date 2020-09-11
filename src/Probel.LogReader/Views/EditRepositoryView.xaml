@@ -15,7 +15,16 @@
     Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
+        <conv:Regex101UriConverter x:Key="Regex101UriConverter" />
         <conv:PluginInfoToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Style x:Key="VisibilityOnColouration" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedPlugin.Colouration, UpdateSourceTrigger=PropertyChanged}" Value="regex">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="Label">
             <Setter Property="Margin" Value="0,5,5,0" />
         </Style>
@@ -87,7 +96,19 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <DockPanel>
+
                 <!--  Query Day  -->
+                <TextBlock
+                    Grid.Row="5"
+                    Margin="50,0,5,5"
+                    DockPanel.Dock="Bottom"
+                    FontSize="14"
+                    FontWeight="DemiBold"
+                    Style="{DynamicResource VisibilityOnColouration}">
+                    <Hyperlink NavigateUri="{Binding Repository.QueryDay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Regex101UriConverter}}" RequestNavigate="OnRequestNavigate">
+                        Test Regular expression
+                    </Hyperlink>
+                </TextBlock>
                 <Label DockPanel.Dock="Top">Query for days:</Label>
                 <Border Margin="5" Style="{StaticResource BorderStyle}">
                     <avalonEdit:TextEditor
@@ -107,6 +128,17 @@
                 Height="5"
                 HorizontalAlignment="Stretch" />
             <DockPanel Grid.Row="2">
+                <TextBlock
+                    Grid.Row="5"
+                    Margin="50,0,5,5"
+                    DockPanel.Dock="Bottom"
+                    FontSize="14"
+                    FontWeight="DemiBold"
+                    Style="{DynamicResource VisibilityOnColouration}">
+                    <Hyperlink NavigateUri="{Binding Repository.QueryLog, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Regex101UriConverter}}" RequestNavigate="OnRequestNavigate">
+                        Test Regular expression
+                    </Hyperlink>
+                </TextBlock>
                 <!--  Query Log  -->
                 <Label DockPanel.Dock="Top">Query for logs:</Label>
                 <Border Margin="5" Style="{StaticResource BorderStyle}">

@@ -32,7 +32,7 @@ namespace Probel.LogReader.ViewModels
         public ICommand CreateFilterCommand { get; private set; }
         public ICommand CreateSubFilterCommand { get; private set; }
         public ManageFilterViewModel(IConfigurationManager configManager
-                    , EditFilterViewModel editSubfilterViewModel
+            , EditFilterViewModel editSubfilterViewModel
             , IEventAggregator eventAggregator
             , IUserInteraction userInteraction
             , ILogger log)
@@ -86,7 +86,7 @@ namespace Probel.LogReader.ViewModels
                 if (toDel != null)
                 {
                     Filters.Remove(toDel);
-                    _app.Filters.Remove(toDel);
+                    _configManager.Decorate(_app).Remove(toDel);
                 }
             }
         }

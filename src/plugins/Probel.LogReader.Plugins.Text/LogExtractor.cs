@@ -1,6 +1,5 @@
 ﻿using Probel.LogReader.Core.Configuration;
 using Probel.LogReader.Plugins.Text.Helpers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -37,7 +36,6 @@ namespace Probel.LogReader.Plugins.Text
                 foreach (Match line in lines)
                 {
                     result.Add(GetRow(line));
-
                 }
             }
             return result;
@@ -45,26 +43,15 @@ namespace Probel.LogReader.Plugins.Text
 
         private LogRow GetRow(Match line)
         {
-            if (line.Groups.Count == 5)
+            return new LogRow
             {
-                return new LogRow
-                {
-                    Time = DateTime.Parse(line.Groups["time"].Value),
-                    Level = line.GetLevel(),
-                    Logger = line.GetLogger(),
-                    Exception = line.GetException(),
-                    Message = line.GetMessage(),
-                    ThreadId = line.GetThreadId(),
-                };
-            }
-            else
-            {
-                return new LogRow
-                {
-                    Message = line.Groups[0].Value
-                };
-            }
-
+                Time = line.GetTime(),
+                Level = line.GetLevel(),
+                Logger = line.GetLogger(),
+                Exception = line.GetException(),
+                Message = line.GetMessage(),
+                ThreadId = line.GetThreadId(),
+            };
         }
 
         #endregion Methods

@@ -73,6 +73,12 @@ namespace Probel.LogReader.ViewModels
 
         #region Methods
 
+        protected override void OnDeactivate(bool close)
+        {
+            CurrentSubfilter = null;
+            DeactivateItem(_editSubfilterViewModel, close);
+        }
+
         public void ActivateCurrentSubfilter()
         {
             _editSubfilterViewModel.Load(CurrentSubfilter);
@@ -109,12 +115,6 @@ namespace Probel.LogReader.ViewModels
             _cachedSubfilter = filter.Expression;
             Subfilters = new ObservableCollection<FilterExpressionSettings>(filter.Expression);
             Filter = filter;
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-            CurrentSubfilter = null;
-            DeactivateItem(_editSubfilterViewModel, close);
         }
 
         #endregion Methods

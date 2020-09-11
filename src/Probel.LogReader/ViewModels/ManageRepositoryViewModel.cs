@@ -98,6 +98,7 @@ namespace Probel.LogReader.ViewModels
 
         public void Load()
         {
+            //TODO: check, seems to works by accident!
             var t1 = Task.Run(() => _cachedAppSettings = _configManager.Get());
             t1.OnErrorHandle(_userInteraction);
 
@@ -123,8 +124,10 @@ namespace Probel.LogReader.ViewModels
         {
             if (_userInteraction.Ask(Strings.Msg_AskDelete) == UserAnswers.Yes)
             {
-                _cachedAppSettings.Repositories.Remove(CurrentRepository);
-                Repositories.Remove(CurrentRepository);
+                var d = _configManager.Decorate(_cachedAppSettings);
+                d.Remove(CurrentRepository);
+
+                Repositories = new ObservableCollection<RepositorySettings>(d.Cast().Repositories);
             }
         }
 

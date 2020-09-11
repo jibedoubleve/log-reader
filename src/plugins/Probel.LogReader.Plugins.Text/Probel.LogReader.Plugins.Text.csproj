@@ -41,16 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\FileFinder.cs" />
     <Compile Include="Helpers\MatchGroupHelper.cs" />
+    <Compile Include="Helpers\Query.cs" />
     <Compile Include="LogExtractor.cs" />
     <Compile Include="LogSource.cs" />
-    <Compile Include="TextPlugin.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Probel.LogReader.Core\Probel.LogReader.Core.csproj">
       <Project>{DAF94458-76E2-4C4B-97D4-CD76763B03C5}</Project>
       <Name>Probel.LogReader.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -53,6 +53,8 @@ namespace Probel.LogReader.Core.Plugins
             await SaveAsync(a);
         }
 
+        public IAppSettingsDecorator Decorate(AppSettings appSettings) => new AppSettingsDecorator(appSettings);
+
         public void Delete() => _fileManager.Delete();
 
         public void Delete(RepositorySettings repository)
@@ -96,6 +98,8 @@ namespace Probel.LogReader.Core.Plugins
             }
             return app;
         }
+
+        public IAppSettingsDecorator GetDecorated() => Decorate(Get());
 
         public void Save(AppSettings settings) => _fileManager.Save(settings);
 

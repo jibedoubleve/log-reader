@@ -1,0 +1,8 @@
+{
+  "name": "IIS log files",
+  "plugin-id": "165ef782-af0f-4a11-a15f-cf68d1dbc4eb",
+  "dll": "Probel.LogReader.Plugins.IIS.dll",
+  "explanation": "Get logs from IIS log files.",
+  "doc-url": "https://github.com/jibedoubleve/log-reader/wiki/plugin-iis",
+  "colouration": "regex"
+}

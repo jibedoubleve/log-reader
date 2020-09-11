@@ -25,7 +25,7 @@ namespace Probel.LogReader.Tests.Helpers
 
             if (pluginTypes.ContainsKey(metadata.Dll) == false)
             {
-                pluginTypes.Add("Probel.LogReader.Plugins.Debug.dll", typeof(DebugPlugin));
+                pluginTypes.Add("Probel.LogReader.Plugins.Debug.dll", typeof(Plugin));
             }
             return metadataList;
         }

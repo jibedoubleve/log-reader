@@ -11,6 +11,7 @@ namespace Probel.LogReader.Core.Configuration
         {
             Filters = new List<FilterSettings>();
             Repositories = new List<RepositorySettings>();
+            RepositoryFilters = new List<RepositoryFilterSettings>();
             Ui = new UiSettings();
         }
 
@@ -23,8 +24,11 @@ namespace Probel.LogReader.Core.Configuration
         [JsonProperty("repositories")]
         public IList<RepositorySettings> Repositories { get; }
 
+        [JsonProperty("repository-filters")]
+        public IList<RepositoryFilterSettings> RepositoryFilters { get; set; }
+
         [JsonProperty("ui")]
-        public UiSettings Ui { get; set; }
+        public UiSettings Ui { get; set; }        
 
         #endregion Properties
     }

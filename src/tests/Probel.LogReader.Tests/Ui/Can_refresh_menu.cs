@@ -92,7 +92,7 @@ namespace Probel.LogReader.Tests.Ui
                 var plugin = pm.Build(repo);
 
                 Assert.Contains(menuName, names);
-                Assert.Equal(typeof(DebugPlugin), plugin.GetType());
+                Assert.Equal(typeof(Plugin), plugin.GetType());
             }
         }
 

@@ -17,6 +17,8 @@ namespace Probel.LogReader.Core.Plugins
 
         Task CreateAsync(RepositorySettings repository);
 
+        IAppSettingsDecorator Decorate(AppSettings appSettings);
+
         void Delete(RepositorySettings repository);
 
         Task DeleteAsync(RepositorySettings repository);
@@ -24,6 +26,8 @@ namespace Probel.LogReader.Core.Plugins
         AppSettings Get();
 
         Task<AppSettings> GetAsync();
+
+        IAppSettingsDecorator GetDecorated();
 
         void Save(AppSettings settings);
 

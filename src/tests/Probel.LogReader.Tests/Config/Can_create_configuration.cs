@@ -15,7 +15,7 @@ namespace Probel.LogReader.Tests.Config
     {
         #region Fields
 
-        private readonly string FilePath = @"%appdata%\probel\logreader\test_data-settings.json";
+        private readonly string FilePath = @"%appdata%\probel\log-reader\test_data-settings.json";
 
         #endregion Fields
 
