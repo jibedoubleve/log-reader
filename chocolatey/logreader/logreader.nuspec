@@ -6,7 +6,7 @@
     <version>0.5.0</version>
     <authors>Jean-Baptiste Wautier</authors>
     <owners>Jean-Baptiste Wautier</owners> <!-- also known as package mantainers -->
-    <description>Generic quite versatile log reader.</description>
+    <description>Generic and quite versatile log reader.</description>
  </metadata>
 <files>
   <file src="tools\**" target="tools" />
