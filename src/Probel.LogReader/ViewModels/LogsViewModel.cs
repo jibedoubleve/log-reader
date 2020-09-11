@@ -459,6 +459,8 @@ namespace Probel.LogReader.ViewModels
             }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
+        public void RefreshLogs() => RefreshLogs(true);
+
         public void ResetFromCache()
         {
             if (_cachedLogs == null) { Logs = new ObservableCollection<LogRow>(); }
