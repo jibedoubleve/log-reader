@@ -10,6 +10,8 @@ $publishDir = "..\Publish"
 $installer = "$publishDir\logreader.*.setup.exe"
 $outputDir = "$publishDir\logreader"
 
+$pattern = "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*((\.|)\d{0,2})\.setup.exe"
+
 <################################################################################
  # FUNCTIONS
  ################################################################################>
@@ -17,7 +19,7 @@ function GetSemVersion() {
     
 
     if ($items = Get-ChildItem $installer) {    
-        $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
+        $items[0].Name -match $pattern > $null
         return "$($Matches[1])$(GetMode).$($Matches[2])"
     }
     else {
@@ -26,8 +28,8 @@ function GetSemVersion() {
 }
 function GetVersion() {
     if ($items = Get-ChildItem $installer) {
-        $items[0].Name -match "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*\.(\d{1,2})\.setup.exe" > $null
-        return "$($Matches[1]).$($Matches[2])"
+        $items[0].Name -match $pattern > $null
+        return "$($Matches[1])$($Matches[2])"
     }
     else {
         throw "Cannot extract version: Cannot find file '$installer'. [PWD] $pwd"
@@ -64,7 +66,7 @@ $instScr = "$outputDir\tools\chocolateyinstall.ps1"
 $version = GetVersion
 $semVersion = GetSemVersion
 
-write-host $version -ForegroundColor Cyan
+write-host "Version: $version" -ForegroundColor Cyan
 
 $(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$version</version>" | Set-Content -Path $nuspec
 $(Get-Content $instScr) -replace "toolsDir 'logreader.(.*).setup.exe'", "toolsDir 'logreader.$semVersion.setup.exe'" | Set-Content -Path $instScr
