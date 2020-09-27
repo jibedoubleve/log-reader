@@ -13,7 +13,7 @@
     x:Name="_self"
     cal:Message.Attach="[Gesture F5] = [RefreshLogs]"
     d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignWidth="1024"
     KeyDown="OnKeyDown"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded"
@@ -39,8 +39,8 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ToolBarTray>
-            <ToolBar>
+        <ToolBarTray IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}">
+            <ToolBar Template="{DynamicResource VSBlueToolBarControlTemplate}">
                 <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding IsTraceVisible, UpdateSourceTrigger=PropertyChanged}">
                     <iconPacks:PackIconModern Kind="Eye" />
                 </ToggleButton>
@@ -154,7 +154,7 @@
                         </TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <Button x:Name="ToggleSortLogs">
+                <Button x:Name="ToggleSortLogs" IsEnabled="{Binding HasLogs}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -217,7 +217,7 @@
                         </TextBlock>
                     </StackPanel>
                 </ToggleButton>
-                <Button cal:Message.Attach="[Click] = [RefreshLogs]" >
+                <Button cal:Message.Attach="[Click] = [RefreshLogs]">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -257,8 +257,9 @@
             Margin="0,5,0,0"
             AllowMixedOrientation="True">
             <xcad:DockingManager.Theme>
-                <xcad:GenericTheme />
+                <Vs2013BlueTheme />
             </xcad:DockingManager.Theme>
+
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
 
@@ -621,9 +622,34 @@
 
                 </xcad:LayoutRoot.LeftSide>
 
+                <xcad:LayoutRoot.RightSide>
+                    <xcad:LayoutAnchorSide>
+                        <xcad:LayoutAnchorGroup>
+                            <xcad:LayoutAnchorable
+                                Title=" Repositories "
+                                AutoHideMinWidth="200"
+                                CanClose="False"
+                                CanHide="False"
+                                ContentId="_repositories">
+                                <ListView cal:Message.Attach="[MouseDoubleClick] = [LoadRepository($this.SelectedItem)]" ItemsSource="{Binding Repositories}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <iconPacks:PackIconModern VerticalAlignment="Center" Kind="Database" />
+                                                <Label VerticalAlignment="Center" Content="{Binding Name}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorGroup>
+                    </xcad:LayoutAnchorSide>
+                </xcad:LayoutRoot.RightSide>
+
             </xcad:LayoutRoot>
 
         </xcad:DockingManager>
+
         <StatusBar Grid.Row="4">
             <StatusBarItem>
                 <TextBlock>
@@ -649,7 +675,10 @@
             <StatusBarItem>
                 <TextBlock Visibility="{Binding IsFile, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Run Text="Source:" />
-                    <Hyperlink NavigateUri="{Binding FilePath, Mode=OneWay}" RequestNavigate="OnRequestNavigate">
+                    <Hyperlink
+                        Foreground="{StaticResource Colour.StatusText}"
+                        NavigateUri="{Binding FilePath, Mode=OneWay}"
+                        RequestNavigate="OnRequestNavigate">
                         <TextBlock Text="{Binding FilePath, Mode=OneWay}" />
                     </Hyperlink>
                 </TextBlock>
@@ -710,14 +739,16 @@
                     <Separator />
                     <StatusBarItem>
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="AvTimer" />
+                            <iconPacks:PackIconMaterial Margin="0,0,5,0" Kind="AvTimer" />
                             <ComboBox
                                 x:Name="_autoRefreshTimes"
                                 Margin="0,-4,0,-4"
                                 BorderThickness="0"
+                                Foreground="White"
                                 IsReadOnly="true"
                                 SelectedIndex="0"
-                                SelectionChanged="OnAutoRefreshTimesSelectionChanged">
+                                SelectionChanged="OnAutoRefreshTimesSelectionChanged"
+                                Style="{StaticResource VsBlueComboBoxStyle}">
                                 <ComboBoxItem Content="0 sec" Tag="0" />
                                 <ComboBoxItem Content="1 sec" Tag="1" />
                                 <ComboBoxItem Content="2 sec" Tag="2" />

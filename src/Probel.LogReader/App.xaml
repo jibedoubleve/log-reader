@@ -9,6 +9,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--  AVALONDOCK THEMES  -->
+                <ResourceDictionary Source="/AvalonDock.Themes.VS2013;component/BlueBrushs.xaml" />
                 <!--  CALIBURN CONFIGURATION  -->
                 <ResourceDictionary>
                     <local:Bootstrapper x:Key="bootstrapper" />
@@ -22,6 +24,7 @@
                     <SolidColorBrush x:Key="LogErrorColour" Color="#E06C75" />
                     <SolidColorBrush x:Key="LogFatalColour" Color="#E06C75" />
                 </ResourceDictionary>
+                <!--  NOTIFICATIONS  -->
                 <ResourceDictionary>
                     <Style TargetType="controls:Notification">
                         <Style.Resources>
@@ -35,6 +38,27 @@
                         <Setter Property="MaxItems" Value="7" />
                     </Style>
                 </ResourceDictionary>
+                <!--  THEMING  -->
+                <ResourceDictionary>
+                    <SolidColorBrush x:Key="Colour.Menu" Color="#FFCCD5F0" />
+                    <SolidColorBrush x:Key="Colour.Status" Color="#FF40508D" />
+                    <SolidColorBrush x:Key="Colour.Selection" Color="#FF5D6B99" />
+                    <SolidColorBrush x:Key="Colour.StatusText" Color="White" />
+
+                    <Style TargetType="ToolBar">
+                        <Setter Property="Background" Value="{StaticResource Colour.Menu}" />
+                    </Style>
+                    <Style TargetType="ToolBarTray">
+                        <Setter Property="Background" Value="{StaticResource Colour.Menu}" />
+                    </Style>
+                    <Style TargetType="StatusBar">
+                        <Setter Property="Background" Value="{StaticResource Colour.Status}" />
+                        <Setter Property="Foreground" Value="{StaticResource Colour.StatusText}" />
+                    </Style>
+                </ResourceDictionary>
+                <ResourceDictionary Source="Xaml/ToolBar.xaml" />
+                <ResourceDictionary Source="Xaml/ComboBox.xaml" />
+                <ResourceDictionary Source="Xaml/Menu.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

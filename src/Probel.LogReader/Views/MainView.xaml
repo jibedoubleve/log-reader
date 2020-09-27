@@ -22,7 +22,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Menu>
+            <Menu Style="{DynamicResource VsBlueMenuStyle}">
                 <MenuItem x:Name="_menuFile" Header="_File">
                     <MenuItem cal:Message.Attach="[Event Click] = [ManageRepositories]" Header="Manage _repositories..." />
                     <MenuItem cal:Message.Attach="[Event Click] = [ManageFilters]" Header="Manage _filters..." />
