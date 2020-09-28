@@ -66,7 +66,11 @@ namespace Probel.LogReader.Views
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F4) { ToggleDetails(); }
+            if (e.Key == Key.F4)
+            {
+                _btnDetail.IsChecked = !_btnDetail.IsChecked;
+                ToggleDetails();
+            }
             else if (e.Key == Key.F5) { ViewModel.RefreshLogs(true); }
             e.Handled = false;
         }
