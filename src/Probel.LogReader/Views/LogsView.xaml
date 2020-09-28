@@ -39,8 +39,8 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ToolBarTray IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}">
-            <ToolBar Template="{DynamicResource VSBlueToolBarControlTemplate}">
+        <ToolBarTray>
+            <ToolBar IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}" Template="{DynamicResource VSBlueToolBarControlTemplate}">
                 <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding IsTraceVisible, UpdateSourceTrigger=PropertyChanged}">
                     <iconPacks:PackIconModern Kind="Eye" />
                 </ToggleButton>
@@ -60,7 +60,7 @@
                     <iconPacks:PackIconModern Kind="SignStop" />
                 </ToggleButton>
             </ToolBar>
-            <ToolBar>
+            <ToolBar IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}">
                 <ToggleButton x:Name="IsThreadIdVisible">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
@@ -190,7 +190,7 @@
                     </StackPanel>
                 </Button>
             </ToolBar>
-            <ToolBar>
+            <ToolBar IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}">
                 <ToggleButton
                     x:Name="_isListeningFile"
                     IsChecked="{Binding IsListeningFile}"
@@ -228,8 +228,9 @@
                     </StackPanel>
                 </Button>
             </ToolBar>
-            <ToolBar Visibility="{Binding ShowPersistenceButtons, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Button Click="OnLoadLayout">
+            <ToolBar>
+
+                <Button Click="OnLoadLayout" Visibility="{Binding ShowPersistenceButtons, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -239,7 +240,7 @@
                         <TextBlock Text="Load layout" />
                     </StackPanel>
                 </Button>
-                <Button Click="OnSaveLayout">
+                <Button Click="OnSaveLayout" Visibility="{Binding ShowPersistenceButtons, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <iconPacks:PackIconMaterial
                             Margin="0,0,5,0"
@@ -247,6 +248,26 @@
                             VerticalContentAlignment="Center"
                             Kind="TableArrowDown" />
                         <TextBlock Text="Save layout" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnDeleteLayout" Visibility="{Binding ShowPersistenceButtons, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Kind="TableRemove" />
+                        <TextBlock Text="Delete layout" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnResetLayout">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Kind="TableHeart" />
+                        <TextBlock Text="Reset layout" />
                     </StackPanel>
                 </Button>
             </ToolBar>

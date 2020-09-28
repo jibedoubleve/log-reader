@@ -208,6 +208,7 @@
     <Compile Include="Models\HierarchyBuilder.cs" />
     <Compile Include="Models\MenuItemModel.cs" />
     <Compile Include="Ui\IUserInteraction.cs" />
+    <Compile Include="Ui\LayoutPersister.cs" />
     <Compile Include="Ui\UiEvent.cs" />
     <Compile Include="Ui\UiEvents.cs" />
     <Compile Include="Ui\UserInteraction.cs" />
