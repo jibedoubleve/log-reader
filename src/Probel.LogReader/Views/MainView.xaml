@@ -10,6 +10,7 @@
     Title="Log reader"
     Width="800"
     Height="570"
+    Background="{StaticResource Colour.Background}"
     Loaded="OnWindowLoaded"
     WindowState="Maximized"
     mc:Ignorable="d">

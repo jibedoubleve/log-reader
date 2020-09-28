@@ -44,6 +44,7 @@
                     <SolidColorBrush x:Key="Colour.Status" Color="#FF40508D" />
                     <SolidColorBrush x:Key="Colour.Selection" Color="#FF5D6B99" />
                     <SolidColorBrush x:Key="Colour.StatusText" Color="White" />
+                    <SolidColorBrush x:Key="Colour.Background" Color="#FF293955" />
 
                     <Style TargetType="ToolBar">
                         <Setter Property="Background" Value="{StaticResource Colour.Menu}" />
@@ -56,6 +57,7 @@
                         <Setter Property="Foreground" Value="{StaticResource Colour.StatusText}" />
                     </Style>
                 </ResourceDictionary>
+                <ResourceDictionary Source="Xaml/Styles.xaml" />
                 <ResourceDictionary Source="Xaml/ToolBar.xaml" />
                 <ResourceDictionary Source="Xaml/ComboBox.xaml" />
                 <ResourceDictionary Source="Xaml/Menu.xaml" />
