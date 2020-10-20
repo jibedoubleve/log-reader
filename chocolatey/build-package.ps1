@@ -48,7 +48,7 @@ Copy-Item .\logreader $publishDir -Recurse -Force
 
 $(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$version</version>" | Set-Content -Path $nuspec
 
-$(Get-Content $installScript) -replace "https://github.com/jibedoubleve/log-reader/releases/download/V\d\.\d\.\d/logreader.\d{1,3}\.\d{1,3}\.\d{1,3}\.setup\.exe", "https://github.com/jibedoubleve/log-reader/releases/download/V$version/logreader.$version.setup.exe" | Set-Content -Path $installScript
+$(Get-Content $installScript) -replace "https://github.com/jibedoubleve/log-reader/releases/download/\d\.\d\.\d/logreader.\d{1,3}\.\d{1,3}\.\d{1,3}\.setup\.exe", "https://github.com/jibedoubleve/log-reader/releases/download/V$version/logreader.$version.setup.exe" | Set-Content -Path $installScript
 
 choco pack $nuspec -out $publishDir
 
