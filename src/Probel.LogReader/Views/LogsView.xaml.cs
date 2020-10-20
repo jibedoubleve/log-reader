@@ -1,10 +1,9 @@
 ﻿using AvalonDock.Layout;
-using AvalonDock.Layout.Serialization;
 using Probel.LogReader.Helpers;
+using Probel.LogReader.Ui;
 using Probel.LogReader.ViewModels;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,17 +44,7 @@ namespace Probel.LogReader.Views
         private void LoadLayout()
         {
             //var currentContentsList = _dockingManager.Layout.Descendents().OfType<LayoutContent>().Where(c => c.ContentId != null).ToArray();
-
-            var fileName = ViewModel.DockingStateFile;
-            var serializer = new XmlLayoutSerializer(_dockingManager);
-
-            if (File.Exists(fileName))
-            {
-                using (var stream = new StreamReader(fileName))
-                {
-                    serializer.Deserialize(stream);
-                }
-            }
+            new LayoutPersister(ViewModel.DockingStateFile).Load(_dockingManager);
         }
 
         private void OnAutoRefreshTimesSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -71,11 +60,17 @@ namespace Probel.LogReader.Views
 
         private void OnCollapseAll(object sender, RoutedEventArgs e) => _treeView.SetExpansion(false);
 
+        private void OnDeleteLayout(object sender, RoutedEventArgs e) => new LayoutPersister(ViewModel.DockingStateFile).Delete();
+
         private void OnExpandAll(object sender, RoutedEventArgs e) => _treeView.SetExpansion(true);
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F4) { ToggleDetails(); }
+            if (e.Key == Key.F4)
+            {
+                _btnDetail.IsChecked = !_btnDetail.IsChecked;
+                ToggleDetails();
+            }
             else if (e.Key == Key.F5) { ViewModel.RefreshLogs(true); }
             e.Handled = false;
         }
@@ -95,6 +90,8 @@ namespace Probel.LogReader.Views
             }
         }
 
+        private void OnResetLayout(object sender, RoutedEventArgs e) => new LayoutPersister(ViewModel.DockingStateFile).ResetLayout(_dockingManager);
+
         private void OnSaveLayout(object sender, RoutedEventArgs e) => SaveLayout();
 
         private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
@@ -111,16 +108,7 @@ namespace Probel.LogReader.Views
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => SaveLayout();
 
-        private void SaveLayout()
-        {
-            var serializer = new XmlLayoutSerializer(_dockingManager);
-            var fileName = ViewModel.DockingStateFile;
-
-            using (var stream = new StreamWriter(fileName))
-            {
-                serializer.Serialize(stream);
-            }
-        }
+        private void SaveLayout() => new LayoutPersister(ViewModel.DockingStateFile).Save(_dockingManager);
 
         private void ToggleDetails()
         {

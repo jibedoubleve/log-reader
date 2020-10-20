@@ -34,7 +34,7 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ToolBarTray Grid.ColumnSpan="2" Margin="5">
+        <ToolBarTray Grid.ColumnSpan="2">
             <ToolBar>
                 <Button x:Name="SaveAll" ToolTip="Save all changes">
                     <iconPacks:PackIconModern Kind="Save" />
@@ -47,11 +47,10 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <HeaderedContentControl
+            Grid.Row="1"
+            Margin="10,10,10,10"
+            Header="Repositories">
             <ListView
                 x:Name="Repositories"
                 cal:Message.Attach="[SelectionChanged] = [ActivateCurrentRepository]"
@@ -66,9 +65,24 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-        </Grid>
-        <ScrollViewer Grid.Row="1" Grid.Column="1">
-            <ContentControl x:Name="ActiveItem" />
-        </ScrollViewer>
+        </HeaderedContentControl>
+        <HeaderedContentControl
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="0,10,10,10">
+            <HeaderedContentControl.Style>
+                <Style BasedOn="{StaticResource VSBlueHeaderedContentControlStyle}" TargetType="HeaderedContentControl">
+                    <Setter Property="Header" Value="{Binding CurrentRepository.Name}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentRepository}" Value="{x:Null}">
+                            <Setter Property="Header" Value="Nothing selected" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </HeaderedContentControl.Style>
+            <ScrollViewer>
+                <ContentControl x:Name="ActiveItem" />
+            </ScrollViewer>
+        </HeaderedContentControl>
     </Grid>
 </UserControl>

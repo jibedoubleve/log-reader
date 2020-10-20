@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyVersion("0.5.0.24")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
-[assembly: AssemblyInformationalVersion("0.5.0-beta.24+Branch.develop.Sha.8782efd4d476112941d0e367afa86c35a4077266")]
+[assembly: AssemblyVersion("0.6.0.4")]
+[assembly: AssemblyFileVersion("0.6.0.0")]
+[assembly: AssemblyInformationalVersion("0.6.0-alpha.avalon-repository.4+Branch.feature-avalon-repository.Sha.dccc2f050e6bbd35397380c2abc277a697ec192c")]

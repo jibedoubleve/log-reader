@@ -36,7 +36,9 @@ namespace Probel.LogReader.ViewModels
         private string _filterApplied;
         private ObservableCollection<MenuItemModel> _filters;
         private string _gridLinesVisibility;
+        private bool _hasLogs;
         private bool _isDebugVisible = true;
+        private bool _isEmpty;
         private bool _isErrorVisible = true;
         private bool _isFatalVisible = true;
         private bool _isFile;
@@ -50,6 +52,7 @@ namespace Probel.LogReader.ViewModels
         private DateTime _lastRefresh = DateTime.Now;
         private ObservableCollection<LogRow> _logs;
 
+        private ObservableCollection<MenuItemModel> _repositories;
         private string _repositoryName;
 
         private bool _showPersistenceButtons;
@@ -59,7 +62,7 @@ namespace Probel.LogReader.ViewModels
         #region Constructors
 
         public LogsViewModel(
-                    IConfigurationManager configManager,
+            IConfigurationManager configManager,
             IEventAggregator eventAggregator,
             ILogger log,
             IUserInteraction ui)
@@ -101,7 +104,11 @@ namespace Probel.LogReader.ViewModels
         public ObservableCollection<IHierarchy<DateTime>> Days
         {
             get => _days;
-            private set => Set(ref _days, value, nameof(Days));
+            private set
+            {
+                Set(ref _days, value, nameof(Days));
+                IsEmpty = _days.Count() == 0;
+            }
         }
 
         public string DockingStateFile { get; private set; }
@@ -132,10 +139,22 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _gridLinesVisibility, value, nameof(GridLinesVisibility));
         }
 
+        public bool HasLogs
+        {
+            get => _hasLogs;
+            set => Set(ref _hasLogs, value);
+        }
+
         public bool IsDebugVisible
         {
             get => _isDebugVisible;
             set => Set(ref _isDebugVisible, value, nameof(IsDebugVisible));
+        }
+
+        public bool IsEmpty
+        {
+            get => _isEmpty;
+            set => Set(ref _isEmpty, value);
         }
 
         public bool IsErrorVisible
@@ -223,6 +242,7 @@ namespace Probel.LogReader.ViewModels
                 if (Set(ref _logs, value, nameof(Logs)))
                 {
                     NotifyOfPropertyChange(nameof(LogsCount));
+                    HasLogs = value.Count > 0;
                 }
             }
         }
@@ -230,6 +250,12 @@ namespace Probel.LogReader.ViewModels
         public int LogsCount => Logs?.Count() ?? 0;
 
         public IPlugin Plugin { get; internal set; }
+
+        public ObservableCollection<MenuItemModel> Repositories
+        {
+            get => _repositories;
+            set => Set(ref _repositories, value);
+        }
 
         public string RepositoryName
         {
@@ -342,6 +368,8 @@ namespace Probel.LogReader.ViewModels
 
             GridLinesVisibility = _configManager.Get()?.Ui?.GridLineVisibility?.ToString() ?? "All";
             ShowPersistenceButtons = _configManager.Get().Ui.ShowLayoutButtons;
+
+            IsEmpty = (Days?.Count ?? 0) == 0;
         }
 
         protected override void OnDeactivate(bool close)
@@ -431,6 +459,15 @@ namespace Probel.LogReader.ViewModels
                 Logs = new ObservableCollection<LogRow>(r.Result);
             });
             t2.OnErrorHandle(_ui, token, scheduler);
+        }
+
+        public void LoadRepository(MenuItemModel repository)
+        {
+            if (repository == null) { return; }
+            else if (repository.MenuCommand.CanExecute(null))
+            {
+                repository.MenuCommand.Execute(null);
+            }
         }
 
         public void RefreshData()

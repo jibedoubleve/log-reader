@@ -170,7 +170,10 @@ Task("Chocolatey")
         //https://github.com/SharpeRAD/Cake.Powershell#usage
       StartPowershellScript("./build-package.ps1", new PowershellSettings()
         .UseWorkingDirectory("./chocolatey")
-        .WithArguments(args =>  args.Append("configuration", configuration))
+        .WithArguments(args => { 
+            args.Append("configuration", configuration);
+            args.Append("version", gitVersion.MajorMinorPatch);
+        })
       );  
 });
 

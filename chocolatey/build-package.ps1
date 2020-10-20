@@ -1,5 +1,6 @@
 param(
-    $configuration = "beta"
+    $configuration = "beta",
+    $version
 )
 <################################################################################
  # VARIABLES
@@ -15,27 +16,6 @@ $pattern = "logreader\.(\d{1,2}\.\d{1,2}\.\d{1,2}).*((\.|)\d{0,2})\.setup.exe"
 <################################################################################
  # FUNCTIONS
  ################################################################################>
-function GetSemVersion() {
-    
-
-    if ($items = Get-ChildItem $installer) {    
-        $items[0].Name -match $pattern > $null
-        return "$($Matches[1])$(GetMode).$($Matches[2])"
-    }
-    else {
-        throw "Cannot extract semver: Cannot find file '$installer'. [PWD] $pwd"
-    }
-}
-function GetVersion() {
-    if ($items = Get-ChildItem $installer) {
-        $items[0].Name -match $pattern > $null
-        return "$($Matches[1])$($Matches[2])"
-    }
-    else {
-        throw "Cannot extract version: Cannot find file '$installer'. [PWD] $pwd"
-    }
-}
-
 function GetMode() {
     if (@("beta", "debug").Contains($configuration.ToLower())) {
         return "-beta"
@@ -62,14 +42,10 @@ if (Test-Path  $outputDir) {
 Copy-Item .\logreader $publishDir -Recurse -Force
 
 $nuspec = "$outputDir\logreader.nuspec"
-$instScr = "$outputDir\tools\chocolateyinstall.ps1"
-$version = GetVersion
-$semVersion = GetSemVersion
 
 write-host "Version: $version" -ForegroundColor Cyan
 
 $(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$version</version>" | Set-Content -Path $nuspec
-$(Get-Content $instScr) -replace "toolsDir 'logreader.(.*).setup.exe'", "toolsDir 'logreader.$semVersion.setup.exe'" | Set-Content -Path $instScr
 
 Copy-Item $installer "$outputDir\tools"
 
