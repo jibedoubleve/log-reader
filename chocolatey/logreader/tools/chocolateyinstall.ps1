@@ -1,8 +1,8 @@
-﻿
+
 $ErrorActionPreference = 'Stop'; 
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url        = 'https://github.com/jibedoubleve/log-reader/releases/download/V0.5.0/logreader.0.5.0.setup.exe' 
-$url64      = 'https://github.com/jibedoubleve/log-reader/releases/download/V0.5.0/logreader.0.5.0.setup.exe' 
+$url        = 'https://github.com/jibedoubleve/log-reader/releases/download/V0.6.0/logreader.0.6.0.setup.exe' 
+$url64      = 'https://github.com/jibedoubleve/log-reader/releases/download/V0.6.0/logreader.0.6.0.setup.exe' 
 
 $packageArgs = @{
   packageName   = $env:ChocolateyPackageName
