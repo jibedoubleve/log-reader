@@ -1,0 +1,5 @@
+﻿1. Download installer for the current release from https://github.com/jibedoubleve/log-reader/releases
+
+2. Get checksum of downloaded executable
+
+3. Check that the checksum matches the included executeable in the tools directory

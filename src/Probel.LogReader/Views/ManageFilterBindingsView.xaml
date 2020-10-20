@@ -20,7 +20,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <ToolBarTray Grid.ColumnSpan="2" Margin="5">
+        <ToolBarTray Grid.ColumnSpan="2">
             <ToolBar>
                 <Button x:Name="SaveAll" ToolTip="Save all changes">
                     <iconPacks:PackIconModern Kind="Save" />
@@ -35,14 +35,21 @@
             </ToolBar>
         </ToolBarTray>
 
-        <ListBox
+        <HeaderedContentControl
             Grid.Row="1"
-            cal:Message.Attach="[SelectionChanged] = [ActivateCurrentRepository]"
-            DisplayMemberPath="Name"
-            ItemsSource="{Binding Repositories}"
-            SelectedItem="{Binding CurrentRepository}" />
-
-        <ScrollViewer Grid.Row="1" Grid.Column="1">
+            Margin="10,10,10,10"
+            Header="Filter bindings">
+            <ListBox
+                cal:Message.Attach="[SelectionChanged] = [ActivateCurrentRepository]"
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding Repositories}"
+                SelectedItem="{Binding CurrentRepository}" />
+        </HeaderedContentControl>
+        <ScrollViewer
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="0,10,10,10"
+            VerticalScrollBarVisibility="Auto">
             <ContentControl x:Name="ActiveItem" />
         </ScrollViewer>
     </Grid>

@@ -15,38 +15,39 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Center" Text="Inactive filters" />
-        <TextBlock
-            Grid.Column="1"
-            HorizontalAlignment="Center"
-            Text="Active filters" />
 
-        <ListBox
-            x:Name="_activeFilters"
+        <HeaderedContentControl
             Grid.Row="1"
             Grid.Column="1"
-            AllowDrop="True"
-            DisplayMemberPath="Name"
-            Drop="OnActiveFiltersDrop"
-            ItemsSource="{Binding ActiveFilters}"
-            MouseDoubleClick="OnActiveFiltersMouseDoubleClick"
-            PreviewMouseMove="OnActiveFiltersPreviewMouseMove" />
-
-        <ListBox
-            x:Name="_inactiveFilters"
+            Margin="3,0,3,0"
+            Header="Active filters">
+            <ListBox
+                x:Name="_activeFilters"
+                AllowDrop="True"
+                DisplayMemberPath="Name"
+                Drop="OnActiveFiltersDrop"
+                ItemsSource="{Binding ActiveFilters}"
+                MouseDoubleClick="OnActiveFiltersMouseDoubleClick"
+                PreviewMouseMove="OnActiveFiltersPreviewMouseMove" />
+        </HeaderedContentControl>
+        <HeaderedContentControl
             Grid.Row="1"
-            AllowDrop="True"
-            DisplayMemberPath="Name"
-            Drop="OnInactiveFiltersDrop"
-            ItemsSource="{Binding InactiveFilters}"
-            MouseDoubleClick="OnInactiveFiltersMouseDoubleClick"
-            PreviewMouseMove="OnInactiveFiltersPreviewMouseMove" />
+            Margin="3,0,3,0"
+            Header="Inactive filters">
+            <ListBox
+                x:Name="_inactiveFilters"
+                AllowDrop="True"
+                DisplayMemberPath="Name"
+                Drop="OnInactiveFiltersDrop"
+                ItemsSource="{Binding InactiveFilters}"
+                MouseDoubleClick="OnInactiveFiltersMouseDoubleClick"
+                PreviewMouseMove="OnInactiveFiltersPreviewMouseMove" />
+        </HeaderedContentControl>
     </Grid>
 </UserControl>

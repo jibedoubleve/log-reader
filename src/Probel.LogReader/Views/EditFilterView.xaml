@@ -24,55 +24,59 @@
             <ColumnDefinition Width="350" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <HeaderedContentControl Margin="0,0,10,0" Header="Filter">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="1" Margin="5,5,5,15">
-                <!--  Name  -->
-                <Label>Name:</Label>
-                <TextBox Text="{Binding Filter.Name, UpdateSourceTrigger=PropertyChanged}" />
-                <Label>Operator:</Label>
-                <ComboBox SelectedItem="{Binding Filter.Operator}">
-                    <sys:String>And</sys:String>
-                    <sys:String>Or</sys:String>
-                </ComboBox>
-            </StackPanel>
-            <ListView
-                Grid.Row="10"
-                Margin="5"
-                cal:Message.Attach="[SelectionChanged] = [ActivateCurrentSubfilter]"
-                ItemsSource="{Binding Subfilters, UpdateSourceTrigger=PropertyChanged}"
-                SelectedItem="{Binding CurrentSubfilter}">
-                <ListView.InputBindings>
-                    <KeyBinding Key="Delete" Command="{Binding DeleteCurrentFilterCommand}" />
-                </ListView.InputBindings>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="ContextMenu" Value="{StaticResource _fiterContextMenu}" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock>
-                            <TextBlock.Text>
-                                <MultiBinding Converter="{StaticResource SubfilterToTextConverter}">
-                                    <Binding Path="." />
-                                    <Binding
-                                        Mode="OneWay"
-                                        Path="DataContext.FilterTranslator"
-                                        Source="{x:Reference _self}"
-                                        UpdateSourceTrigger="PropertyChanged" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
-        <ContentControl x:Name="ActiveItem" Grid.Column="1" />
+                <StackPanel Grid.Row="1" Margin="5,5,5,15">
+                    <!--  Name  -->
+                    <Label>Name:</Label>
+                    <TextBox Text="{Binding Filter.Name, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label>Operator:</Label>
+                    <ComboBox SelectedItem="{Binding Filter.Operator}">
+                        <sys:String>And</sys:String>
+                        <sys:String>Or</sys:String>
+                    </ComboBox>
+                </StackPanel>
+                <ListView
+                    Grid.Row="10"
+                    Margin="5"
+                    cal:Message.Attach="[SelectionChanged] = [ActivateCurrentSubfilter]"
+                    ItemsSource="{Binding Subfilters, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedItem="{Binding CurrentSubfilter}">
+                    <ListView.InputBindings>
+                        <KeyBinding Key="Delete" Command="{Binding DeleteCurrentFilterCommand}" />
+                    </ListView.InputBindings>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="ContextMenu" Value="{StaticResource _fiterContextMenu}" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource SubfilterToTextConverter}">
+                                        <Binding Path="." />
+                                        <Binding
+                                            Mode="OneWay"
+                                            Path="DataContext.FilterTranslator"
+                                            Source="{x:Reference _self}"
+                                            UpdateSourceTrigger="PropertyChanged" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </HeaderedContentControl>
+        <HeaderedContentControl Grid.Column="1" Header="Operations">
+            <ContentControl x:Name="ActiveItem" />
+        </HeaderedContentControl>
     </Grid>
 </UserControl>

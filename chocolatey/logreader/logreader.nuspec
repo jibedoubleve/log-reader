@@ -7,8 +7,8 @@
     <authors>Jean-Baptiste Wautier</authors>
     <owners>Jean-Baptiste Wautier</owners> <!-- also known as package mantainers -->
     <description>Generic and quite versatile log reader.</description>
+    <packageSourceUrl>https://github.com/jibedoubleve/log-reader</packageSourceUrl>
+    <tags>logreader</tags>
+    <projectUrl>https://github.com/jibedoubleve/log-reader</projectUrl>
  </metadata>
-<files>
-  <file src="tools\**" target="tools" />
-</files>
 </package>

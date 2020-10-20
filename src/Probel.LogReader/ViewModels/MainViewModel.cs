@@ -64,7 +64,13 @@ namespace Probel.LogReader.ViewModels
         #endregion Constructors
 
         #region Properties
-
+        protected override void OnActivate()
+        {
+            LoadRepositoryMenu();
+            _vmLogsViewModel.Repositories = MenuRepository;
+            ActivateItem(_vmLogsViewModel);
+            base.OnActivate();
+        }
         public bool IsFilterVisible
         {
             get => _isFilterVisible;
@@ -158,15 +164,19 @@ namespace Probel.LogReader.ViewModels
             {
                 var t1 = Task.Run(() =>
                 {
-                    var app = _configurationManager.Get();
                     _fmanager = _configurationManager.BuildFilterManager();
-
-                    var menuRepository = LoadMenuRepository(app);
-                    MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
+                    LoadRepositoryMenu();
                 });
                 t1.OnErrorHandle(_userInteraction);
             }
             catch (Exception ex) { throw ex; }
+        }
+
+        private void LoadRepositoryMenu()
+        {
+            var app = _configurationManager.Get();
+            var menuRepository = LoadMenuRepository(app);
+            MenuRepository = new ObservableCollection<MenuItemModel>(menuRepository);
         }
 
         public void LoadRepository(IPlugin plugin)
@@ -190,6 +200,7 @@ namespace Probel.LogReader.ViewModels
                     _vmLogsViewModel.Plugin = plugin;
                     _vmLogsViewModel.Listener = plugin;
                     _vmLogsViewModel.Filters = MenuFilter;
+                    _vmLogsViewModel.Repositories = MenuRepository;
 
                     _vmLogsViewModel.LoadDays(days);
                     _eventAggregator.PublishOnUIThread(UiEvent.FilterApplied(string.Empty));

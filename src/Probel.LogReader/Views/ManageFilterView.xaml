@@ -39,7 +39,7 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ToolBarTray Grid.ColumnSpan="2" Margin="5">
+        <ToolBarTray Grid.ColumnSpan="2">
             <ToolBar>
                 <Button x:Name="SaveAll" ToolTip="Save all changes">
                     <iconPacks:PackIconModern Kind="Save" />
@@ -56,16 +56,12 @@
                 </Button>
             </ToolBar>
         </ToolBarTray>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <HeaderedContentControl
+            Grid.Row="1"
+            Margin="10,10,10,10"
+            Header="Filters">
             <ListView
                 x:Name="Filters"
-                Grid.Row="1"
-                Margin="5"
                 cal:Message.Attach="[SelectionChanged] = [ActivateCurrentFilter]"
                 DisplayMemberPath="Name"
                 SelectedItem="{Binding CurrentFilter}">
@@ -78,8 +74,11 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-        </Grid>
-        <ScrollViewer Grid.Row="1" Grid.Column="1">
+        </HeaderedContentControl>
+        <ScrollViewer
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="0,10,10,10">
             <ContentControl x:Name="ActiveItem" />
         </ScrollViewer>
     </Grid>
