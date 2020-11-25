@@ -168,11 +168,11 @@ Task("Inno-Setup")
 Task("Chocolatey")
     .Does(()=>{
         //https://github.com/SharpeRAD/Cake.Powershell#usage
-      StartPowershellScript("./build-package.ps1", new PowershellSettings()
-        .UseWorkingDirectory("./chocolatey")
-        .WithArguments(args => { 
-            args.Append("configuration", configuration);
-            args.Append("version", gitVersion.MajorMinorPatch);
+        StartPowershellScript("./build-package.ps1", new PowershellSettings()
+            .UseWorkingDirectory("./chocolatey")
+            .WithArguments(args => { 
+                args.Append("configuration", configuration);
+                args.Append("version", gitVersion.MajorMinorPatch);
         })
       );  
 });

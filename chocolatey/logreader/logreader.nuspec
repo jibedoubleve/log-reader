@@ -3,10 +3,15 @@
   <metadata>
     <id>logreader</id>
     <title>Log reader (Install)</title>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <authors>Jean-Baptiste Wautier</authors>
     <owners>Jean-Baptiste Wautier</owners> <!-- also known as package mantainers -->
     <description>Generic and quite versatile log reader.</description>
+    <summary>Generic and quite versatile log reader.</summary>
+    <licenceUrl>https://github.com/jibedoubleve/log-reader/blob/develop/LICENSE</licenceUrl>
+    <docsUrl>https://github.com/jibedoubleve/log-reader/wiki</docsUrl>
+    <bugTrackerUrl>https://github.com/jibedoubleve/log-reader/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/jibedoubleve/log-reader</projectSourceUrl>
     <packageSourceUrl>https://github.com/jibedoubleve/log-reader</packageSourceUrl>
     <tags>logreader</tags>
     <projectUrl>https://github.com/jibedoubleve/log-reader</projectUrl>
