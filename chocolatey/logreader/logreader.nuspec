@@ -8,7 +8,7 @@
     <owners>Jean-Baptiste Wautier</owners> <!-- also known as package mantainers -->
     <description>Generic and quite versatile log reader.</description>
     <summary>Generic and quite versatile log reader.</summary>
-    <licenceUrl>https://github.com/jibedoubleve/log-reader/blob/develop/LICENSE</licenceUrl>
+    <licenseUrl>https://github.com/jibedoubleve/log-reader/blob/master/LICENSE</licenseUrl>
     <docsUrl>https://github.com/jibedoubleve/log-reader/wiki</docsUrl>
     <bugTrackerUrl>https://github.com/jibedoubleve/log-reader/issues</bugTrackerUrl>
     <projectSourceUrl>https://github.com/jibedoubleve/log-reader</projectSourceUrl>

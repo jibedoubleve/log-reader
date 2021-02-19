@@ -8,7 +8,6 @@ $packageArgs = @{
   unzipLocation = $toolsDir
   fileType      =  'EXE' 
   url           = $url
-  url64bit      = $url64
 
   softwareName  = 'logreader*' 
 
@@ -20,22 +19,3 @@ $packageArgs = @{
 }
 
 Install-ChocolateyPackage @packageArgs 
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
