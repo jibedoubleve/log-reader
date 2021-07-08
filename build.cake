@@ -106,7 +106,7 @@ Task("Build")
         };
 
         MSBuild(solution, msBuildSettings
-            .WithProperty("Description", "A simple launcher.")
+            .WithProperty("Description", "A simple log-reader.")
         );
         
 });

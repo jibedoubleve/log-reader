@@ -30,19 +30,29 @@ if (Test-Path  $outputDir) {
     Remove-Item -Force -Recurse $outputDir
 }
 
+Write-Host "Copy directory 'lanceur' into '$publishDir'"
 Copy-Item .\logreader $publishDir -Recurse -Force
 
-$(Get-Content $nuspec) -replace "<version>.*</version>", "<version>$version</version>" | Set-Content -Path $nuspec
+Write-Host "Update the nuspec file with the new version of Lanceur..."
+$(Get-Content $nuspec) -replace "<version>.*<\/version>", "<version>$version</version>" | Set-Content -Path $nuspec
 
-$content = $(Get-Content $installScript) -replace "https:\/\/github\.com\/jibedoubleve\/log-reader\/releases\/download\/[Vv]?\.?\d*\.?\d*\.?\d*\/logreader\.\d*\.?\d*\.?\d*\.setup\.exe", "https://github.com/jibedoubleve/log-reader/releases/download/$version/logreader.$version.setup.exe"
+Write-Host "Update the install script with the URL of the package..."
+$replacement = "https://github.com/jibedoubleve/log-reader/releases/download/$version/lanceur.$version.setup.exe"
+$(Get-Content $installScript) -replace "\$url = \'.*\'", $replacement | Set-Content -Path $installScript
 
-#Display content to screen
-$content
 
-Set-Content $content -Path $installScript 
+Write-Host "Set the checksum of the package..."
 
-choco pack $nuspec -out $publishDir
+if (Test-Path $publishDir) {
+    Write-Host "Build the package '$nuspec'..."
+    choco pack $nuspec -out $publishDir -v
+}
+else {
+    Write-Host "No nuspec file '$nuspec'!" -ForegroundColor Red
+}
 
 if (Test-Path  $outputDir) {
+    Write-Host "Removing '$outputDir' ..." -ForegroundColor Cyan
     Remove-Item -Force -Recurse $outputDir
+}
 }
