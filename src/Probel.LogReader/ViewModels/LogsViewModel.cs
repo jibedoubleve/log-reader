@@ -483,11 +483,20 @@ namespace Probel.LogReader.ViewModels
             t2.OnErrorHandle(_ui, token, scheduler);
         }
 
+        private MenuItemModel _loadedRepository;
+        private void ReloadRepository()
+        {
+            if (_loadedRepository != null)
+            {
+                LoadRepository(_loadedRepository);
+            }
+        }
         public void LoadRepository(MenuItemModel repository)
         {
             if (repository == null) { return; }
             else if (repository.MenuCommand.CanExecute(null))
             {
+                _loadedRepository = repository;
                 repository.MenuCommand.Execute(null);
             }
         }
@@ -499,6 +508,8 @@ namespace Probel.LogReader.ViewModels
             var logs = Filter(LastFilter?.Filter(l) ?? l);
             Logs = new ObservableCollection<LogRow>(logs);
             LastRefresh = DateTime.Now;
+
+            ReloadRepository();
         }
 
         /// <summary>

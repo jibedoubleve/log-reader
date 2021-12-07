@@ -39,33 +39,36 @@ namespace Probel.LogReader.Plugins.Csv.IO
 
         private IEnumerable<LogRow> TryGetLogs(OrderBy orderby)
         {
-            var ci = CultureInfo.InvariantCulture;
-            var encoding = Encoding.GetEncoding(_querylog.Encoding);
-
-            using (var file = File.Open(_path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var reader = new StreamReader(file, encoding))
-            using (var csv = new CsvReader(reader, ci))
+            if (File.Exists(_path))
             {
-                csv.Configure(_querylog);
+                var ci = CultureInfo.InvariantCulture;
+                var encoding = Encoding.GetEncoding(_querylog.Encoding);
 
-                var records = csv.GetRecords<LogRow>();
-
-                switch (orderby)
+                using (var file = File.Open(_path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var reader = new StreamReader(file, encoding))
+                using (var csv = new CsvReader(reader, ci))
                 {
-                    case OrderBy.Asc:
-                        return records.OrderBy(e => e.Time).ToList();
+                    csv.Configure(_querylog);
 
-                    case OrderBy.Desc:
-                        return records.OrderByDescending(e => e.Time).ToList();
+                    var records = csv.GetRecords<LogRow>();
 
-                    case OrderBy.None:
-                        return records.ToList();
+                    switch (orderby)
+                    {
+                        case OrderBy.Asc:
+                            return records.OrderBy(e => e.Time).ToList();
 
-                    default: throw new NotSupportedException($"Sort type '{orderby}' is not supported!");
+                        case OrderBy.Desc:
+                            return records.OrderByDescending(e => e.Time).ToList();
+
+                        case OrderBy.None:
+                            return records.ToList();
+
+                        default: throw new NotSupportedException($"Sort type '{orderby}' is not supported!");
+                    }
                 }
             }
+            else { return new List<LogRow>(); }
         }
-
         #endregion Methods
     }
 }
