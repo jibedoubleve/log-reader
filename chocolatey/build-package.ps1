@@ -55,4 +55,3 @@ if (Test-Path  $outputDir) {
     Write-Host "Removing '$outputDir' ..." -ForegroundColor Cyan
     Remove-Item -Force -Recurse $outputDir
 }
-}
