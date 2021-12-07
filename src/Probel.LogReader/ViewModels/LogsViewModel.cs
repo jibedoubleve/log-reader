@@ -508,7 +508,7 @@ namespace Probel.LogReader.ViewModels
         public void RefreshLogs(bool notifyUser = true)
         {
             if (notifyUser) { _ui.NotifyInformation("Refreshing logs..."); }
-            var t1 = Task.Run(() => RefreshData());
+            var t1 = new Task(() => RefreshData());
             t1.OnErrorHandle(_ui);
 
             t1.ContinueWith(r =>
@@ -516,6 +516,8 @@ namespace Probel.LogReader.ViewModels
                 if (notifyUser) { _ui.NotifySuccess("Refresh done."); }
                 LastRefresh = DateTime.Now;
             }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            t1.Start();
         }
 
         public void RefreshLogs() => RefreshLogs(true);
