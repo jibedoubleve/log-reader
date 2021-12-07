@@ -15,6 +15,7 @@
     d:DesignHeight="450"
     d:DesignWidth="1024"
     KeyDown="OnKeyDown"
+    KeyUp="OnUserControlPreviewKeyUp"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded"
     mc:Ignorable="d">
@@ -59,6 +60,15 @@
                 <ToggleButton Command="{Binding FilterCommand}" IsChecked="{Binding IsFatalVisible, UpdateSourceTrigger=PropertyChanged}">
                     <iconPacks:PackIconModern Kind="SignStop" />
                 </ToggleButton>
+                <Separator />
+                <Label>Search:</Label>
+                <TextBox
+                    x:Name="_tbFilter"
+                    Width="150"
+                    KeyUp="OnSearchKeyUp" />
+                <Button Command="{Binding ResetFilterCommand}" ToolTip="Clear filter" Click="OnClickResetFilter">
+                    <iconPacks:PackIconModern Kind="ClearReflectHorizontal" />
+                </Button>
             </ToolBar>
             <ToolBar IsEnabled="{Binding IsEmpty, Converter={StaticResource InvertBooleanConverter}}">
                 <ToggleButton x:Name="IsThreadIdVisible">

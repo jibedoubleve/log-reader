@@ -74,6 +74,8 @@ namespace Probel.LogReader.ViewModels
             _ui = ui;
             _log = log;
             FilterCommand = new RelayCommand(Filter);
+            ResetFilterCommand = new RelayCommand(ResetFilter);
+
             _eventAggregator = eventAggregator;
             _configManager = configManager;
             _stopwatch.Start();
@@ -263,6 +265,8 @@ namespace Probel.LogReader.ViewModels
             set => Set(ref _repositoryName, value, nameof(RepositoryName));
         }
 
+        public ICommand ResetFilterCommand { get; set; }
+
         public bool ShowPersistenceButtons
         {
             get => _showPersistenceButtons;
@@ -329,10 +333,15 @@ namespace Probel.LogReader.ViewModels
             else { _log.Warn("Plugin can listen but no listener is configured!"); }
         }
 
-        private void SaveConfig() => _configManager.Save(e =>
+        private void ResetFilter()
         {
-            e.Ui.IsLogOrderAsc = IsOrderByAsc;
-        });
+            Logs = new ObservableCollection<LogRow>(_cachedLogs);
+        }
+
+        private void SaveConfig() => _configManager.Save(e =>
+           {
+               e.Ui.IsLogOrderAsc = IsOrderByAsc;
+           });
 
         private void SortLogs(bool sortAsc)
         {
@@ -406,6 +415,19 @@ namespace Probel.LogReader.ViewModels
         {
             var logs = Filter(null);
             Logs = new ObservableCollection<LogRow>(logs);
+        }
+
+        public void FilterMessage(string criterion)
+        {
+            if (string.IsNullOrEmpty(criterion)) { Logs = new ObservableCollection<LogRow>(_cachedLogs); }
+            else
+            {
+                criterion = criterion.ToLower();
+                var logs = from l in Logs
+                           where l.Message.ToLower().Contains(criterion)
+                           select l;
+                Logs = new ObservableCollection<LogRow>(logs);
+            }
         }
 
         public IEnumerable<LogRow> GetLogRows() => Plugin.GetLogs(Date, _isOrderByAsc ? OrderBy.Asc : OrderBy.Desc);

@@ -58,6 +58,8 @@ namespace Probel.LogReader.Views
             }
         }
 
+        private void OnClickResetFilter(object sender, RoutedEventArgs e) => _tbFilter.Text = string.Empty;
+
         private void OnCollapseAll(object sender, RoutedEventArgs e) => _treeView.SetExpansion(false);
 
         private void OnDeleteLayout(object sender, RoutedEventArgs e) => new LayoutPersister(ViewModel.DockingStateFile).Delete();
@@ -94,6 +96,20 @@ namespace Probel.LogReader.Views
 
         private void OnSaveLayout(object sender, RoutedEventArgs e) => SaveLayout();
 
+        private void OnSearchKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ViewModel.FilterMessage(_tbFilter.Text);
+
+                //Select the whole text
+                _tbFilter.SelectionStart = 0;
+                _tbFilter.SelectionLength = _tbFilter.Text.Length;
+            }
+
+            e.Handled = false;
+        }
+
         private void OnTimerTicked(object sender, EventArgs e) => ViewModel?.RefreshLogs(false);
 
         private void OnToggleButtonClick(object sender, RoutedEventArgs e) => ToggleDetails();
@@ -107,6 +123,16 @@ namespace Probel.LogReader.Views
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e) => SaveLayout();
+
+        private void OnUserControlPreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F && Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                _tbFilter.Focus();
+            }
+
+            e.Handled = false;
+        }
 
         private void SaveLayout() => new LayoutPersister(ViewModel.DockingStateFile).Save(_dockingManager);
 
