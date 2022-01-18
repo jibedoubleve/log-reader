@@ -4,7 +4,7 @@
 $release = "Debug"
 $src = "$env:GIT_PRJ_SOURCE\log-reader\src\plugins\Probel.LogReader.Plugins.{0}\bin\$release\*.*"
 $dst = "$env:APPDATA\probel\log-reader\plugins\{0}"
-$plugins = "csv", "oracle", "debug", "text", "mssql", "iis"
+$plugins = "csv", "oracle", "debug", "text", "mssql", "iis", "sqlite"
 
 <#############################################################################
  # FUNCTIONS 

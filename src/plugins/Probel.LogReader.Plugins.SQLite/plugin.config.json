@@ -1,0 +1,8 @@
+{
+  "name": "SQLite Database",
+  "plugin-id": "b75093cc-3e34-48f0-b6e2-30a0fc195507",
+  "dll": "Probel.LogReader.Plugins.SQLite.dll",
+  "explanation": "Get logs from an SQLite database",
+  "doc-url": "https://github.com/jibedoubleve/log-reader/wiki/plugin-sqlite",
+  "colouration": "sql"
+}

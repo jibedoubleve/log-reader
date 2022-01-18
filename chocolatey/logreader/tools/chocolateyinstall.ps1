@@ -1,7 +1,7 @@
 
-$ErrorActionPreference = 'Stop'; 
+$ErrorActionPreferencehttps://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe; 
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url        = 'https://github.com/jibedoubleve/log-reader/releases/download/0.6.0/logreader.0.6.0.setup.exe' 
+$url       https://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe 
 
 $packageArgs = @{
   packageName   = $env:ChocolateyPackageName
@@ -9,13 +9,13 @@ $packageArgs = @{
   fileType      =  'EXE' 
   url           = $url
 
-  softwareName  = 'logreader*' 
+  softwareName https://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe 
 
-  checksum      = '46BB8555641E4DA649061D3A87F1AF153DC0BE54E5EC7A08CC3D68AA828FA7F4'
-  checksumType  = 'sha256' 
+  checksum     https://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe
+  checksumType https://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe 
 
   validExitCodes= @(0, 3010, 1641)
-  silentArgs   = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-' 
+  silentArgs  https://github.com/jibedoubleve/log-reader/releases/download/0.7.0/lanceur.0.7.0.setup.exe 
 }
 
 Install-ChocolateyPackage @packageArgs 
