@@ -145,7 +145,7 @@ Task("Inno-Setup")
     .Does(() => {
         var path      = MakeAbsolute(Directory(binDirectory)).FullPath + "\\";
         var pluginDir = MakeAbsolute(Directory(binPluginDir)).FullPath + "\\";
-        var plugins   = new string[] { "csv", "text", "oracle", "mssql", "iis" };   
+        var plugins   = new string[] { "csv", "text", "oracle", "mssql", "iis", "sqlite" };   
         var i = 0;
 
         Information("Bin path   : {0}: ", path);
@@ -161,6 +161,7 @@ Task("Inno-Setup")
                 { "OraclePluginDir", String.Format(pluginDir, plugins[i++]) },
                 { "MsSqlPluginDir", String.Format(pluginDir, plugins[i++]) },
                 { "IISPluginDir", String.Format(pluginDir, plugins[i++]) },
+                { "SQLitePluginDir", String.Format(pluginDir, plugins[i++]) },
             }
         });
 });
@@ -196,6 +197,7 @@ Task("Release-GitHub")
                        + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
                        + publishDir + "/plugin-iis-" + gitVersion.SemVer + ".bin.zip," 
                        + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
+                       + publishDir + "/plugin-sqlite-" + gitVersion.SemVer + ".bin.zip" 
         };
 
         GitReleaseManagerCreate(token, owner, "log-reader", stg);  
