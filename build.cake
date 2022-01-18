@@ -196,7 +196,7 @@ Task("Release-GitHub")
                        + publishDir + "/plugin-csv-" + gitVersion.SemVer + ".bin.zip," 
                        + publishDir + "/plugin-text-" + gitVersion.SemVer + ".bin.zip," 
                        + publishDir + "/plugin-iis-" + gitVersion.SemVer + ".bin.zip," 
-                       + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip" 
+                       + publishDir + "/plugin-debug-" + gitVersion.SemVer + ".bin.zip," 
                        + publishDir + "/plugin-sqlite-" + gitVersion.SemVer + ".bin.zip" 
         };
 
