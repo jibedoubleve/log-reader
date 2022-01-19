@@ -66,7 +66,10 @@
                     x:Name="_tbFilter"
                     Width="150"
                     KeyUp="OnSearchKeyUp" />
-                <Button Command="{Binding ResetFilterCommand}" ToolTip="Clear filter" Click="OnClickResetFilter">
+                <Button
+                    Click="OnClickResetFilter"
+                    Command="{Binding ResetFilterCommand}"
+                    ToolTip="Clear filter">
                     <iconPacks:PackIconModern Kind="ClearReflectHorizontal" />
                 </Button>
             </ToolBar>
@@ -426,15 +429,10 @@
                                     ContentId="_detailPane">
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="150" />
+                                            <ColumnDefinition Width="100" />
                                             <ColumnDefinition Width="5" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="5" />
-                                            <RowDefinition Height="2*" />
-                                        </Grid.RowDefinitions>
                                         <!--  FIRST COLUMN  -->
                                         <StackPanel Grid.RowSpan="3" Margin="5">
                                             <StackPanel.Style>
@@ -481,44 +479,48 @@
                                             <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Level}" />
                                             <TextBlock Style="{StaticResource LabelStyle}" Text="Thread Id" />
                                             <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.ThreadId}" />
-                                            <TextBlock Style="{StaticResource LabelStyle}" Text="Logger" />
-                                            <TextBlock Style="{StaticResource ValueStyle}" Text="{Binding ElementName=_logs, Path=SelectedItem.Logger}" />
                                         </StackPanel>
 
                                         <!--  SECOND COLUMN  -->
-                                        <GridSplitter
-                                            Grid.RowSpan="2"
-                                            Grid.Column="1"
-                                            Width="5"
-                                            VerticalAlignment="Stretch"
-                                            ResizeBehavior="PreviousAndNext"
-                                            ResizeDirection="Columns" />
-
-                                        <!--  THIRD COLUMN  -->
-                                        <GroupBox Grid.Column="2" Header="Message">
-                                            <TextBox
-                                                FontFamily="Consolas"
-                                                HorizontalScrollBarVisibility="Auto"
-                                                IsReadOnly="True"
-                                                Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
-                                                VerticalScrollBarVisibility="Auto" />
-                                        </GroupBox>
-                                        <GridSplitter
-                                            Grid.Row="1"
-                                            Grid.Column="2"
-                                            Height="5"
-                                            HorizontalAlignment="Stretch" />
-                                        <GroupBox
-                                            Grid.Row="2"
-                                            Grid.Column="2"
-                                            Header="Call stack">
-                                            <TextBox
-                                                FontFamily="Consolas"
-                                                HorizontalScrollBarVisibility="Auto"
-                                                IsReadOnly="True"
-                                                Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
-                                                VerticalScrollBarVisibility="Auto" />
-                                        </GroupBox>
+                                        <Grid Grid.Column="2">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="25" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="5" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Margin="5,5,0,0" Orientation="Horizontal">
+                                                <TextBlock FontWeight="Bold" Text="Logger:" />
+                                                <TextBlock Margin="5,0,0,0" Text="{Binding ElementName=_logs, Path=SelectedItem.Logger}" />
+                                            </StackPanel>
+                                            <GroupBox
+                                                Grid.Row="1"
+                                                Grid.Column="2"
+                                                Header="Message">
+                                                <TextBox
+                                                    FontFamily="Consolas"
+                                                    HorizontalScrollBarVisibility="Auto"
+                                                    IsReadOnly="True"
+                                                    Text="{Binding ElementName=_logs, Path=SelectedItem.Message}"
+                                                    VerticalScrollBarVisibility="Auto" />
+                                            </GroupBox>
+                                            <GridSplitter
+                                                Grid.Row="2"
+                                                Grid.Column="2"
+                                                Height="5"
+                                                HorizontalAlignment="Stretch" />
+                                            <GroupBox
+                                                Grid.Row="3"
+                                                Grid.Column="2"
+                                                Header="Call stack">
+                                                <TextBox
+                                                    FontFamily="Consolas"
+                                                    HorizontalScrollBarVisibility="Auto"
+                                                    IsReadOnly="True"
+                                                    Text="{Binding ElementName=_logs, Path=SelectedItem.Exception}"
+                                                    VerticalScrollBarVisibility="Auto" />
+                                            </GroupBox>
+                                        </Grid>
                                     </Grid>
                                 </xcad:LayoutAnchorable>
                                 <xcad:LayoutAnchorable
