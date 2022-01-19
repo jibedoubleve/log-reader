@@ -55,6 +55,7 @@ Source: "{#TextPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\t
 Source: "{#OraclePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\oracle\"; Flags: ignoreversion
 Source: "{#MsSqlPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\mssql\"; Flags: ignoreversion
 Source: "{#IISPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\iis\"; Flags: ignoreversion
+Source: "{#SQLitePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\sqlite\"; Flags: ignoreversion
 ;----------------------------------------------------------------
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
