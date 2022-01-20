@@ -50,12 +50,12 @@ Source: "{#BinDirectory}*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
 ;----------------------------------------------------------------
 ;-- binaries of the plugins
 ;----------------------------------------------------------------
-Source: "{#CsvPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\csv\"; Flags: ignoreversion
-Source: "{#TextPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\text\"; Flags: ignoreversion
-Source: "{#OraclePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\oracle\"; Flags: ignoreversion
-Source: "{#MsSqlPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\mssql\"; Flags: ignoreversion
-Source: "{#IISPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\iis\"; Flags: ignoreversion
-Source: "{#SQLitePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\sqlite\"; Flags: ignoreversion
+Source: "{#CsvPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\csv\";       Flags: ignoreversion recursesubdirs
+Source: "{#TextPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\text\";     Flags: ignoreversion recursesubdirs
+Source: "{#OraclePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\oracle\"; Flags: ignoreversion recursesubdirs
+Source: "{#MsSqlPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\mssql\";   Flags: ignoreversion recursesubdirs
+Source: "{#IISPluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\iis\";       Flags: ignoreversion recursesubdirs
+Source: "{#SQLitePluginDir}*"; DestDir: "{userappdata}\probel\log-reader\plugins\sqlite\"; Flags: ignoreversion recursesubdirs
 ;----------------------------------------------------------------
 [Icons]
 Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
