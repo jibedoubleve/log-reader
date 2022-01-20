@@ -338,10 +338,12 @@ namespace Probel.LogReader.ViewModels
             Logs = new ObservableCollection<LogRow>(_cachedLogs);
         }
 
-        private void SaveConfig() => _configManager.Save(e =>
-           {
-               e.Ui.IsLogOrderAsc = IsOrderByAsc;
-           });
+        private void SaveConfig() => _configManager.Save(cfg =>
+        {
+            cfg.Ui.IsLogOrderAsc = IsOrderByAsc;
+            cfg.Ui.IsLoggerVisible = IsLoggerVisible;
+            cfg.Ui.IsThreadIdVisible = IsThreadIdVisible;
+        });
 
         private void SortLogs(bool sortAsc)
         {
@@ -386,14 +388,7 @@ namespace Probel.LogReader.ViewModels
             _eventAggregator.PublishOnUIThread(UiEvent.HideMenuFilter());
             UnregisterListener();
 
-            var t1 = Task.Run(() =>
-            {
-                _configManager.Save(stg =>
-                {
-                    stg.Ui.IsLoggerVisible = IsLoggerVisible;
-                    stg.Ui.IsThreadIdVisible = IsThreadIdVisible;
-                });
-            });
+            var t1 = Task.Run(() => SaveConfig());
             t1.OnErrorHandle(_ui);
         }
 
@@ -488,6 +483,13 @@ namespace Probel.LogReader.ViewModels
         {
             if (_loadedRepository != null)
             {
+                /* Configuration is saved only when LogView
+                 * is deactivated. Whenever you reloads the
+                 * repositories, settings is reladed from files
+                 * Therefore, this is why I save it here
+                 */
+                SaveConfig();
+
                 LoadRepository(_loadedRepository);
             }
         }

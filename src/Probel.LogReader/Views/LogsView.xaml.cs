@@ -116,7 +116,7 @@ namespace Probel.LogReader.Views
 
         private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue is IHierarchy<DateTime> day)
+            if (e.NewValue is IHierarchy<DateTime> day && day.Level == 3)
             {
                 ViewModel.LoadLogs(day.Value);
             }
