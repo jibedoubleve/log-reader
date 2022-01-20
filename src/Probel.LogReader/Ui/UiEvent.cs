@@ -13,7 +13,8 @@
 
         #region Methods
 
-        public static UiEvent ShowMenuFilter(bool isVisible) => new UiEvent() { Event = UiEvents.FilterVisibility, Context = isVisible };
+        public static UiEvent ShowMenuFilter() => new UiEvent() { Event = UiEvents.FilterVisibility, Context = true };
+        public static UiEvent HideMenuFilter() => new UiEvent() { Event = UiEvents.FilterVisibility, Context = false };
         public static UiEvent FilterApplied(string filterName) => new UiEvent() { Event = UiEvents.FilterApplied, Context = filterName };
 
         #endregion Methods

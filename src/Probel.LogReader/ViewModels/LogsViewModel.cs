@@ -365,7 +365,7 @@ namespace Probel.LogReader.ViewModels
 
         protected override void OnActivate()
         {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(true));
+            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter());
             IsTraceVisible
                 = IsDebugVisible
                 = IsInfoVisible
@@ -383,7 +383,7 @@ namespace Probel.LogReader.ViewModels
 
         protected override void OnDeactivate(bool close)
         {
-            _eventAggregator.PublishOnUIThread(UiEvent.ShowMenuFilter(false));
+            _eventAggregator.PublishOnUIThread(UiEvent.HideMenuFilter());
             UnregisterListener();
 
             var t1 = Task.Run(() =>
